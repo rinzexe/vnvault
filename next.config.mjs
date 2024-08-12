@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: { domains: ['t.vndb.org'], },
+    reactStrictMode: false,
+    images: { domains: ['t.vndb.org', 'cbdyelxczooainxtfjgp.supabase.co'], },
 };
 
 export default nextConfig;

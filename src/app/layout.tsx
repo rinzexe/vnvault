@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import LocalFont from "next/font/local";
 import "./globals.css";
 import Header from "./_components/header";
+import { AuthProvider } from "./_components/auth-provider";
 
 const poppins = Poppins({ weight: "300", variable: '--font-poppins', subsets: ["latin"] })
 
@@ -24,8 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={calSans.variable + " " + poppins.variable + " " + poppins.className + " bg-black text-white"}>
-        <Header />
-        {children}
+        <AuthProvider>
+          <Header />
+          {children} 
+        </AuthProvider>
       </body>
     </html>
   );

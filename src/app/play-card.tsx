@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-export default async function PlayCard() {
+export default function PlayCard() {
 
     return (
         <Link href="/challenge">

@@ -27,7 +27,6 @@ export default function Profile() {
 
     return (
         <div>
-            <h1>Upload Profile Photo</h1>
             <input accept="image/png, image/gif, image/jpeg" type="file" onChange={uploadFile} />
         </div>
     );

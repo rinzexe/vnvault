@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const filter = ['votecount', '>', "4000"]
+const filter = ['votecount', '>', "10000"]
 
 export async function getRandomPanel() {
     const res1: any = await axios.post(
@@ -53,7 +53,7 @@ export async function getRandomPanel() {
         }
     }
 
-    return ({ alttitle: res2.data.results[0].alttitle, title: res2.data.results[0].title, screenshot: screenshotUrl })
+    return ({ alttitle: res2.data.results[0].alttitle, title: res2.data.results[0].title, screenshot: screenshotUrl, votecount: res2.data.results[0].votecount })
 }
 
 export async function getAutofillSuggestions(input: string) {
@@ -66,7 +66,7 @@ export async function getAutofillSuggestions(input: string) {
             'filters': [
                 "and", ['has_screenshot', '=', '1'], ['search', '=', input]
             ],
-            'fields': 'title, alttitle, image.url',
+            'fields': 'title, votecount, alttitle, image.url',
             "results": "3",
         })
     });

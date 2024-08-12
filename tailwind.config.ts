@@ -16,6 +16,16 @@ const config: Config = {
       fontFamily: {
         poppins: ['var(--font-poppins)'],
         calsans: ['var(--font-calsans)']
+      },
+      animation: {
+        "xpPopup": 'xpPopup 1.5s ease-in-out forwards',
+      },
+      keyframes: {
+        xpPopup: {
+          '0%': { transform: 'translateY(0)', opacity: "0" },
+          '50%': { transform: 'translateY(-1rem)', opacity: "1" },
+          '100%': { transform: 'translateY(-2rem)', opacity: "0" },
+        }
       }
     },
   },

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import FileUpload from "../_components/file-upload";
 import { getAutofillSuggestions, getRandomPanel } from "./actions";
+import { useAuth } from "../_components/auth-provider";
+import XpPopup from "./xp-popup";
 
 const suggestionPlaceholders = [
     "Song of Saya",
@@ -34,10 +36,13 @@ export default function Challenge() {
     const [vnData, setVnData] = useState<VnData | undefined>()
     const [suggestions, setSuggestions] = useState<any>([])
     const [lastRounds, setLastRounds] = useState<any>([])
+    const [xpPopupValue, setXpPopupValue] = useState<number>(0)
 
     const lastInput = useRef<number>(0)
 
     const inputRef = useRef<HTMLInputElement>(null)
+
+    const auth = useAuth()
 
     useEffect(() => {
         setVnData(undefined)
@@ -75,14 +80,37 @@ export default function Challenge() {
         setSuggestions([])
         if (answerTitle === vnData?.title) {
             setLastRounds([...lastRounds, { pass: true, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }])
+
+            var streak = 1
+            var streakBroken = false
+            var incr = 1
+            while (lastRounds.length > 1 && streakBroken == false) {
+                if (lastRounds[lastRounds.length - incr].pass) {
+                    streak++
+                }
+                else {
+                    streakBroken = true
+                }
+                incr++
+            }
+
+            if (auth.user != null) {
+                auth.updateStats(auth.user.id, streak, true, vnData).then((xpValue: number) => {
+                    setXpPopupValue(xpValue)
+                })
+            }
         }
         else {
             setLastRounds([...lastRounds, { pass: false, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }])
+
+            if (auth.user != null) {
+                auth.updateStats(auth.user.id, 0, false, vnData)
+            }
         }
     }
 
     return (
-        <main className="flex min-h-screen flex-col items-center gap-8 p-24">
+        <main className="flex flex-col items-center gap-8 p-24">
             <div className="flex flex-col items-center relative mb-6">
                 <div className="h-[40rem] w-auto flex flex-col items-center justify-center">
                     {vnData ? (
@@ -92,11 +120,11 @@ export default function Challenge() {
                     )}
                 </div>
                 <div className="flex h-0 absolute -bottom-6 flex-col items-center justify-end">
-                    <div style={{ gridAutoRows: "repeat(" + suggestions.length + ", minmax(0, 1fr))" }} className="grid bottom-0 m-2 w-[40rem] gap-4 panel p-2 empty:hidden">
+                    <div style={{ gridAutoRows: "repeat(" + suggestions.length + ", minmax(0, 1fr))" }} className="grid bottom-0 m-2 w-[40rem] gap-2 panel p-2 empty:hidden">
                         {suggestions.map((suggestion: any, id: number) => {
                             return (
                                 <div key={id} onClick={() => { checkAnswer(suggestion.title) }} className="flex flex-row hover:bg-white/10 p-2 rounded-lg items-center gap-4 select-none hover:cursor-pointer">
-                                    <Image src={suggestion.image.url} alt={suggestion.title} width={50} height={50} />
+                                    <Image src={suggestion.image.url} alt="" width={50} height={50} />
                                     <div>
                                         <p className="text-white">{suggestion.title}</p>
                                         <p className="">{suggestion.alttitle}</p>
@@ -110,26 +138,31 @@ export default function Challenge() {
                         <button className="panel px-4 py-2" onClick={() => checkAnswer("")}>Skip</button>
                     </div>
                 </div>
+                <div className="flex h-0 absolute bottom-6 flex-col items-center justify-end">
+                        <XpPopup xpPopupValue={xpPopupValue} />
+                </div>
             </div>
             <div className="inline-block w-[40rem] p-1 items-center gap-2">
                 {lastRounds.map((round: any, id: number) => {
                     return (
                         <div key={id} className="group inline-block w-fit p-1">
-                            <div className="w-0 absolute hidden group-hover:flex pt-8">
-                                <div className="absolute -translate-x-[50%] hidden group-hover:flex panel flex-col gap-3 w-[30rem]">
-                                    <Image className="rounded-xl h-full w-auto" src={round.screenshot} alt={round.title} width={1000} height={500} />
-                                    <p className="text-white">
-                                        {round.title}
-                                    </p>
-                                    <p>
-                                        {round.title}
-                                    </p>
+                            <div className="w-0 absolute h-0 flex-col justify-end hidden group-hover:flex">
+                                <div className="absolute -translate-x-[50%] hidden group-hover:flex flex-col pb-6 gap-3 w-[30rem]">
+                                    <div className="panel">
+                                        <Image className="rounded-xl h-full w-auto" src={round.screenshot} alt={round.title} width={1000} height={500} />
+                                        <p className="text-white">
+                                            {round.title}
+                                        </p>
+                                        <p>
+                                            {round.alttitle}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             {round.pass ? (
-                                <div className="bg-green-600 select-none rounded-full w-6 h-6 flex items-center justify-center">✓</div>
+                                <div className="bg-green-600 select-none rounded-full text-xs w-4 h-4 flex items-center justify-center">✓</div>
                             ) : (
-                                <div className="bg-red-600 select-none rounded-full w-6 h-6 flex items-center justify-center">X</div>
+                                <div className="bg-red-600 select-none rounded-full text-xs  w-4 h-4 flex items-center justify-center">X</div>
                             )}
                         </div>
                     )
