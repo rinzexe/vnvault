@@ -83,7 +83,7 @@ export default function Challenge() {
 
     return (
         <main className="flex min-h-screen flex-col items-center gap-8 p-24">
-            <div className="flex flex-col items-center relative mb-4">
+            <div className="flex flex-col items-center relative mb-6">
                 <div className="h-[40rem] w-auto flex flex-col items-center justify-center">
                     {vnData ? (
                         <Image className="rounded-xl h-full w-auto" src={vnData.screenshot} alt={vnData.title} width={1000} height={500} />
@@ -91,7 +91,7 @@ export default function Challenge() {
                         <h1>Loading...</h1>
                     )}
                 </div>
-                <div className="flex h-0 absolute -bottom-4 flex-col items-center justify-end">
+                <div className="flex h-0 absolute -bottom-6 flex-col items-center justify-end">
                     <div style={{ gridAutoRows: "repeat(" + suggestions.length + ", minmax(0, 1fr))" }} className="grid bottom-0 m-2 w-[40rem] gap-4 panel p-2 empty:hidden">
                         {suggestions.map((suggestion: any, id: number) => {
                             return (
@@ -106,8 +106,8 @@ export default function Challenge() {
                         })}
                     </div>
                     <div className="w-[40rem] flex flex-row gap-2">
-                        <input onSubmit={() => { console.log("submit") }} placeholder={getRandomSuggestionPlaceholder()} ref={inputRef} onChange={() => { onInputChange() }} className="panel px-3 py-1 focus:outline-none flex-grow" type="text" />
-                        <button className="panel px-3 py-1" onClick={() => checkAnswer("")}>Skip</button>
+                        <input onSubmit={() => { console.log("submit") }} placeholder={getRandomSuggestionPlaceholder()} ref={inputRef} onChange={() => { onInputChange() }} className="panel px-4 py-2 focus:outline-none flex-grow" type="text" />
+                        <button className="panel px-4 py-2" onClick={() => checkAnswer("")}>Skip</button>
                     </div>
                 </div>
             </div>
