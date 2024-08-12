@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const filter = ['votecount', '>', "10000"]
+const filter = ['votecount', '>', "4000"]
 
 export async function getRandomPanel() {
     const res1: any = await axios.post(
