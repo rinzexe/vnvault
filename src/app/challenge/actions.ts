@@ -29,7 +29,7 @@ export async function getRandomPanel() {
             'filters': [
                 "and", ['has_screenshot', '=', '1'], filter
             ],
-            'fields': 'title, image.url, screenshots.url, screenshots.sexual, votecount',
+            'fields': 'title, alttitle, image.url, screenshots.url, screenshots.sexual, votecount',
             "results": "1",
             "page": Math.floor(Math.random() * res1.data.count + 1),
             "count": true
@@ -53,7 +53,7 @@ export async function getRandomPanel() {
         }
     }
 
-    return ({ title: res2.data.results[0].title, screenshot: screenshotUrl })
+    return ({ alttitle: res2.data.results[0].alttitle, title: res2.data.results[0].title, screenshot: screenshotUrl })
 }
 
 export async function getAutofillSuggestions(input: string) {
@@ -66,7 +66,7 @@ export async function getAutofillSuggestions(input: string) {
             'filters': [
                 "and", ['has_screenshot', '=', '1'], ['search', '=', input]
             ],
-            'fields': 'title, image.url',
+            'fields': 'title, alttitle, image.url',
             "results": "3",
         })
     });
