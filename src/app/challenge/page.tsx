@@ -69,9 +69,9 @@ export default function Challenge() {
                 <input ref={inputRef} onChange={() => { onInputChange() }} className="panel px-3 py-1" type="text" />
                 <div className="w-full flex flex-col items-center">
                     <div className="absolute grid grid-rows-3 gap-4">
-                        {suggestions.map((suggestion: any) => {
+                        {suggestions.map((suggestion: any, id: number) => {
                             return (
-                                <div onClick={() => { checkAnswer(suggestion.title) }} className="flex flex-row panel p-4 items-center gap-4 select-none hover:cursor-pointer">
+                                <div key={id} onClick={() => { checkAnswer(suggestion.title) }} className="flex flex-row panel p-4 items-center gap-4 select-none hover:cursor-pointer">
                                     <Image src={suggestion.image.url} alt={suggestion.title} width={50} height={50} />
                                     <h3>{suggestion.title}</h3>
                                 </div>
@@ -81,9 +81,9 @@ export default function Challenge() {
                 </div>
             </div>
             <div className="flex flex-col items-center gap-2">
-                {lastRounds.map((round: any) => {
+                {lastRounds.map((round: any, id: number) => {
                     return (
-                        <div className="panel p-1">
+                        <div key={id} className="panel p-1">
                             <p>{round.pass ? "Correct" : "Incorrect"}</p>
                         </div>
                     )
