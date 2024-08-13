@@ -52,8 +52,8 @@ export default function Challenge() {
             }
 
             if (auth.user != null) {
-                auth.updateStats(auth.user.id, streak + 1, true, calculateXpReward(vnData.votecount, streak))
-                setXpPopupValue(calculateXpReward(vnData.votecount, streak))
+                auth.updateStats(auth.user.id, streak + 1, true, Math.ceil(calculateXpReward(vnData.votecount, streak)))
+                setXpPopupValue(Math.ceil(calculateXpReward(vnData.votecount, streak)))
             }
         }
         else {
@@ -136,11 +136,11 @@ export default function Challenge() {
                     </div>
                 </div>
                 <p className="text-sm text-neutral-500">
-                    {"Displaying vns with " + Math.floor(10000 / (1 + Math.pow(streak, 1.8) / 2)).toString() + " votecount and over"}
+                    {"Displaying vns with " + Math.floor(10000 / (1 + streak / 2)).toString().toString() + " votecount and over"}
                 </p>
                 <p className="text-sm text-neutral-500">
-                    {"Current XP multiplier: " + Math.ceil((50000 - 18000) / 3000 * Math.pow(streak, 1.8) / 1) / 10 + "X"}
-                </p>
+                    {"Current XP multiplier: " + Math.ceil(calculateXpReward(42000, streak) * 10) / 10 + "X"}
+                </p> 
             </div>
         </main >
     );
