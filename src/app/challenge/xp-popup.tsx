@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useRef, useState } from "react";
 
 export default function XpPopup({ xpPopupValue }: any) {
