@@ -73,7 +73,7 @@ export default function Challenge() {
     }
 
     return (
-        <main className="flex flex-col items-center gap-4 m-24">
+        <main className="flex flex-col items-center gap-4 m-2">
             <div className="flex h-0 absolute  flex-col items-center justify-end">
                 <XpPopup xpPopupValue={xpPopupValue} />
             </div>
