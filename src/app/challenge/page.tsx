@@ -135,10 +135,10 @@ export default function Challenge() {
                         <StreakBadge streak={streak} />
                     </div>
                 </div>
-                <p className="text-sm">
+                <p className="text-sm text-neutral-500">
                     {"Displaying vns with " + Math.floor(10000 / (1 + streak / 2)).toString() + " votecount and over"}
                 </p>
-                <p className="text-sm">
+                <p className="text-sm text-neutral-500">
                     {"Current XP multiplier: " + Math.ceil((50000 - 18000) / 3000 * streak / 1) / 10 + "X"}
                 </p>
             </div>
