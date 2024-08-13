@@ -10,14 +10,9 @@ export default function Profile() {
         const file = event.target.files[0];
         const bucket = "documents"
 
-        console.log(await supabase.storage.listBuckets())
-
-        // Call Storage API to upload file
         const { data, error } = await supabase.storage.from("user_profiles").upload(file.name, file);
 
-        // Handle error if upload failed
         if (error) {
-            console.log(error)
             alert('Error uploading file.');
             return;
         }

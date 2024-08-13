@@ -12,8 +12,8 @@ export default function XpPopup({ xpPopupValue }: any) {
 
 
     return (
-        <h3 ref={popupRef} onAnimationEnd={() => setAnimating(false)} className={animating ? "animate-xpPopup text-green-500 drop-shadow-[0_0px_5px_rgba(0,255,0,1)]" : "hidden"}>
-            {"+ " + xpPopupValue}
+        <h3 ref={popupRef} onAnimationEnd={() => setAnimating(false)} className={animating ? "animate-xpPopup text-blue-500 drop-shadow-[0_0px_5px_rgba(0,255,0,1)]" : "hidden"}>
+            {"+ " + xpPopupValue + " XP"}
         </h3>
     )
 }

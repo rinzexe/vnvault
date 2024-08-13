@@ -41,11 +41,9 @@ export default function Header() {
             )
         } else {
             return (
-                <div>
+                <div className="flex flex-row items-center gap-8">
                     <Link href="/signin">
-                        <AccentButton>
-                            Login
-                        </AccentButton>
+                        Login
                     </Link>
                     <Link href="/signup">
                         <AccentButton>

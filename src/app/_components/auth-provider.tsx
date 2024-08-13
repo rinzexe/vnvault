@@ -27,40 +27,52 @@ export const AuthProvider = ({ children }: any) => {
             email: formData.get('email') as string,
             password: formData.get('password') as string,
         }
-    
+
         supabase.auth.signInWithPassword(data).then((res: any) => {
             if (res.error) {
                 router.push('/error')
             }
-        
-            router.push('/')
+
+            router.push('/profile')
         })
     }
-    
-    function signUp(formData: FormData) {
-    
+
+    async function signUp(formData: FormData) {
+
+        const username = formData.get('username') as string
+
+        const userCheck = await checkIfNameExists(username)
+
+        if (userCheck.username) {
+            alert("Username taken")
+            return
+        }
+
         const data = {
             email: formData.get('email') as string,
             password: formData.get('password') as string,
         }
-    
+
         supabase.auth.signUp(data).then((res: any) => {
             if (res.error) {
                 router.push('/error')
             }
 
-            supabase.from('users').insert({ id: res.user.id, username: formData.get('username') as string })
-        
-            router.push('/profile')
+            supabase.from('users').insert({ id: res.data.user.id, username: username }).then((res: any) => {
+                router.push('/profile')
+            })
         })
+
+        return "success"
     }
-    
+
+
     function signOut() {
         supabase.auth.signOut().then((res: any) => {
             router.push('/')
         })
     }
-    
+
 
     useEffect(() => {
         var listener: any;
@@ -72,7 +84,6 @@ export const AuthProvider = ({ children }: any) => {
 
             const { data: listener } = supabase.auth.onAuthStateChange(
                 (event: any, session: any) => {
-                    console.log("statechange")
                     setUser(session?.user ?? null);
                     setLoading(false);
                 }
@@ -88,8 +99,8 @@ export const AuthProvider = ({ children }: any) => {
     }, []);
 
     const value: any = {
-        signUp: async (data: any) => { signUp(data) },
-        signIn: async (data: any) => { signIn(data) },
+        signUp: async (data: any) => { return await signUp(data) },
+        signIn: async (data: any) => { return await signIn(data) },
         signOut: async () => { signOut() },
         getUserData,
         getAvatar,
@@ -109,14 +120,18 @@ export const useAuth = () => {
     return useContext(AuthContext);
 };
 
-export async function getUserData(uuid: string) {
-    const avatar = await getAvatar(uuid)
-    const userdata = await supabase.from('users').select('*').eq('id', uuid).single()
-    console.log(userdata)
-    return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data } 
+async function checkIfNameExists(username: string) {
+    const { data, error } = await supabase.from('users').select('*').eq('username', username).single()
+    return data
 }
 
-export async function getAvatar(uuid: string) {
+async function getUserData(uuid: string) {
+    const avatar = await getAvatar(uuid)
+    const userdata = await supabase.from('users').select('*').eq('id', uuid).single()
+    return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data }
+}
+
+async function getAvatar(uuid: string) {
     const { data, error } = await supabase.rpc('storage_avatar_exists', {
         uid: uuid,
         path: uuid + '/avatar.png'
@@ -134,22 +149,31 @@ export async function getAvatar(uuid: string) {
 export async function updateStats(uuid: string, streak: number, correct: boolean, vnData: any) {
     const currentData: any = await supabase.from('users').select('*').eq('id', uuid).single()
 
+    var payload: any = {}
+
+
+    console.log(currentData)
+
     if (currentData.data.longest_streak < streak) {
-        const res = await supabase.from('users').update({ longest_streak: streak }).eq('id', uuid)
+        payload['longest_streak'] = streak
     }
 
     if (correct) {
-        const res = await supabase.from('users').update({ total_correct: currentData.data.total_correct + 1 }).eq('id', uuid)
+        payload['total_correct'] = currentData.data.total_correct + 1
     }
-    else {
-        const res = await supabase.from('users').update({ total_incorrect: currentData.data.total_incorrect + 1 }).eq('id', uuid)
+    else
+    {
+        payload['total_incorrect'] = currentData.data.total_incorrect + 1
     }
 
     const xpValue = Math.ceil((50000 - vnData.votecount) / 3000 * streak)
-
+    payload['xp'] = currentData.data.xp + xpValue
     console.log(xpValue)
+    console.log(payload)
 
-    const res = await supabase.from('users').update({ xp: currentData.data.xp + xpValue }).eq('id', uuid)
+    const res = await supabase.from('users').update(payload).eq('id', uuid)
+
+    console.log(res)
 
     return xpValue
 }

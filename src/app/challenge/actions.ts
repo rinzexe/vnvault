@@ -2,9 +2,10 @@
 
 import axios from "axios";
 
-const filter = ['votecount', '>', "4000"]
 
-export async function getRandomPanel() {
+export async function getRandomPanel(streak: number) {
+    console.log(Math.floor(10000 / (1 + streak / 2)).toString())
+    const filter = ['votecount', '>', Math.floor(14000 / (1 + streak / 2)).toString()]
     const res1: any = await axios.post(
         'https://api.vndb.org/kana/vn',
         {
