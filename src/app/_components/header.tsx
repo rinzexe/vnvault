@@ -15,6 +15,7 @@ export default function Header() {
 
         async function checkUser() {
             if (auth.user != null) {
+
                 const profile = await auth.getUserData(auth.user.id)
                 setUserProfile(profile)
             }
@@ -57,11 +58,25 @@ export default function Header() {
 
     return (
         <div className="flex flex-row justify-between w-full p-8">
-            <Link className="select-none" href="/">
-                <h1>
-                    VNVault
-                </h1>
-            </Link>
+            <div className="flex flex-row items-center gap-16">
+                <Link className="select-none" href="/">
+                    <h1>
+                        VNVault
+                    </h1>
+                </Link>
+                <div className="flex flex-row items-center gap-8">
+                    <Link href="/leaderboard">
+                        <h3>
+                            Leaderboard
+                        </h3>
+                    </Link>
+                    <Link href="/challenge">
+                        <h3>
+                            Challenge
+                        </h3>
+                    </Link>
+                </div>
+            </div>
             <ProfileButton />
         </div>
     )

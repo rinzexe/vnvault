@@ -68,9 +68,8 @@ export const AuthProvider = ({ children }: any) => {
 
 
     function signOut() {
-        supabase.auth.signOut().then((res: any) => {
-            router.push('/')
-        })
+        supabase.auth.signOut()
+        router.push('/')
     }
 
 
@@ -105,6 +104,8 @@ export const AuthProvider = ({ children }: any) => {
         getUserData,
         getAvatar,
         updateStats,
+        getUserDataWithUsername,
+        getLeaderboard,
         supabase,
         user,
     };
@@ -125,28 +126,28 @@ async function checkIfNameExists(username: string) {
     return data
 }
 
-async function getUserData(uuid: string) {
-    const avatar = await getAvatar(uuid)
-    const userdata = await supabase.from('users').select('*').eq('id', uuid).single()
+async function getUserDataWithUsername(username: string) {
+    const userdata = await supabase.from('users').select('*').eq('username', username).single()
+    const avatar = await getAvatar(userdata!)
     return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data }
 }
 
-async function getAvatar(uuid: string) {
-    const { data, error } = await supabase.rpc('storage_avatar_exists', {
-        uid: uuid,
-        path: uuid + '/avatar.png'
-    });
+async function getUserData(uuid: string) {
+    const userdata = await supabase.from('users').select('*').eq('id', uuid).single()
+    const avatar = await getAvatar(userdata!)
+    return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data }
+}
 
-    if (!data) {
+async function getAvatar(userData: any) {
+    if (!userData.has_avatar) {
         return await supabase.storage.from('user_profiles').getPublicUrl('default.jpg')
     }
     else {
-        return await supabase.storage.from('user_profiles').getPublicUrl(uuid + '/avatar.png')
+        return await supabase.storage.from('user_profiles').getPublicUrl(userData.id + '/avatar.png')
     }
 }
 
-
-export async function updateStats(uuid: string, streak: number, correct: boolean, vnData: any) {
+async function updateStats(uuid: string, streak: number, correct: boolean, vnData: any) {
     const currentData: any = await supabase.from('users').select('*').eq('id', uuid).single()
 
     var payload: any = {}
@@ -169,4 +170,9 @@ export async function updateStats(uuid: string, streak: number, correct: boolean
     const res = await supabase.from('users').update(payload).eq('id', uuid)
 
     return xpValue
+}
+
+async function getLeaderboard() {
+    const { data, error } = await supabase.from('users').select('*').order('xp', { ascending: false })
+    return data
 }
