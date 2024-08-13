@@ -1,5 +1,3 @@
-
-
 export function calculateLevel(xp: number) {
     let level = 1;
     let xpForNextLevel = 200;

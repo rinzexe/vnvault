@@ -13,6 +13,7 @@ export interface VnData {
     screenshot: string
     title: string
     alttitle: string
+    votecount: number
 }
 
 export default function Challenge() {
@@ -50,7 +51,7 @@ export default function Challenge() {
             }
 
             if (auth.user != null) {
-                auth.updateStats(auth.user.id, streak + 1, true, vnData).then((xpValue: number) => {
+                auth.updateStats(auth.user.id, streak + 1, true, Math.ceil((50000 - vnData.votecount) / 3000 * streak)).then((xpValue: number) => {
                     setXpPopupValue(xpValue)
                 })
             }
@@ -66,7 +67,7 @@ export default function Challenge() {
             }
 
             if (auth.user != null) {
-                auth.updateStats(auth.user.id, 0, false, vnData)
+                auth.updateStats(auth.user.id, 0, false, 0)
             }
         }
     }
@@ -122,16 +123,24 @@ export default function Challenge() {
                     )
                 })}
             </div>
-            <div className="flex items-center gap-3">
-                <p>
-                    Current streak:
-                </p>
-                <div className="flex items-center gap-2">
-                    <h2>
-                        {streak}
-                    </h2>
-                    <StreakBadge streak={streak} />
+            <div className="flex flex-col items-center">
+                <div className="flex items-center gap-3">
+                    <p>
+                        Current streak:
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <h2>
+                            {streak}
+                        </h2>
+                        <StreakBadge streak={streak} />
+                    </div>
                 </div>
+                <p className="text-sm">
+                    {"Displaying vns with " + Math.floor(10000 / (1 + streak / 2)).toString() + " votecount and over"}
+                </p>
+                <p className="text-sm">
+                    {"Current XP multiplier: " + Math.ceil((50000 - 18000) / 3000 * streak / 1) / 10 + "X"}
+                </p>
             </div>
         </main >
     );

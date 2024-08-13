@@ -152,7 +152,7 @@ async function getAvatar(userData: any) {
     }
 }
 
-async function updateStats(uuid: string, streak: number, correct: boolean, vnData: any) {
+async function updateStats(uuid: string, streak: number, correct: boolean, xpValue: number) {
     const currentData: any = await supabase.from('users').select('*').eq('id', uuid).single()
 
     var payload: any = {}
@@ -168,12 +168,9 @@ async function updateStats(uuid: string, streak: number, correct: boolean, vnDat
         payload['total_incorrect'] = currentData.data.total_incorrect + 1
     }
 
-    const xpValue = Math.ceil((50000 - vnData.votecount) / 3000 * streak)
     payload['xp'] = currentData.data.xp + xpValue
 
     const res = await supabase.from('users').update(payload).eq('id', uuid)
-
-    return xpValue
 }
 
 async function getLeaderboard() {
