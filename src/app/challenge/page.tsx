@@ -8,6 +8,7 @@ import XpPopup from "./xp-popup";
 import LevelBar from "../_components/level-bar";
 import StreakBadge from "../_components/streak-badge";
 import GamePanel from "./game-panel";
+import { calculateXpReward } from "@/utils/levels";
 
 export interface VnData {
     screenshot: string
@@ -51,8 +52,8 @@ export default function Challenge() {
             }
 
             if (auth.user != null) {
-                auth.updateStats(auth.user.id, streak + 1, true, Math.ceil((50000 - vnData.votecount) / 3000 * streak))
-                setXpPopupValue(Math.ceil((50000 - vnData.votecount) / 3000 * streak))
+                auth.updateStats(auth.user.id, streak + 1, true, calculateXpReward(vnData.votecount, streak))
+                setXpPopupValue(calculateXpReward(vnData.votecount, streak))
             }
         }
         else {
@@ -135,10 +136,10 @@ export default function Challenge() {
                     </div>
                 </div>
                 <p className="text-sm text-neutral-500">
-                    {"Displaying vns with " + Math.floor(10000 / (1 + streak / 2)).toString() + " votecount and over"}
+                    {"Displaying vns with " + Math.floor(10000 / (1 + Math.pow(streak, 1.8) / 2)).toString() + " votecount and over"}
                 </p>
                 <p className="text-sm text-neutral-500">
-                    {"Current XP multiplier: " + Math.ceil((50000 - 18000) / 3000 * streak / 1) / 10 + "X"}
+                    {"Current XP multiplier: " + Math.ceil((50000 - 18000) / 3000 * Math.pow(streak, 1.8) / 1) / 10 + "X"}
                 </p>
             </div>
         </main >

@@ -15,3 +15,7 @@ export function calculateLevel(xp: number) {
         remainingXP
     };
 }
+
+export function calculateXpReward(votecount: number, streak: number) {
+    return Math.ceil((50000 - votecount) / 3000 * Math.pow(streak, 1.8));
+}
