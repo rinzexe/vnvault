@@ -6,7 +6,7 @@ export function calculateLevel(xp: number) {
     while (remainingXP >= xpForNextLevel) {
         remainingXP -= xpForNextLevel;
         level++;
-        xpForNextLevel = Math.floor(xpForNextLevel * 1.5); 
+        xpForNextLevel = Math.floor(xpForNextLevel * 1.2); 
     }
 
     return {

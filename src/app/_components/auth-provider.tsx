@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: any) => {
 
         const userCheck = await checkIfNameExists(username)
 
-        if (userCheck.username) {
+        if (userCheck) {
             alert("Username taken")
             return
         }
@@ -126,6 +126,7 @@ export const useAuth = () => {
 
 async function checkIfNameExists(username: string) {
     const { data, error } = await supabase.from('users').select('*').eq('username', username).single()
+    console.log(data, error)
     return data
 }
 
