@@ -51,9 +51,8 @@ export default function Challenge() {
             }
 
             if (auth.user != null) {
-                auth.updateStats(auth.user.id, streak + 1, true, Math.ceil((50000 - vnData.votecount) / 3000 * streak)).then((xpValue: number) => {
-                    setXpPopupValue(xpValue)
-                })
+                auth.updateStats(auth.user.id, streak + 1, true, Math.ceil((50000 - vnData.votecount) / 3000 * streak))
+                setXpPopupValue(Math.ceil((50000 - vnData.votecount) / 3000 * streak))
             }
         }
         else {
