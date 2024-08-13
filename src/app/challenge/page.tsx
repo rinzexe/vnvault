@@ -1,15 +1,12 @@
 'use client'
 
-import axios from "axios";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import FileUpload from "../_components/file-upload";
 import { getAutofillSuggestions, getRandomPanel } from "./actions";
 import { useAuth } from "../_components/auth-provider";
 import XpPopup from "./xp-popup";
 import LevelBar from "../_components/level-bar";
 import StreakBadge from "../_components/streak-badge";
-import FeedbackPopup from "./feedback-popup";
 
 const suggestionPlaceholders = [
     "Song of Saya",
