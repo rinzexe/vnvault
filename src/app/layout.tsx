@@ -25,10 +25,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={calSans.variable + " " + poppins.variable + " " + poppins.className + " bg-black text-white"}>
-        <AuthProvider>
-          <Header />
-          {children} 
-        </AuthProvider>
+        <div className="hidden lg:block">
+          <AuthProvider>
+            <Header />
+            {children}
+          </AuthProvider>
+        </div>
+        <div className="lg:hidden block p-4">
+          Mobile support coming soon
+        </div>
       </body>
     </html>
   );

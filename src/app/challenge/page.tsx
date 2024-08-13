@@ -20,15 +20,16 @@ export default function Challenge() {
     const [lastRounds, setLastRounds] = useState<any>([])
     const [xpPopupValue, setXpPopupValue] = useState<number>(0)
     const [userData, setUserData] = useState<any>(0)
+    const [streak, setStreak] = useState<number>(0)
 
     const auth = useAuth()
 
     useEffect(() => {
         setVnData(undefined)
         async function getVnData() {
-            const gotVnData: VnData = await getRandomPanel(getStreak())
+            const gotVnData: VnData = await getRandomPanel(streak)
 
-            const userData = await auth.getUserData(auth.user.id)
+            const userData = await auth.getUserData(auth.user?.id)
 
             setUserData(userData)
             setVnData(gotVnData)
@@ -37,25 +38,10 @@ export default function Challenge() {
         getVnData()
     }, [lastRounds])
 
-    function getStreak() {
-        var streak = 0
-        var streakBroken = false
-        var incr = 1
-        while (lastRounds.length > 0 && streakBroken == false) {
-            if (lastRounds[lastRounds.length - incr] && lastRounds[lastRounds.length - incr].pass) {
-                streak++
-            }
-            else {
-                streakBroken = true
-            }
-            incr++
-        }
-
-        return streak
-    }
-
     function checkAnswer(answerTitle: string) {
         if (answerTitle === vnData?.title) {
+            setStreak(streak + 1)
+
             if (lastRounds.length > 10) {
                 setLastRounds([...lastRounds, { pass: true, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }].slice(1))
             }
@@ -63,15 +49,15 @@ export default function Challenge() {
                 setLastRounds([...lastRounds, { pass: true, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }])
             }
 
-            const streak = getStreak()
-
             if (auth.user != null) {
-                auth.updateStats(auth.user.id, streak, true, vnData).then((xpValue: number) => {
+                auth.updateStats(auth.user.id, streak + 1, true, vnData).then((xpValue: number) => {
                     setXpPopupValue(xpValue)
                 })
             }
         }
         else {
+            setStreak(0)
+            
             if (lastRounds.length > 10) {
                 setLastRounds([...lastRounds, { pass: false, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }].slice(1))
             }
@@ -90,15 +76,25 @@ export default function Challenge() {
             <div className="flex h-0 absolute  flex-col items-center justify-end">
                 <XpPopup xpPopupValue={xpPopupValue} />
             </div>
-            {auth.user ? (
-                <div>
+            {auth.user ?
+                userData ? (<div>
                     <LevelBar xp={userData?.xp} />
-                </div>
-            ) : (
-                <div>
-                    Sign in to see xp features
-                </div>
-            )}
+                </div>) : (
+                    <div className="grid grid-cols-1 grid-rows-1">
+                        <div className="backdrop-blur-sm grid-center" />
+                        <LevelBar className="grid-center m-4" xp={2561} />
+                    </div>
+                )
+                : (
+                    <div className="grid grid-cols-1 grid-rows-1">
+                        <div className="backdrop-blur-sm grid-center flex items-center justify-center">
+                            <h2>
+                                Sign in to track your progress
+                            </h2>
+                        </div>
+                        <LevelBar className="grid-center m-4" xp={2561} />
+                    </div>
+                )}
             <GamePanel vnData={vnData} checkAnswer={checkAnswer} />
             <div className="flex w-[40rem] p-1 h-12 items-center justify-center gap-3">
                 {lastRounds.map((round: any, id: number) => {
@@ -132,11 +128,11 @@ export default function Challenge() {
                 </p>
                 <div className="flex items-center gap-2">
                     <h2>
-                        {getStreak()}
+                        {streak}
                     </h2>
-                    <StreakBadge streak={getStreak()} />
+                    <StreakBadge streak={streak} />
                 </div>
             </div>
-        </main>
+        </main >
     );
 }

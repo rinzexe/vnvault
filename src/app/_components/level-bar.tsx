@@ -1,9 +1,9 @@
 import { calculateLevel } from "@/utils/levels"
 
-export default function LevelBar({ xp }: any) {
+export default function LevelBar({ xp, ...props }: any) {
     const xpInfo = calculateLevel(xp)
     return (
-        <div>
+        <div {...props}>
             <h3>
                 Level {xpInfo.level}
             </h3>

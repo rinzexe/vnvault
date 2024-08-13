@@ -9,6 +9,7 @@ import { useAuth } from '../_components/auth-provider'
 import Image from 'next/image'
 import { calculateLevel } from '@/utils/levels'
 import LevelBar from '../_components/level-bar'
+import Profile from '../_components/file-upload'
 
 export default function PrivatePage() {
     const [userData, setProfile] = useState<any>(null)
@@ -20,6 +21,7 @@ export default function PrivatePage() {
         async function fetchProfile() {
             const data = await auth.getUserData(auth.user.id)
             setProfile(data)
+            console.log(data)
         }
 
         const user = auth.user
@@ -31,6 +33,24 @@ export default function PrivatePage() {
         }
     }, [auth])
 
+    return (
+        <div>
+            {userData ? <ProfilePanel userData={userData} auth={auth} /> :
+                (
+                    <div className='grid grid-rows-1 grid-cols-1 p-4'>
+                        <div className='backdrop-blur-md grid-center z-20'>
+
+                        </div>
+                        <div className='grid-center m-4'>
+                            <ProfilePanel userData={{ avatar: "https://cbdyelxczooainxtfjgp.supabase.co/storage/v1/object/public/user_profiles/default.jpg", created_at: "26-06-1999T", xp: 2627, total_incorrect: 256, total_correct: 367, longest_streak: 23 }} auth={auth} />
+                        </div>
+                    </div>
+                )}
+        </div>
+    )
+}
+
+function ProfilePanel({ userData, auth }: any) {
     return (
         <div className='flex flex-col items-center gap-12'>
             <div className='flex flex-row items-center gap-8 h-[300px]'>
@@ -44,11 +64,10 @@ export default function PrivatePage() {
             </div>
             <LevelBar xp={userData?.xp} />
             <Stats userData={userData} />
-            <AccentButton onClick={() => { auth.signOut() }}>Sign Out</AccentButton>
+            {auth && <AccentButton onClick={() => { auth.signOut() }}>Sign Out</AccentButton>}
         </div>
     )
 }
-
 
 function Stats({ userData }: any) {
     return (

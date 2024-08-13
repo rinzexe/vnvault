@@ -28,4 +28,8 @@
   p {
     @apply text-neutral-400
   }
+
+  .grid-center {
+    @apply col-start-1 col-end-1 row-start-1 row-end-1
+  }
 }
