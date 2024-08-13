@@ -4,27 +4,10 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { getAutofillSuggestions, getRandomPanel } from "./actions";
 import { useAuth } from "../_components/auth-provider";
-/* import XpPopup from "./xp-popup"; */
+import XpPopup from "./xp-popup";
 import LevelBar from "../_components/level-bar";
 import StreakBadge from "../_components/streak-badge";
-
-const suggestionPlaceholders = [
-    "Song of Saya",
-    "Tsukihime",
-    "Fate/Stay Night",
-    "CLANNAD",
-    "Steins;Gate",
-    "Higurashi",
-    "Umineko",
-    "Muv-Luv",
-    "Little Busters",
-    "Chaos;Head",
-    "Chaos;Child",
-]
-
-function getRandomSuggestionPlaceholder() {
-    return suggestionPlaceholders[Math.floor(Math.random() * suggestionPlaceholders.length)]
-}
+import GamePanel from "./game-panel";
 
 export interface VnData {
     screenshot: string
@@ -34,14 +17,9 @@ export interface VnData {
 
 export default function Challenge() {
     const [vnData, setVnData] = useState<VnData | undefined>()
-    const [suggestions, setSuggestions] = useState<any>([])
     const [lastRounds, setLastRounds] = useState<any>([])
     const [xpPopupValue, setXpPopupValue] = useState<number>(0)
     const [userData, setUserData] = useState<any>(0)
-
-    const lastInput = useRef<number>(0)
-
-    const inputRef = useRef<HTMLInputElement>(null)
 
     const auth = useAuth()
 
@@ -76,30 +54,7 @@ export default function Challenge() {
         return streak
     }
 
-    function completeSuggestions() {
-        const time = new Date().getTime()
-
-        if (inputRef.current && inputRef.current.value == "") {
-            setSuggestions([])
-        }
-        else if (time - lastInput.current > 500 && inputRef.current) {
-            getAutofillSuggestions(inputRef.current.value).then((res) => {
-                setSuggestions(res)
-            })
-        }
-    }
-
-    function onInputChange() {
-        const time = new Date().getTime()
-
-        lastInput.current = time
-        setTimeout(completeSuggestions, 501)
-    }
-
     function checkAnswer(answerTitle: string) {
-        inputRef.current ? inputRef.current.value = "" : ""
-
-        setSuggestions([])
         if (answerTitle === vnData?.title) {
             if (lastRounds.length > 10) {
                 setLastRounds([...lastRounds, { pass: true, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }].slice(1))
@@ -133,7 +88,7 @@ export default function Challenge() {
     return (
         <main className="flex flex-col items-center gap-4 m-24">
             <div className="flex h-0 absolute  flex-col items-center justify-end">
-                {/* <XpPopup xpPopupValue={xpPopupValue} /> */}
+                <XpPopup xpPopupValue={xpPopupValue} />
             </div>
             {auth.user ? (
                 <div>
@@ -144,34 +99,7 @@ export default function Challenge() {
                     Sign in to see xp features
                 </div>
             )}
-            <div className="flex flex-col items-center relative mb-6">
-                <div className="h-[40rem] w-auto flex flex-col items-center justify-center">
-                    {vnData ? (
-                        <Image className="rounded-xl h-full w-auto" src={vnData.screenshot} alt={vnData.title} width={1000} height={500} />
-                    ) : (
-                        <h1>Loading...</h1>
-                    )}
-                </div>
-                <div className="flex h-0 absolute -bottom-6 flex-col items-center justify-end">
-                    <div style={{ gridAutoRows: "repeat(" + suggestions.length + ", minmax(0, 1fr))" }} className="grid bottom-0 m-2 w-[40rem] gap-2 panel p-2 empty:hidden">
-                        {suggestions.map((suggestion: any, id: number) => {
-                            return (
-                                <div key={id} onClick={() => { checkAnswer(suggestion.title) }} className="flex flex-row hover:bg-white/10 p-2 rounded-lg items-center gap-4 select-none hover:cursor-pointer">
-                                    <Image src={suggestion.image.url} alt="" width={50} height={50} />
-                                    <div>
-                                        <p className="text-white">{suggestion.title}</p>
-                                        <p className="">{suggestion.alttitle}</p>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <div className="w-[40rem] flex flex-row gap-2">
-                        <input placeholder={getRandomSuggestionPlaceholder()} ref={inputRef} onChange={() => { onInputChange() }} className="panel px-4 py-2 focus:outline-none flex-grow" type="text" />
-                        <button className="panel px-4 py-2" onClick={() => checkAnswer("")}>Skip</button>
-                    </div>
-                </div>
-            </div>
+            <GamePanel vnData={vnData} checkAnswer={checkAnswer} />
             <div className="flex w-[40rem] p-1 h-12 items-center justify-center gap-3">
                 {lastRounds.map((round: any, id: number) => {
                     return (

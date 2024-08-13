@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { permanentRedirect, redirect, useRouter } from 'next/navigation'
 import { useAuth } from '../_components/auth-provider'
 import Image from 'next/image'
-import { calculateLevel } from '@/utils/supabase/levels'
+import { calculateLevel } from '@/utils/levels'
 import LevelBar from '../_components/level-bar'
 
 export default function PrivatePage() {

@@ -1,4 +1,4 @@
-import { calculateLevel } from "@/utils/supabase/levels"
+import { calculateLevel } from "@/utils/levels"
 
 export default function LevelBar({ xp }: any) {
     const xpInfo = calculateLevel(xp)

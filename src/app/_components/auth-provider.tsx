@@ -151,9 +151,6 @@ export async function updateStats(uuid: string, streak: number, correct: boolean
 
     var payload: any = {}
 
-
-    console.log(currentData)
-
     if (currentData.data.longest_streak < streak) {
         payload['longest_streak'] = streak
     }
@@ -168,12 +165,8 @@ export async function updateStats(uuid: string, streak: number, correct: boolean
 
     const xpValue = Math.ceil((50000 - vnData.votecount) / 3000 * streak)
     payload['xp'] = currentData.data.xp + xpValue
-    console.log(xpValue)
-    console.log(payload)
 
     const res = await supabase.from('users').update(payload).eq('id', uuid)
-
-    console.log(res)
 
     return xpValue
 }
