@@ -57,7 +57,7 @@ export default function Challenge() {
         }
         else {
             setStreak(0)
-            
+
             if (lastRounds.length > 10) {
                 setLastRounds([...lastRounds, { pass: false, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }].slice(1))
             }

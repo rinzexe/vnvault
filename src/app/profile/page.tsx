@@ -21,7 +21,6 @@ export default function PrivatePage() {
         async function fetchProfile() {
             const data = await auth.getUserData(auth.user.id)
             setProfile(data)
-            console.log(data)
         }
 
         const user = auth.user
