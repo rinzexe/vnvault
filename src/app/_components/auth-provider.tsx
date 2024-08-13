@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useState, useEffect, createContext } from 'react';
 
+
+
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL as string, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string);
 
 const defaultValues: any = {
@@ -106,6 +108,7 @@ export const AuthProvider = ({ children }: any) => {
         updateStats,
         getUserDataWithUsername,
         getLeaderboard,
+        updateAvatar,
         supabase,
         user,
     };
@@ -128,22 +131,24 @@ async function checkIfNameExists(username: string) {
 
 async function getUserDataWithUsername(username: string) {
     const userdata = await supabase.from('users').select('*').eq('username', username).single()
-    const avatar = await getAvatar(userdata!)
+    const avatar = await getAvatar(userdata?.data)
+    console.log(userdata)
     return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data }
 }
 
 async function getUserData(uuid: string) {
     const userdata = await supabase.from('users').select('*').eq('id', uuid).single()
-    const avatar = await getAvatar(userdata!)
+    const avatar = await getAvatar(userdata?.data)
     return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data }
 }
 
 async function getAvatar(userData: any) {
-    if (!userData.has_avatar) {
-        return await supabase.storage.from('user_profiles').getPublicUrl('default.jpg')
+    if (userData.has_avatar == false) {
+        return await supabase.storage.from('user_profiles').getPublicUrl('default.jpg?updated')
     }
     else {
-        return await supabase.storage.from('user_profiles').getPublicUrl(userData.id + '/avatar.png')
+        const url = 'avatars/' + userData.id + '.png?t=' + userData.updated_at
+        return await supabase.storage.from('user_profiles').getPublicUrl(url)
     }
 }
 
@@ -159,8 +164,7 @@ async function updateStats(uuid: string, streak: number, correct: boolean, vnDat
     if (correct) {
         payload['total_correct'] = currentData.data.total_correct + 1
     }
-    else
-    {
+    else {
         payload['total_incorrect'] = currentData.data.total_incorrect + 1
     }
 
@@ -175,4 +179,27 @@ async function updateStats(uuid: string, streak: number, correct: boolean, vnDat
 async function getLeaderboard() {
     const { data, error } = await supabase.from('users').select('*').order('xp', { ascending: false })
     return data
+}
+
+async function updateAvatar(file: any, uuid: string) {
+
+    const { data, error } = await supabase.storage.from("user_profiles").update("avatars/" + uuid + ".png", file, {
+        cacheControl: '3600',
+        upsert: true
+    })
+
+    console.log(data)
+
+    if (error) {
+        const res = await supabase.storage.from("user_profiles").upload("avatars/" + uuid + ".png", file, {
+            cacheControl: '3600',
+            upsert: true
+        })
+        if (res.error) {
+            alert('Error uploading file.');
+            return
+        }
+    }
+
+    const res = await supabase.from('users').update({ has_avatar: true }).eq('id', uuid)
 }

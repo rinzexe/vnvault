@@ -1,4 +1,5 @@
 import AccentButton from "@/app/_components/accent-button"
+import AvatarUpload from "@/app/profile/_components/avatar-upload"
 import LevelBar from "@/app/_components/level-bar"
 import Image from "next/image"
 import { useEffect, useState } from "react"
@@ -12,7 +13,12 @@ export default function ProfilePanel({ userData, auth }: any) {
     return (
         <div className='flex flex-col items-center gap-12'>
             <div className='flex flex-row items-center gap-8 h-[300px]'>
-                {userData && <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full' />}
+                {userData && !isMe && <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full' />}
+                {userData && isMe && (
+                    <AvatarUpload>
+                        <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full' />
+                    </AvatarUpload>
+                )}
                 <div>
                     <h1>{userData?.username}</h1>
                     <p>

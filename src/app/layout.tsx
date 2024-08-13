@@ -25,6 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={calSans.variable + " " + poppins.variable + " " + poppins.className + " bg-black text-white"}>
+        <div id="modal-content">
+
+        </div>
         <div className="hidden lg:block">
           <AuthProvider>
             <Header />

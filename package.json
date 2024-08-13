@@ -22,7 +22,8 @@
     "nock": "^13.5.4",
     "nsfwjs": "^4.1.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-image-crop": "^11.0.6"
   },
   "devDependencies": {
     "@types/node": "^20",

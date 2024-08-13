@@ -9,8 +9,9 @@ export default function Avatar({ user }: any) {
 
     useEffect(() => {
         async function fetchAvatar() {
-            const avatar = await auth.getAvatar(user)
-            console.log(avatar.data.publicUrl)
+            const userData = await auth.getUserData(user.id)
+            console.log(userData)
+            const avatar = await auth.getAvatar(userData)
             setAvatar(avatar.data.publicUrl)
         }
 
@@ -19,7 +20,7 @@ export default function Avatar({ user }: any) {
 
     return (
         <div className="h-12 w-12">
-            {avatar && <Image className="rounded-full" alt="" width="50" height="50" src={avatar} />}
+            {avatar && <Image className="rounded-full w-12 h-12" alt="" width="50" height="50" src={avatar} />}
         </div>
     )
 }

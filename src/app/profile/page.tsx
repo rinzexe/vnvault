@@ -1,7 +1,7 @@
 'use client'
 
 import { createClient } from '@/utils/supabase/server'
-import FileUpload from '../_components/file-upload'
+import FileUpload from './_components/avatar-upload'
 import AccentButton from '../_components/accent-button'
 import { useEffect, useState } from 'react'
 import { permanentRedirect, redirect, useRouter } from 'next/navigation'
@@ -9,7 +9,7 @@ import { useAuth } from '../_components/auth-provider'
 import Image from 'next/image'
 import { calculateLevel } from '@/utils/levels'
 import LevelBar from '../_components/level-bar'
-import Profile from '../_components/file-upload'
+import Profile from './_components/avatar-upload'
 import ProfilePanel from './_components/profile-panel'
 
 export default function PrivatePage() {
