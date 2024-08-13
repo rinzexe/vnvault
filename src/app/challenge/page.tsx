@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { getAutofillSuggestions, getRandomPanel } from "./actions";
 import { useAuth } from "../_components/auth-provider";
-import XpPopup from "./xp-popup";
+/* import XpPopup from "./xp-popup"; */
 import LevelBar from "../_components/level-bar";
 import StreakBadge from "../_components/streak-badge";
 
@@ -133,7 +133,7 @@ export default function Challenge() {
     return (
         <main className="flex flex-col items-center gap-4 m-24">
             <div className="flex h-0 absolute  flex-col items-center justify-end">
-                <XpPopup xpPopupValue={xpPopupValue} />
+                {/* <XpPopup xpPopupValue={xpPopupValue} /> */}
             </div>
             {auth.user ? (
                 <div>
