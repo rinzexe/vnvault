@@ -1,7 +1,6 @@
 'use server'
 
 export async function getRandomPanel(streak: number) {
-    console.log(Math.floor(10000 / (1 + streak / 2)).toString())
     const filter = ['votecount', '>', Math.floor(14000 / (1 + streak / 2)).toString()]
     const res1: any = await fetch('https://api.vndb.org/kana/vn', {
         method: 'POST',
