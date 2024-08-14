@@ -43,9 +43,9 @@ export default function Challenge() {
 
             const userData = await auth.getUserData(auth.user?.id)
 
-            if (Date.now() - timeElapsed <= 1000) {
+            if (Date.now() - timeElapsed <= 1500) {
                 clearTimeout(timeout)
-                await new Promise(resolve => setTimeout(resolve, 1000 - (Date.now() - timeElapsed)));
+                await new Promise(resolve => setTimeout(resolve, 1500 - (Date.now() - timeElapsed)));
             }
 
             setAnswerChecked(false)
