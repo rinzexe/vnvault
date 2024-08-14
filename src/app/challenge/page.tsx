@@ -104,7 +104,7 @@ export default function Challenge() {
     }
 
     return (
-        <main className="flex min-h-[calc(100vh-6rem)] relative justify-center flex-col items-center gap-4">
+        <main className="flex lg:min-h-[calc(100vh-9rem)] relative justify-center flex-col items-center gap-4">
             {auth.user ?
                 userData ? (
                     <LevelSection userData={userData} xpPopupValue={xpPopupValue} streak={streak} />
@@ -185,10 +185,10 @@ function Timer({ vnData, checkAnswer, answerChecked }: any) {
 
 function LastRounds({ lastRounds }: any) {
     return (
-        <div className="flex w-[40rem] p-1 h-12 items-center justify-center gap-3">
+        <div className="flex w-full lg:w-[40rem] p-1 h-12 items-center justify-center gap-3">
             {lastRounds.map((round: any, id: number) => {
                 return (
-                    <div key={id} className="group inline-block w-fit">
+                    <div key={id} className="group inline-block w-fit z-20">
                         <div className="w-0 absolute h-0 flex-col justify-end hidden group-hover:flex">
                             <div className="absolute -translate-x-[50%] hidden group-hover:flex flex-col pb-6 gap-3 w-[30rem]">
                                 <div className="panel">

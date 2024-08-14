@@ -28,17 +28,12 @@ export default function RootLayout({
         <div id="modal-content">
 
         </div>
-        <div className="hidden lg:block">
-          <AuthProvider>
-            <Header />
-            <div className="top-24 relative">
-              {children}
-            </div>
-          </AuthProvider>
-        </div>
-        <div className="lg:hidden block p-4">
-          Mobile support coming soon
-        </div>
+        <AuthProvider>
+          <Header />
+          <div className="top-24 relative p-6">
+            {children}
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -28,20 +28,20 @@ export default function Leaderboard() {
                 Leaderboard
             </h1>
             <div className="flex flex-col">
-                <div className="grid items-center gap-12 grid-cols-3 pb-4">
+                <div className="grid items-center gap-12 grid-cols-2 lg:grid-cols-3 pb-4">
                     <p className="ml-10 text-sm text-neutral-500">
                         Name
                     </p>
-                    <p className=" text-sm text-neutral-500">
+                    <p className="hidden lg:block text-sm text-neutral-500">
                         Longest streak
                     </p>
-                    <p className="flex flex-row justify-end text-sm text-neutral-500">
+                    <p className="flex text-left flex-row justify-end text-sm text-neutral-500">
                         Level
                     </p>
                 </div>
                 {leaderboardData && leaderboardData.map((user: any, index: number) => {
                     return (
-                        <div onClick={() => router.push("/profile/" + user.username)} key={index} className="grid items-center gap-12 py-3 grid-cols-3 last:border-none border-b-[1px] hover:cursor-pointer border-b-neutral-700">
+                        <div onClick={() => router.push("/profile/" + user.username)} key={index} className="grid items-center gap-12 py-3 grid-cols-2 lg:grid-cols-3 last:border-none border-b-[1px] hover:cursor-pointer border-b-neutral-700">
                             <div className="flex flex-row items-center gap-4">
                                 <p className="w-6">
                                     {index + 1 + "."}
@@ -51,7 +51,7 @@ export default function Leaderboard() {
                                     {user.username}
                                 </h2>
                             </div>
-                            <h4>
+                            <h4 className="hidden lg:block">
                                 {user.longest_streak}
                             </h4>
                             <div className="flex flex-row justify-end">

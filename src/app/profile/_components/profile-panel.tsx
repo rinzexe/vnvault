@@ -12,21 +12,21 @@ export default function ProfilePanel({ userData, auth }: any) {
     }
     return (
         <div className='flex flex-col items-center gap-12'>
-            <div className='flex flex-row items-center gap-8 h-[300px]'>
+            <div className='flex flex-col w-full lg:w-auto lg:flex-row lg:items-center gap-8 lg:h-[300px]'>
                 {userData && !isMe && <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full' />}
                 {userData && isMe && (
                     <AvatarUpload>
-                        <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full' />
+                        <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full w-full lg:w-auto' />
                     </AvatarUpload>
                 )}
                 <div>
                     <h1>{userData?.username}</h1>
-                    <p>
+                    <p className="lg:text-base text-sm">
                         {"Joined on " + userData?.created_at.split('T')[0]}
                     </p>
                 </div>
             </div>
-            <LevelBar xp={userData?.xp} />
+            <LevelBar  xp={userData?.xp} />
             <Stats userData={userData} />
             {auth && isMe && <AccentButton onClick={() => { auth.signOut() }}>Sign Out</AccentButton>}
         </div>
@@ -37,7 +37,7 @@ function Stats({ userData }: any) {
     return (
         <div className='max-w-[50rem]'>
             <h1 className='mb-4 text-center'>Stats</h1>
-            <div className='grid grid-rows-2 grid-cols-4 gap-3 panel'>
+            <div className='grid grid-rows-4 grid-cols-2 lg:grid-rows-2 lg:grid-cols-4 gap-3 panel'>
                 <Stat title='Total XP' value={userData?.xp} symbol='' />
                 <Stat title='Total guesses' value={userData?.total_incorrect + userData?.total_correct} symbol='' />
                 <Stat title='Longest streak' value={userData?.longest_streak} symbol='' />

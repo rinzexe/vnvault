@@ -8,8 +8,8 @@ import { calculateXpReward } from "@/utils/levels";
 export default function LevelSection({ userData, xpPopupValue, streak }: any) {
     const auth = useAuth()
     return (
-        <div className="flex flex-row items-center gap-4 h-24">
-        <div className="relative flex flex-col items-center">
+        <div className="flex w-full lg:w-auto flex-row items-center gap-4 h-24">
+        <div className="relative flex-grow flex flex-col items-center">
             <div className="flex h-0 top-0 absolute flex-col items-center justify-end">
                 <XpPopup xpPopupValue={xpPopupValue} />
             </div>
