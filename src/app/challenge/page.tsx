@@ -45,8 +45,6 @@ export default function Challenge() {
 
             if (Date.now() - timeElapsed <= 1500) {
                 clearTimeout(timeout)
-            }
-            else {
                 await new Promise(resolve => setTimeout(resolve, 1500 - (Date.now() - timeElapsed)));
             }
 
