@@ -16,7 +16,7 @@ export default function ProfilePanel({ userData, auth }: any) {
                 {userData && !isMe && <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full' />}
                 {userData && isMe && (
                     <AvatarUpload>
-                        <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full w-full lg:w-auto' />
+                        <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full w-full lg:h-full lg:w-auto' />
                     </AvatarUpload>
                 )}
                 <div>

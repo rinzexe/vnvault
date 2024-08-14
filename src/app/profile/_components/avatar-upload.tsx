@@ -24,7 +24,7 @@ export default function AvatarUpload({ children }: any) {
     }
 
     return (
-        <div className="relative">
+        <div className="relative h-full w-full">
             {modalContent && isEditing && createPortal((
                 <div className="absolute w-full h-full flex items-center justify-center bg-black/75 z-50">
                     <div onClick={() => { setIsEditing(false) }} className="absolute w-full h-full">
