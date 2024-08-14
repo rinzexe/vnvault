@@ -37,14 +37,12 @@ function Stat({ value }: { value: number }) {
     const valueArray = ("00000" + value).split('').slice(-6);
 
     const color = Math.round(Math.max((255 - value * 2 / 0.4538461), 59)) + "," + Math.round(Math.max(255 - value * 2, 130)) + "," + "255"
-    console.log("0px 0px " + Math.sqrt(value) * 8 + "px rgba(" + color + ", 1),")
 
     return (
         <div className="flex justify-center">
             <div className="flex flex-col flex-wrap justify-center content-center"
             >
                 <div className="w-full flex content-center justify-center mx-auto h-min">
-                    <div>
                         <div
                             style={{
                                 color: "rgb(" + color + ")"
@@ -67,7 +65,6 @@ function Stat({ value }: { value: number }) {
                                 X
                             </h1>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>

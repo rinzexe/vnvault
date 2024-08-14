@@ -25,24 +25,41 @@ export default function Challenge() {
     const [xpPopupValue, setXpPopupValue] = useState<number>(0)
     const [userData, setUserData] = useState<any>(0)
     const [streak, setStreak] = useState<number>(0)
+    const [answerChecked, setAnswerChecked] = useState<boolean>(false)
+    console.log(answerChecked)
 
     const auth = useAuth()
 
     useEffect(() => {
-        setVnData(undefined)
+        setAnswerChecked(true)
         async function getVnData() {
+            var timeElapsed = Date.now()
+
+            const timeout = setTimeout(() => {
+                setVnData(undefined)
+            }, 1500)
+
             const gotVnData: VnData = await getRandomPanel(streak)
 
             const userData = await auth.getUserData(auth.user?.id)
 
+            if (Date.now() - timeElapsed <= 1500) {
+                clearTimeout(timeout)
+            }
+            else {
+                await new Promise(resolve => setTimeout(resolve, 1500 - (Date.now() - timeElapsed)));
+            }
+
+            setAnswerChecked(false)
             setUserData(userData)
             setVnData(gotVnData)
         }
 
         getVnData()
-    }, [lastRounds])
+    }, [lastRounds, setAnswerChecked])
 
     function checkAnswer(answerTitle: string) {
+        console.log("answer checked")
         if (answerTitle === vnData?.title) {
             setStreak(streak + 1)
 
@@ -112,41 +129,9 @@ export default function Challenge() {
                         </div>
                     </div>
                 )}
-            <GamePanel vnData={vnData} checkAnswer={checkAnswer} />
-            <div className="flex w-[40rem] p-1 h-12 items-center justify-center gap-3">
-                {lastRounds.map((round: any, id: number) => {
-                    return (
-                        <div key={id} className="group inline-block w-fit">
-                            <div className="w-0 absolute h-0 flex-col justify-end hidden group-hover:flex">
-                                <div className="absolute -translate-x-[50%] hidden group-hover:flex flex-col pb-6 gap-3 w-[30rem]">
-                                    <div className="panel">
-                                        <Image className="rounded-xl h-full w-auto" src={round.screenshot} alt={""} width={1000} height={500} />
-                                        <div className="flex flex-row w-fit justify-between pt-6 items-center">
-                                            <div>
-                                                <p className="text-white">
-                                                    {round.title}
-                                                </p>
-                                                <p>
-                                                    {round.alttitle}
-                                                </p>
-                                            </div>
-                                            <p className="text-blue-500 w-20 text-right text-sm flex-grow">
-                                                {round.xpReward > 0 && "+ " + round.xpReward + " XP"}
-                                            </p>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            {round.pass ? (
-                                <div className="bg-green-600 select-none rounded-full text-xs w-4 h-4 flex items-center justify-center">✓</div>
-                            ) : (
-                                <div className="bg-red-600 select-none rounded-full text-xs  w-4 h-4 flex items-center justify-center">X</div>
-                            )}
-                        </div>
-                    )
-                })}
-            </div>
+            <Timer vnData={vnData} checkAnswer={checkAnswer} answerChecked={answerChecked} />
+            <GamePanel answerChecked={answerChecked} vnData={vnData} checkAnswer={checkAnswer} lastRounds={lastRounds} />
+            <LastRounds lastRounds={lastRounds} />
             <div className="flex flex-col items-center">
                 <div className="flex items-center gap-3">
                     <p>
@@ -160,9 +145,79 @@ export default function Challenge() {
                     </div>
                 </div>
                 <p className="text-sm text-neutral-500">
-                    {"Displaying vns with " + Math.floor(10000 / (1 + streak / 2)).toString().toString() + " votecount and over"}
+                    {"Displaying vns with " + Math.floor(8000 / (1 + streak / 2)).toString().toString() + " votecount and over"}
                 </p>
             </div>
         </main >
     );
+}
+
+function Timer({ vnData, checkAnswer, answerChecked }: any) {
+    const [timer, setTimer] = useState<number>(0)
+    const [timerSet, setTimerSet] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (timerSet) {
+            if (timer > 0) {
+                setTimeout(() => setTimer(timer - 1), 100)
+            }
+            else {
+                console.log("timer answer checked")
+                checkAnswer("")
+                setTimerSet(false)
+            }
+        }
+        if (vnData && !answerChecked && !timerSet) {
+            setTimer(200)
+            setTimerSet(true)
+        }
+        if (answerChecked) {
+            setTimerSet(false)
+        }
+    }, [timer, setTimer, vnData, answerChecked])
+
+    return (
+        <p className="h-8">
+            {timerSet && timer != 0 && timer / 10 + " s"}
+        </p>
+    )
+}
+
+function LastRounds({ lastRounds }: any) {
+    return (
+        <div className="flex w-[40rem] p-1 h-12 items-center justify-center gap-3">
+            {lastRounds.map((round: any, id: number) => {
+                return (
+                    <div key={id} className="group inline-block w-fit">
+                        <div className="w-0 absolute h-0 flex-col justify-end hidden group-hover:flex">
+                            <div className="absolute -translate-x-[50%] hidden group-hover:flex flex-col pb-6 gap-3 w-[30rem]">
+                                <div className="panel">
+                                    <Image className="rounded-xl h-full w-auto" src={round.screenshot} alt={""} width={1000} height={500} />
+                                    <div className="flex flex-row w-full justify-between pt-6 items-center">
+                                        <div>
+                                            <p className="text-white">
+                                                {round.title}
+                                            </p>
+                                            <p>
+                                                {round.alttitle}
+                                            </p>
+                                        </div>
+                                        <p className="text-blue-500 w-20 text-right text-sm flex-grow">
+                                            {round.xpReward > 0 && "+ " + round.xpReward + " XP"}
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {round.pass ? (
+                            <div className="bg-green-600 select-none rounded-full text-xs w-4 h-4 flex items-center justify-center">✓</div>
+                        ) : (
+                            <div className="bg-red-600 select-none rounded-full text-xs  w-4 h-4 flex items-center justify-center">X</div>
+                        )}
+                    </div>
+                )
+            })}
+        </div>
+    )
 }

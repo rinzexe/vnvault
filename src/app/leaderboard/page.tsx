@@ -59,7 +59,7 @@ export default function Leaderboard() {
                                     <h4>
                                         {"Level " + calculateLevel(user.xp).level}
                                     </h4>
-                                    <p className="text-sm text-right">
+                                    <p className="text-sm text-right text-blue-500">
                                         {user.xp + " XP"}
                                     </p>
                                 </div>

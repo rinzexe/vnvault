@@ -19,12 +19,21 @@ const config: Config = {
       },
       animation: {
         "xpPopup": 'xpPopup 1.5s ease-in-out forwards',
+        "feedbackPopup": 'feedbackPopup 1.5s ease-in-out forwards',
       },
       keyframes: {
         xpPopup: {
           '0%': { transform: 'translateY(0)', opacity: "0" },
           '50%': { transform: 'translateY(-1rem)', opacity: "1" },
           '100%': { transform: 'translateY(-2rem)', opacity: "0" },
+        },
+        feedbackPopup: {
+          '0%': {  opacity: "0" },
+          '1%': {  opacity: "1" },
+          '10%': {  opacity: "0" },
+          '11%': {  opacity: "1" },
+          '50%': {  opacity: "1" },
+          '100%': {  opacity: "0" },
         }
       }
     },

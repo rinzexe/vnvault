@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { getAutofillSuggestions, getRandomPanel } from "./actions";
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import FeedbackPopup from "./feedback-popup";
 
 const suggestionPlaceholders = [
     "Song of Saya",
@@ -20,7 +21,7 @@ function getRandomSuggestionPlaceholder() {
     return suggestionPlaceholders[Math.floor(Math.random() * suggestionPlaceholders.length)]
 }
 
-export default function GamePanel({ vnData, checkAnswer }: any) {
+export default function GamePanel({ vnData, checkAnswer, lastRounds, answerChecked }: any) {
     const [suggestions, setSuggestions] = useState<any>([])
 
     const lastInput = useRef<number>(0)
@@ -46,13 +47,20 @@ export default function GamePanel({ vnData, checkAnswer }: any) {
             })
         }
     }
+
     return (
         <div className="flex flex-col items-center relative mb-6">
-            <div className="h-[50dvh] w-auto flex flex-col items-center justify-center">
-                {vnData ? (
-                    <Image className="rounded-xl h-full w-auto" src={vnData.screenshot} alt={vnData.title} width={1000} height={500} />
+            <div className="h-[50dvh] w-auto flex flex-col relative items-center justify-center">
+                <FeedbackPopup lastRounds={lastRounds} />
+                {vnData && answerChecked == true ? (
+                    <Image style={{ filter: "blur(12px) brightness(25%)" }} className="rounded-xl h-full w-auto" src={lastRounds[lastRounds.length - 1].screenshot} alt={""} width={1000} height={500} />
                 ) : (
-                    <h1>Loading...</h1>
+                    vnData ? (
+                        <Image onLoad={(e: any) => { e.target.classList.remove("opacity-0") }} className="rounded-xl h-full w-auto opacity-0" src={vnData.screenshot} alt={vnData.title} width={1000} height={500} />
+                    ) : (
+                        <h1>Loading...</h1>
+                    )
+
                 )}
             </div>
             <div className="flex h-0 absolute -bottom-6 flex-col items-center justify-end">
@@ -74,6 +82,6 @@ export default function GamePanel({ vnData, checkAnswer }: any) {
                     <button className="panel px-4 py-2" onClick={() => { inputRef.current.value = ""; setSuggestions([]); checkAnswer("") }}>Skip</button>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
