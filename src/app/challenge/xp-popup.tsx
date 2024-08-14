@@ -1,5 +1,6 @@
 'use client'
 
+import { animate, useMotionValue, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 export default function XpPopup({ xpPopupValue }: any) {

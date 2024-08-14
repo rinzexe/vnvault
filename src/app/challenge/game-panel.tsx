@@ -48,7 +48,7 @@ export default function GamePanel({ vnData, checkAnswer }: any) {
     }
     return (
         <div className="flex flex-col items-center relative mb-6">
-            <div className="h-[40rem] w-auto flex flex-col items-center justify-center">
+            <div className="h-[50dvh] w-auto flex flex-col items-center justify-center">
                 {vnData ? (
                     <Image className="rounded-xl h-full w-auto" src={vnData.screenshot} alt={vnData.title} width={1000} height={500} />
                 ) : (

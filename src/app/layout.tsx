@@ -31,7 +31,9 @@ export default function RootLayout({
         <div className="hidden lg:block">
           <AuthProvider>
             <Header />
-            {children}
+            <div className="top-24 relative">
+              {children}
+            </div>
           </AuthProvider>
         </div>
         <div className="lg:hidden block p-4">

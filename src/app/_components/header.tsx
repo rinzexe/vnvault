@@ -32,11 +32,11 @@ export default function Header() {
         if (userProfile) {
             return (
                 <Link href="/profile">
-                    <div className="flex-row flex items-center gap-4">
-                        <h1>
+                    <div className="flex-row flex items-center gap-6">
+                        <h2>
                             {userProfile.username}
-                        </h1>
-                        <Image className="rounded-full" src={userProfile.avatar} alt="" width={80} height={80} />
+                        </h2>
+                        <Image className="rounded-full" src={userProfile.avatar} alt="" width={50} height={50} />
                     </div>
                 </Link>
             )
@@ -57,7 +57,7 @@ export default function Header() {
     }
 
     return (
-        <div className="flex flex-row justify-between w-full p-8">
+        <div className="flex flex-row justify-between w-full px-8 items-center h-20 top-0 fixed panel rounded-none border-t-0 border-r-0 border-l-0">
             <div className="flex flex-row items-center gap-16">
                 <Link className="select-none" href="/">
                     <h1>
@@ -66,14 +66,14 @@ export default function Header() {
                 </Link>
                 <div className="flex flex-row items-center gap-8">
                     <Link href="/leaderboard">
-                        <h3>
+                        <h4>
                             Leaderboard
-                        </h3>
+                        </h4>
                     </Link>
                     <Link href="/challenge">
-                        <h3>
-                            Challenge
-                        </h3>
+                        <h4>
+                            Play
+                        </h4>
                     </Link>
                 </div>
             </div>

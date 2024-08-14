@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { getAutofillSuggestions, getRandomPanel } from "./actions";
 import { useAuth } from "../_components/auth-provider";
 import XpPopup from "./xp-popup";
@@ -9,6 +9,8 @@ import LevelBar from "../_components/level-bar";
 import StreakBadge from "../_components/streak-badge";
 import GamePanel from "./game-panel";
 import { calculateXpReward } from "@/utils/levels";
+import { animate, useMotionValue, motion } from "framer-motion";
+import LevelSection from "./level-section";
 
 export interface VnData {
     screenshot: string
@@ -45,10 +47,22 @@ export default function Challenge() {
             setStreak(streak + 1)
 
             if (lastRounds.length > 10) {
-                setLastRounds([...lastRounds, { pass: true, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }].slice(1))
+                setLastRounds([...lastRounds, {
+                    pass: true,
+                    title: vnData?.title,
+                    alttitle: vnData?.alttitle,
+                    screenshot: vnData?.screenshot,
+                    xpReward: Math.ceil(calculateXpReward(vnData.votecount, streak))
+                }].slice(1))
             }
             else {
-                setLastRounds([...lastRounds, { pass: true, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }])
+                setLastRounds([...lastRounds, {
+                    pass: true,
+                    title: vnData?.title,
+                    alttitle: vnData?.alttitle,
+                    screenshot: vnData?.screenshot,
+                    xpReward: Math.ceil(calculateXpReward(vnData.votecount, streak))
+                }])
             }
 
             if (auth.user != null) {
@@ -60,10 +74,10 @@ export default function Challenge() {
             setStreak(0)
 
             if (lastRounds.length > 10) {
-                setLastRounds([...lastRounds, { pass: false, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }].slice(1))
+                setLastRounds([...lastRounds, { pass: false, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot, xpReward: 0 }].slice(1))
             }
             else {
-                setLastRounds([...lastRounds, { pass: false, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot }])
+                setLastRounds([...lastRounds, { pass: false, title: vnData?.title, alttitle: vnData?.alttitle, screenshot: vnData?.screenshot, xpReward: 0 }])
             }
 
             if (auth.user != null) {
@@ -73,27 +87,29 @@ export default function Challenge() {
     }
 
     return (
-        <main className="flex flex-col items-center gap-4 m-2">
-            <div className="flex h-0 absolute  flex-col items-center justify-end">
-                <XpPopup xpPopupValue={xpPopupValue} />
-            </div>
+        <main className="flex min-h-[calc(100vh-6rem)] relative justify-center flex-col items-center gap-4">
             {auth.user ?
-                userData ? (<div>
-                    <LevelBar xp={userData?.xp} />
-                </div>) : (
+                userData ? (
+                    <LevelSection userData={userData} xpPopupValue={xpPopupValue} streak={streak} />
+
+                ) : (
                     <div className="grid grid-cols-1 grid-rows-1">
-                        <div className="backdrop-blur-sm grid-center" />
-                        <LevelBar className="grid-center m-4" xp={2561} />
+                        <div className="grid-center p-2">
+                            <LevelSection userData={{ xp: 2651 }} xpPopupValue={0} streak={6} />
+                        </div>
+                        <div className="backdrop-blur-sm grid-center z-10" />
                     </div>
                 )
                 : (
                     <div className="grid grid-cols-1 grid-rows-1">
-                        <div className="backdrop-blur-sm grid-center flex items-center justify-center">
+                        <div className="grid-center p-2">
+                            <LevelSection userData={{ xp: 2651 }} xpPopupValue={0} streak={6} />
+                        </div>
+                        <div className="backdrop-blur-sm grid-center z-10 flex items-center justify-center">
                             <h2>
                                 Sign in to track your progress
                             </h2>
                         </div>
-                        <LevelBar className="grid-center m-4" xp={2561} />
                     </div>
                 )}
             <GamePanel vnData={vnData} checkAnswer={checkAnswer} />
@@ -105,12 +121,20 @@ export default function Challenge() {
                                 <div className="absolute -translate-x-[50%] hidden group-hover:flex flex-col pb-6 gap-3 w-[30rem]">
                                     <div className="panel">
                                         <Image className="rounded-xl h-full w-auto" src={round.screenshot} alt={""} width={1000} height={500} />
-                                        <p className="text-white pt-6">
-                                            {round.title}
-                                        </p>
-                                        <p>
-                                            {round.alttitle}
-                                        </p>
+                                        <div className="flex flex-row w-fit justify-between pt-6 items-center">
+                                            <div>
+                                                <p className="text-white">
+                                                    {round.title}
+                                                </p>
+                                                <p>
+                                                    {round.alttitle}
+                                                </p>
+                                            </div>
+                                            <p className="text-blue-500 w-20 text-right text-sm flex-grow">
+                                                {round.xpReward > 0 && "+ " + round.xpReward + " XP"}
+                                            </p>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -138,9 +162,6 @@ export default function Challenge() {
                 <p className="text-sm text-neutral-500">
                     {"Displaying vns with " + Math.floor(10000 / (1 + streak / 2)).toString().toString() + " votecount and over"}
                 </p>
-                <p className="text-sm text-neutral-500">
-                    {"Current XP multiplier: " + Math.ceil(calculateXpReward(42000, streak) * 10) / 10 + "X"}
-                </p> 
             </div>
         </main >
     );
