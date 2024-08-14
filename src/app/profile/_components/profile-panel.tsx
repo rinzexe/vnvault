@@ -13,7 +13,7 @@ export default function ProfilePanel({ userData, auth }: any) {
     return (
         <div className='flex flex-col items-center gap-12'>
             <div className='flex flex-col w-full lg:w-auto lg:flex-row lg:items-center gap-8 lg:h-[300px]'>
-                {userData && !isMe && <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full' />}
+                {userData && !isMe && <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full w-full lg:h-full lg:w-auto' />}
                 {userData && isMe && (
                     <AvatarUpload>
                         <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full w-full lg:h-full lg:w-auto' />

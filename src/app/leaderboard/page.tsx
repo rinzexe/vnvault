@@ -23,12 +23,12 @@ export default function Leaderboard() {
     }, [])
 
     return (
-        <div className="flex flex-col items-center gap-8">
+        <div className="flex flex-col w-full lg:w-auto items-center gap-8">
             <h1 className="mb-8">
                 Leaderboard
             </h1>
-            <div className="flex flex-col">
-                <div className="grid items-center gap-12 grid-cols-2 lg:grid-cols-3 pb-4">
+            <div className="flex flex-col w-full lg:w-auto">
+                <div className="grid w-full lg:w-auto items-center gap-12 grid-cols-2 lg:grid-cols-3 pb-4">
                     <p className="ml-10 text-sm text-neutral-500">
                         Name
                     </p>
@@ -41,8 +41,8 @@ export default function Leaderboard() {
                 </div>
                 {leaderboardData && leaderboardData.map((user: any, index: number) => {
                     return (
-                        <div onClick={() => router.push("/profile/" + user.username)} key={index} className="grid items-center gap-12 py-3 grid-cols-2 lg:grid-cols-3 last:border-none border-b-[1px] hover:cursor-pointer border-b-neutral-700">
-                            <div className="flex flex-row items-center gap-4">
+                        <div onClick={() => router.push("/profile/" + user.username)} key={index} className="grid items-center gap-12 py-3 grid-cols-3 last:border-none border-b-[1px] hover:cursor-pointer border-b-neutral-700">
+                            <div className="flex flex-row items-center gap-4 col-start-1 lg:col-end-2 col-end-3">
                                 <p className="w-6">
                                     {index + 1 + "."}
                                 </p>
