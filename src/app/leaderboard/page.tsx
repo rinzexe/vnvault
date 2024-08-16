@@ -35,7 +35,7 @@ export default function Leaderboard() {
                 {leaderboardData && leaderboardData.map((user: any, id: number) => {
                     return (
                         <Row
-                        key={id}
+                            key={id}
                             href={"/profile/" + user.username}
                             avatarUser={user}
                             fields={[

@@ -15,9 +15,9 @@ interface RowProps {
     numbered?: boolean
 }
 
-export default function Row({ href, title, subtitle, iconUrl, fields, editingCallback, avatarUser, numbered }: RowProps) {
+export default function Row({ href, title, subtitle, iconUrl, fields, editingCallback, avatarUser, numbered, ...props }: RowProps) {
     return (
-        <div className="w-full">
+        <div {...props} className="w-full">
             {fields ? (
                 <div className="flex items-center gap-4 hover:bg-white/10 hover:cursor-pointer p-2 rounded-lg duration-300">
                     <Link className="flex-grow" href={href} >
