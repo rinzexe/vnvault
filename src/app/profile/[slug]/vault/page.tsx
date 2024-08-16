@@ -165,14 +165,14 @@ export default function Vault({ params }: { params: { slug: string } }) {
     )
 }
 
-function Entry({ entry, isMe, setIsEditing, setEditingVid }: any) {
+function Entry({ entry, isMe, setIsEditing, setEditingVid, ...props }: any) {
     function toggleEditing() {
         setEditingVid(entry.vid)
         setIsEditing(true)
     }
 
     return (
-        <div>
+        <div {...props}>
             {entry && <Row
                 href={"/novel/" + entry.vid}
                 iconUrl={entry && entry.imageUrl}
