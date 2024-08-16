@@ -43,7 +43,7 @@ export default function Header() {
             )
         } else {
             return (
-                <div className="flex-row items-center gap-8">
+                <div className="flex flex-row items-center gap-8">
                     <Link href="/signin">
                         Login
                     </Link>
@@ -68,12 +68,12 @@ export default function Header() {
                         </h1>
                     </Link>
                     <div className="hidden lg:flex flex-row items-center gap-8">
-                        <Link href="/leaderboard">
+                        <Link href="/search">
                             <h4>
-                                Leaderboard
+                                Search
                             </h4>
                         </Link>
-                        <Link href="/challenge">
+                        <Link href="/play">
                             <h4>
                                 Play
                             </h4>
@@ -85,9 +85,9 @@ export default function Header() {
                 </div>
                 <div className="lg:hidden h-full">
                     <svg onClick={() => setMobileMenuOpen(true)} className="h-full w-auto" xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24" fill="rgb(255,255,255)">
-                        <path d="M4 18L20 18" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
-                        <path d="M4 12L20 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
-                        <path d="M4 6L20 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                        <path d="M4 18L20 18" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M4 12L20 12" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M4 6L20 6" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                 </div>
             </div>
@@ -100,15 +100,15 @@ function MobileMenu({ setMobileMenuOpen }: any) {
         <div className="fixed w-screen h-screen p-4 z-50 bg-black/50">
             <div className="flex flex-col w-full h-full gap-4 relative panel">
                 <div className="w-full h-full flex right-0 top-0 bottom-0 left-0 flex-col gap-4 items-center absolute justify-center pointer-events-none">
-                    <Link className="pointer-events-auto" onClick={() => { setMobileMenuOpen(false) }} href="/challenge">
+                    <Link className="pointer-events-auto" onClick={() => { setMobileMenuOpen(false) }} href="/play">
                         <h3>
                             Play
                         </h3>
                     </Link>
-                    <Link className="pointer-events-auto" onClick={() => { setMobileMenuOpen(false) }} href="/leaderboard">
-                        <h3>
-                            Leaderboard
-                        </h3>
+                    <Link href="/search">
+                        <h4>
+                            Search
+                        </h4>
                     </Link>
                     <Link className="pointer-events-auto" onClick={() => { setMobileMenuOpen(false) }} href="/profile">
                         <h3>

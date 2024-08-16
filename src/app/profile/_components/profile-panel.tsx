@@ -3,8 +3,10 @@ import AvatarUpload from "@/app/profile/_components/avatar-upload"
 import LevelBar from "@/app/_components/level-bar"
 import Image from "next/image"
 import { useEffect, useState } from "react"
+import Link from "next/link"
+import OpenSVG from "@/app/_components/svgs/open"
 
-export default function ProfilePanel({ userData, auth }: any) {
+export default function ProfilePanel({ userData, auth, slug }: any) {
     var isMe = false
 
     if (userData.id == auth.user?.id) {
@@ -26,6 +28,16 @@ export default function ProfilePanel({ userData, auth }: any) {
                     </p>
                 </div>
             </div>
+            <Link href={"/profile/" + slug + "/vault"} >
+                <AccentButton>
+                    <div className="group flex items-center gap-2">
+                        <h3 className="group-hover:text-blue-500 group-hover:font-bold duration-300">
+                            Open vault
+                        </h3>
+                        <OpenSVG className="fill-white group-hover:fill-blue-500 stroke-0 group-hover:stroke-1 storke-white group-hover:stroke-blue-500 duration-300" />
+                    </div>
+                </AccentButton>
+            </Link>
             <LevelBar  xp={userData?.xp} />
             <Stats userData={userData} />
             {auth && isMe && <AccentButton onClick={() => { auth.signOut() }}>Sign Out</AccentButton>}

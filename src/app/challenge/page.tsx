@@ -41,15 +41,17 @@ export default function Challenge() {
 
             const gotVnData: VnData = await getRandomPanel(streak)
 
-            const userData = await auth.getUserData(auth.user?.id)
-
             if (Date.now() - timeElapsed <= 1500) {
                 clearTimeout(timeout)
                 await new Promise(resolve => setTimeout(resolve, 1500 - (Date.now() - timeElapsed)));
             }
 
+            if (auth.user) {
+                const userData = await auth.getUserData(auth.user?.id)
+                setUserData(userData)
+            }
+
             setAnswerChecked(false)
-            setUserData(userData)
             setVnData(gotVnData)
         }
 

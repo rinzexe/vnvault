@@ -2,24 +2,7 @@ import Image from "next/image"
 import { getAutofillSuggestions, getRandomPanel } from "./actions";
 import { useEffect, useRef, useState } from "react"
 import FeedbackPopup from "./feedback-popup";
-
-const suggestionPlaceholders = [
-    "Song of Saya",
-    "Tsukihime",
-    "Fate/Stay Night",
-    "CLANNAD",
-    "Steins;Gate",
-    "Higurashi",
-    "Umineko",
-    "Muv-Luv",
-    "Little Busters",
-    "Chaos;Head",
-    "Chaos;Child",
-]
-
-function getRandomSuggestionPlaceholder() {
-    return suggestionPlaceholders[Math.floor(Math.random() * suggestionPlaceholders.length)]
-}
+import { getRandomSuggestionPlaceholder } from "@/utils/placeholders";
 
 export default function GamePanel({ vnData, checkAnswer, lastRounds, answerChecked }: any) {
     const [suggestions, setSuggestions] = useState<any>([])

@@ -25,6 +25,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={calSans.variable + " " + poppins.variable + " " + poppins.className + " bg-black text-white"}>
+        <div className="bg-neutral-950/10 fixed w-screen h-screen z-[-99999]">
+        </div>
         <div id="modal-content">
 
         </div>

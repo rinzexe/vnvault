@@ -109,6 +109,8 @@ export const AuthProvider = ({ children }: any) => {
         getUserDataWithUsername,
         getLeaderboard,
         updateAvatar,
+        getVault,
+        updateVault,
         supabase,
         user,
     };
@@ -126,15 +128,15 @@ export const useAuth = () => {
 
 async function checkIfNameExists(username: string) {
     const { data, error } = await supabase.from('users').select('*').eq('username', username).single()
-    console.log(data, error)
     return data
 }
 
 async function getUserDataWithUsername(username: string) {
     const userdata = await supabase.from('users').select('*').eq('username', username).single()
-    const avatar = await getAvatar(userdata?.data)
-    console.log(userdata)
-    return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data }
+    if (userdata.data) {
+        const avatar = await getAvatar(userdata?.data)
+        return { avatar: avatar?.data.publicUrl, username: userdata?.data?.username, ...userdata?.data }
+    }
 }
 
 async function getUserData(uuid: string) {
@@ -186,8 +188,6 @@ async function updateAvatar(file: any, uuid: string) {
         upsert: true
     })
 
-    console.log(data)
-
     if (error) {
         const res = await supabase.storage.from("user_profiles").upload("avatars/" + uuid + ".png", file, {
             cacheControl: '3600',
@@ -200,4 +200,27 @@ async function updateAvatar(file: any, uuid: string) {
     }
 
     const res = await supabase.from('users').update({ has_avatar: true }).eq('id', uuid)
+}
+
+async function getVault(username: string, sort?: any) {
+    const userdata = await supabase.from('users').select('*').eq('username', username).single()
+
+    var res: any
+
+    sort ? 
+    res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).order(sort?.type, { ascending:  sort?.asc }):
+    res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id)
+
+    return res.data
+}
+
+async function updateVault(uuid: string, rating: number, status: number, vid: string, remove?: boolean) {
+    if (remove) {
+        const res = await supabase.from('vault_entries').delete().eq('owner_id', uuid).eq('vid', vid)
+    }
+    else {
+        const res = await supabase.from('vault_entries').upsert({ owner_id: uuid, vid: vid, rating: rating, status: status })
+
+        return res.data
+    }
 }

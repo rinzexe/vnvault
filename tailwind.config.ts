@@ -20,6 +20,7 @@ const config: Config = {
       animation: {
         "xpPopup": 'xpPopup 1.5s ease-in-out forwards',
         "feedbackPopup": 'feedbackPopup 1.5s ease-in-out forwards',
+        "fadeOut": 'fadeOut 1.5s ease-in forwards',
       },
       keyframes: {
         xpPopup: {
@@ -34,7 +35,11 @@ const config: Config = {
           '11%': {  opacity: "1" },
           '50%': {  opacity: "1" },
           '100%': {  opacity: "0" },
-        }
+        },
+        fadeOut: {
+          '0%': {  opacity: "1" },
+          '100%': { opacity: "0" },
+        },
       }
     },
   },

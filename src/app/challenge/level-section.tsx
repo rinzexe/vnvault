@@ -36,7 +36,7 @@ function Stat({ value }: { value: number }) {
 
     const valueArray = ("00000" + value).split('').slice(-6);
 
-    const color = Math.round(Math.max((255 - value * 2 / 0.4538461), 59)) + "," + Math.round(Math.max(255 - value * 2, 130)) + "," + "255"
+    const color = Math.round(Math.max((255 - value * 4 / 0.4538461), 59)) + "," + Math.round(Math.max(255 - value * 4, 130)) + "," + "255"
 
     return (
         <div className="flex justify-center">
