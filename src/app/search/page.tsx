@@ -49,9 +49,10 @@ export default function Search() {
                                 , asc: sorting.asc }}
                             fields={['Length', 'Rating']}
                             sortingCallback={[titleSort, , ratingSort]} />
-                        {searchResults.map((result: any, index: number) => {
+                        {searchResults.map((result: any, id: number) => {
                             return (
                                 <Row
+                                key={id}
                                     href={"/novel/" + result.id}
                                     iconUrl={result.image && result.image.url}
                                     fields={[(

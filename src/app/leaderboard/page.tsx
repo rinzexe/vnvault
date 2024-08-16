@@ -32,9 +32,10 @@ export default function Leaderboard() {
             </h1>
             <Table>
                 <Headers fields={['Longest streak', 'Level']} />
-                {leaderboardData && leaderboardData.map((user: any, index: number) => {
+                {leaderboardData && leaderboardData.map((user: any, id: number) => {
                     return (
                         <Row
+                        key={id}
                             href={"/profile/" + user.username}
                             avatarUser={user}
                             fields={[
