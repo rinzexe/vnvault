@@ -44,19 +44,21 @@ export default function Search() {
                 {searchResults && searchResults.length > 0 ? (
                     <Table>
                         <Headers
-                            sort={{ type: 
-                                sorting.type == "rating" ? 2 : 0
-                                , asc: sorting.asc }}
+                            sort={{
+                                type:
+                                    sorting.type == "rating" ? 2 : 0
+                                , asc: sorting.asc
+                            }}
                             fields={['Length', 'Rating']}
                             sortingCallback={[titleSort, , ratingSort]} />
                         {searchResults.map((result: any, id: number) => {
                             return (
                                 <Row
-                                key={id}
+                                    key={id}
                                     href={"/novel/" + result.id}
                                     iconUrl={result.image && result.image.url}
                                     fields={[(
-                                        <div className="*:text-center">
+                                        <div key={id} className="*:text-center">
                                             {result.length == "1" && (
                                                 <p>Very short</p>
                                             )}
@@ -74,7 +76,7 @@ export default function Search() {
                                             )}
                                         </div>
                                     ), (
-                                        <RatingBadge rating={result.rating / 10} />)
+                                        <RatingBadge key={id} rating={result.rating / 10} />)
 
                                     ]}
                                     title={result.title}
