@@ -40,12 +40,12 @@ export default function Leaderboard() {
                             avatarUser={user}
                             fields={[
                                 (
-                                    <h4 className="hidden text-center lg:block">
+                                    <h4 key={id} className="hidden text-center lg:block">
                                         {user.longest_streak}
                                     </h4>
                                 ),
                                 (
-                                    <div className="flex flex-row justify-end">
+                                    <div key={id} className="flex flex-row justify-end">
                                         <div className="">
                                             <h4>
                                                 {"Level " + calculateLevel(user.xp).level}
