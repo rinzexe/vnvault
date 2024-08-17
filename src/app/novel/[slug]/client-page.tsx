@@ -57,7 +57,7 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
 
     return (
         <div className="w-full flex flex-col gap-4 items-center">
-            {createPortal((
+            {vnData && isEditing && createPortal((
                 <div className="fixed w-full h-full flex items-center justify-center bg-black/75 z-50">
                     <div onClick={() => { setIsEditing(false) }} className="fixed w-full h-full">
                     </div>
