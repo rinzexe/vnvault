@@ -113,7 +113,7 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
                                 Distribution
                             </h1>
                             <p className="text-neutral-500 text-xs text-center">
-                                These are work in progress, and might not be accurate. Please check the games name before buying
+                                These are work in progress, and might not be accurate. Check the game's name before buying
                             </p>
                             {gameLinks && (gameLinks.steam || gameLinks.gog) ?(
                                 <div className="flex lg:flex-row flex-col gap-4">
@@ -195,6 +195,7 @@ function formatDescription(text: string) {
     console.log(text)
     text = text.replace("[From", "^")
     text = text.replace("[Edited from", "^")
+    text = text.replace("[Translated from", "^")
     
     text = text.replace("]]", "^")
     text = text.replace(/\^([^\^]+)\^/g, '');

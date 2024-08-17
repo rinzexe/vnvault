@@ -17,6 +17,7 @@ export async function generateMetadata({ params }: any) {
             openGraph: {
                 siteName: "VNVault",
                 title: res.data[0].username,
+                description: "Check out " + res.data[0].username + "'s profile on VNVault",
                 images: [
                     {
                         url: pfpurl.data.publicUrl

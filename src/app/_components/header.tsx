@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import AccentButton from "./accent-button";
 import Image from "next/image";
 import { useAuth } from "./auth-provider";
+import SearchSVG from "./svgs/search";
 
 export default function Header() {
     const [userProfile, setUserProfile] = useState<any>(null)
@@ -62,16 +63,17 @@ export default function Header() {
             {mobileMenuOpen && <MobileMenu userProfile={userProfile} setMobileMenuOpen={setMobileMenuOpen} />}
             <div className="flex flex-row justify-between z-30 w-full  lg:p-0 lg:px-4 items-center  h-20 top-0 fixed panel rounded-none border-t-0 border-r-0 border-l-0">
                 <div className="flex flex-row items-center gap-16">
-                    <Link className="select-none" href="/">
+                    <Link className="select-none ml-4" href="/">
                         <h1>
                             VNVault
                         </h1>
                     </Link>
                     <div className="hidden lg:flex flex-row items-center gap-4">
-                        <Link className="lg:hover:bg-white/10 rounded-xl px-3 py-1 duration-300" href="/search">
+                        <Link className="lg:hover:bg-white/10 rounded-xl flex items-center px-3 gap-2 py-1 duration-300" href="/search">
                             <h4>
                                 Search
                             </h4>
+                            <SearchSVG className="fill-white w-6 h-6" />
                         </Link>
                         <Link className="lg:hover:bg-white/10 rounded-xl px-3 py-1 duration-300" href="/play">
                             <h4>
