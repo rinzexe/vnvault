@@ -199,6 +199,9 @@ function formatDescription(text: string) {
     text = text.replace("]]", "^")
     text = text.replace(/\^([^\^]+)\^/g, '');
 
+    text = text.replace("[spoiler]", "")
+    text = text.replace("[/spoiler]", "")
+
     text = text.replace("[b]", "")
     text = text.replace("[/b]", "")
 
