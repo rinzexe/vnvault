@@ -111,6 +111,7 @@ export const AuthProvider = ({ children }: any) => {
         updateAvatar,
         getVault,
         updateVault,
+        searchUsers,
         supabase,
         user,
     };
@@ -207,13 +208,11 @@ async function getVault(username: string, sort?: any, statusFilter?: number) {
 
     var res: any
     console.log(statusFilter)
-    sort && statusFilter! > -1 ? 
-    res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter).order(sort?.type, { ascending:  sort?.asc }) :
-    statusFilter! > -1 ? res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter) :
-    sort ? res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).order(sort?.type, { ascending:  sort?.asc }) :
-    res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id)
-
-    console.log(res)
+    sort && statusFilter! > -1 ?
+        res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter).order(sort?.type, { ascending: sort?.asc }) :
+        statusFilter! > -1 ? res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter) :
+            sort ? res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).order(sort?.type, { ascending: sort?.asc }) :
+                res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id)
 
     return res.data
 }
@@ -227,4 +226,17 @@ async function updateVault(uuid: string, rating: number, status: number, vid: st
 
         return res.data
     }
+}
+
+async function searchUsers(query: string) {
+    var res: any = await supabase.from('users').select('*').ilike('username', "%" + query + "%").limit(20)
+
+    if (res.data && res.data.length > 0) {
+        for (let i = 0; i < res.data.length; i++) {
+            const url = 'avatars/' + res.data[i].id + '.png?t=' + res.data[i].updated_at
+            res.data[i].avatar_url = await supabase.storage.from('user_profiles').getPublicUrl(url).data.publicUrl
+        }
+    }
+
+    return res.data
 }

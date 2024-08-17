@@ -13,6 +13,7 @@ interface RowProps {
     editingCallback?: any
     avatarUser?: any
     numbered?: boolean
+    roundIcons?: boolean
 }
 
 export default function Row({ href, title, subtitle, iconUrl, fields, editingCallback, avatarUser, numbered, ...props }: RowProps) {

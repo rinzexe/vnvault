@@ -82,7 +82,7 @@ export default function Header() {
                         </Link>
                     </div>
                 </div>
-                <div className="hidden lg:block lg:hover:bg-white/10 rounded-xl px-3 py-1">
+                <div className="hidden lg:block  rounded-xl px-3 py-1">
                     <ProfileButton />
                 </div>
                 <div className="lg:hidden h-full">
@@ -101,7 +101,7 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
     function ProfileButton() {
         if (userProfile) {
             return (
-                <div className="panel pointer-events-auto flex flex-col gap-2 w-full">
+                <div className="panel !bg-black pointer-events-auto flex flex-col gap-2 w-full">
                     <Link onClick={() => { setMobileMenuOpen(false) }} href="/profile">
                         <div className="flex-row flex items-center gap-6">
                             <Image className="rounded-full" src={userProfile.avatar} alt="" width={80} height={80} />
@@ -124,22 +124,26 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
             )
         } else {
             return (
-                <div className="flex flex-col panel w-full gap-2 items-center ">
-                    <Link onClick={() => { setMobileMenuOpen(false) }} href="/signin">
-                        Login
-                    </Link>
+                <div className="flex flex-row panel w-full gap-4 items-center ">
                     <Link onClick={() => { setMobileMenuOpen(false) }} href="/signup">
                         <AccentButton>
-                            Sign up
+                            <h3 className="p-1">
+                                Sign up
+                            </h3>
                         </AccentButton>
+                    </Link>
+                    <Link onClick={() => { setMobileMenuOpen(false) }} href="/signin">
+                        <h3>
+                            Login
+                        </h3>
                     </Link>
                 </div>
             )
         }
     }
     return (
-        <div className="fixed pointer-events-auto w-screen h-screen p-4 z-50 bg-black/50">
-            <div className="flex flex-col w-full h-full gap-4 relative panel">
+        <div className="fixed pointer-events-auto w-screen h-screen z-50 ">
+            <div className="flex flex-col w-full h-full gap-4 relative panel bg-black/75 rounded-none">
                 <div className="grid grid-cols-3 items-center content-center">
                     <div></div>
                     <Link onClick={() => { setMobileMenuOpen(false) }} className="select-none text-center" href="/">

@@ -47,7 +47,7 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
 
                             </div>
                             <div className='grid-center m-4'>
-                                <ProfilePanel slug={params.slug} userData={{ avatar: "https://cbdyelxczooainxtfjgp.supabase.co/storage/v1/object/public/user_profiles/default.jpg", created_at: "26-06-1999T", xp: 2627, total_incorrect: 256, total_correct: 367, longest_streak: 23 }} auth={auth} />
+                                <ProfilePanel slug={params.slug} userData={{ id:'152', avatar: "https://cbdyelxczooainxtfjgp.supabase.co/storage/v1/object/public/user_profiles/default.jpg", created_at: "26-06-1999T", xp: 2627, total_incorrect: 256, total_correct: 367, longest_streak: 23 }} auth={auth} />
                             </div>
                         </div>
                     )

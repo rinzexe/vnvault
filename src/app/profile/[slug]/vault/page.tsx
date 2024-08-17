@@ -27,60 +27,55 @@ export default function Vault({ params }: { params: { slug: string } }) {
 
     useEffect(() => {
         async function fetchVault() {
-            "finished"
             var res: any
             filter > -1 ?
                 res = await auth.getVault(params.slug, sorting.type != "title" ? sorting : { type: "rating", asc: false }, filter) :
                 res = await auth.getVault(params.slug, sorting.type != "title" ? sorting : { type: "rating", asc: false })
 
-            const userData = await auth.getUserData(auth.user.id)
+            if (res.length > 0) {
+                if (auth.user) {
+                    const userData = await auth.getUserData(auth.user.id)
 
-            if (userData.username == params.slug) {
-                setIsMe(true)
-            }
+                    if (userData.username == params.slug) {
+                        setIsMe(true)
+                    }
+                }
 
-            var queries: any = []
+                var queries: any = []
 
-            res.forEach((e: any) => {
-                queries.push(e.vid)
-            });
-
-            const vnDataRes = await vnListSearchById(queries, 100, sorting.type == "title" ? sorting : undefined)
-
-            var vnData: any = vnDataRes.results
-            var iterationCount = 1
-            while (iterationCount * 100 < vnDataRes.count) {
-                const vnDataRes2 = await vnListSearchById(queries, 100, sorting.type == "title" ? sorting : undefined)
-                vnData = [...vnData, ...vnDataRes2.results]
-                iterationCount++
-            }
-
-            var finalEntryDataArray: any = []
-
-
-            if (sorting.type != "title") {
-                res.forEach((e: any, id: number) => {
-                    const thisRes = vnData.find((y: any) => e.vid == y.id)
-                    finalEntryDataArray.push({
-                        ...e,
-                        title: thisRes.title,
-                        alttitle: thisRes.alttitle,
-                        imageUrl: thisRes.image.url
-                    })
+                res.forEach((e: any) => {
+                    queries.push(e.vid)
                 });
-            }
-            else {
-                vnData.forEach((e: any, id: number) => {
-                    const thisRes = res.find((y: any) => y.vid == e.id)
-                    finalEntryDataArray.push({
-                        ...e,
-                        imageUrl: e.image.url,
-                        created_at: thisRes.created_at,
-                        updated_at: thisRes.updated_at,
-                        rating: thisRes.rating,
-                        status: thisRes.status
-                    })
-                });
+
+                const vnData = await vnListSearchById(queries, sorting.type == "title" ? sorting : undefined)
+
+                var finalEntryDataArray: any = []
+
+
+                if (sorting.type != "title") {
+                    res.forEach((e: any, id: number) => {
+                        const thisRes = vnData.find((y: any) => e.vid == y.id)
+                        finalEntryDataArray.push({
+                            ...e,
+                            title: thisRes.title,
+                            alttitle: thisRes.alttitle,
+                            imageUrl: thisRes.image.url
+                        })
+                    });
+                }
+                else {
+                    vnData.forEach((e: any, id: number) => {
+                        const thisRes = res.find((y: any) => y.vid == e.id)
+                        finalEntryDataArray.push({
+                            ...e,
+                            imageUrl: e.image.url,
+                            created_at: thisRes.created_at,
+                            updated_at: thisRes.updated_at,
+                            rating: thisRes.rating,
+                            status: thisRes.status
+                        })
+                    });
+                }
             }
 
             setEntries(finalEntryDataArray)
@@ -91,6 +86,8 @@ export default function Vault({ params }: { params: { slug: string } }) {
         setIsLoading(true)
         fetchVault()
     }, [isEditing, sorting, filter])
+
+    console.log(isLoading)
 
     function ratingSort() {
         setSorting({ type: "rating", asc: !sorting.asc })
@@ -164,9 +161,9 @@ export default function Vault({ params }: { params: { slug: string } }) {
                     ) : (
                         isLoading ? (
                             <p className="text-center">Loading...</p>
-                        ) : (
+                        ) : ( 
                             <div>
-                                <p>No vns in vault :(</p>
+                                <p className="text-center">No vns in vault :(</p>
                             </div>
                         )
                     )
