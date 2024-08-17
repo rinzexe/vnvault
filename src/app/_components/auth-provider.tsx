@@ -202,14 +202,18 @@ async function updateAvatar(file: any, uuid: string) {
     const res = await supabase.from('users').update({ has_avatar: true }).eq('id', uuid)
 }
 
-async function getVault(username: string, sort?: any) {
+async function getVault(username: string, sort?: any, statusFilter?: number) {
     const userdata = await supabase.from('users').select('*').eq('username', username).single()
 
     var res: any
-
-    sort ? 
-    res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).order(sort?.type, { ascending:  sort?.asc }):
+    console.log(statusFilter)
+    sort && statusFilter! > -1 ? 
+    res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter).order(sort?.type, { ascending:  sort?.asc }) :
+    statusFilter! > -1 ? res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter) :
+    sort ? res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).order(sort?.type, { ascending:  sort?.asc }) :
     res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id)
+
+    console.log(res)
 
     return res.data
 }

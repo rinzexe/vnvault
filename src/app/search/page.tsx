@@ -35,10 +35,10 @@ export default function Search() {
 
     return (
         <div className="flex flex-col items-center w-full">
-            <div className="w-[60rem] flex flex-col gap-4 items-center">
+            <div className="flex flex-col gap-4 items-center">
                 <h1>Search</h1>
-                <form className="flex gap-4 mb-4 max-w-[95vw] w-[40rem]" action={(e) => setSearchQuery({ searchTerm: e.get('searchTerm') })}>
-                    <input name="searchTerm" placeholder={getRandomSuggestionPlaceholder()} className="panel px-4 w-[30rem] py-2 focus:outline-none flex-grow" type="text" />
+                <form className="flex gap-4 mb-4 flex-col lg:flex-row max-w-[85vw] w-[40rem]" action={(e) => setSearchQuery({ searchTerm: e.get('searchTerm') })}>
+                    <input name="searchTerm" placeholder={getRandomSuggestionPlaceholder()} className="panel px-4 max-w-full w-[30rem] py-2 focus:outline-none flex-grow" type="text" />
                     <button type="submit" className="panel px-4 py-2 focus:outline-none">Search</button>
                 </form>
                 {searchResults && searchResults.length > 0 ? (

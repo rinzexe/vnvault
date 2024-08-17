@@ -20,14 +20,19 @@ export default function Vault({ params }: { params: { slug: string } }) {
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [editingVid, setEditingVid] = useState<any>()
     const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [filter, setFilter] = useState<"all" | "finished" | "in progress" | "not read" | "dropped">("all")
+    const [filter, setFilter] = useState<number>(0)
     const [sorting, setSorting] = useState({ type: "rating", asc: false })
 
     const auth = useAuth()
 
     useEffect(() => {
         async function fetchVault() {
-            const res = await auth.getVault(params.slug, sorting.type != "title" ? sorting : { type: "rating", asc: false })
+            "finished"
+            var res: any
+            filter > -1 ?
+                res = await auth.getVault(params.slug, sorting.type != "title" ? sorting : { type: "rating", asc: false }, filter) :
+                res = await auth.getVault(params.slug, sorting.type != "title" ? sorting : { type: "rating", asc: false })
+
             const userData = await auth.getUserData(auth.user.id)
 
             if (userData.username == params.slug) {
@@ -85,7 +90,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
         setEntries({})
         setIsLoading(true)
         fetchVault()
-    }, [isEditing, sorting])
+    }, [isEditing, sorting, filter])
 
     function ratingSort() {
         setSorting({ type: "rating", asc: !sorting.asc })
@@ -119,9 +124,9 @@ export default function Vault({ params }: { params: { slug: string } }) {
                 </div>
             ), modalContent)}
             <div className="flex flex-col items-center overflow-scoll max-w-[90vw] gap-2 w-[60rem]">
-                <div className="grid grid-cols-3 items-center w-full">
-                    <Link href={"/profile/" + params.slug}>
-                        <p className="text-sm text-neutral-500 hover:text-white duration-300">
+                <div className="flex flex-col gap-8 lg:gap-0 lg:grid grid-cols-3 items-center w-full mb-8">
+                    <Link className="w-fit self-start" href={"/profile/" + params.slug}>
+                        <p className="text-sm text-neutral-500 w-fit hover:text-white duration-300">
                             {"<- Back to profile"}
                         </p>
                     </Link>
@@ -129,37 +134,44 @@ export default function Vault({ params }: { params: { slug: string } }) {
                         {params.slug + "'s VNVault"}
                     </h1>
                 </div>
-                {entries && entries.length > 0 ? (
-                    <Table>
-                        <Headers
-                            sort={{
-                                type:
-                                    sorting.type == "rating" ? 4 :
-                                        sorting.type == "created_at" ? 1 :
-                                            sorting.type == "updated_at" ? 2 :
-                                                sorting.type == "status" && 3
-                                , asc: sorting.asc
-                            }}
-                            isEditable={isMe}
-                            fields={['Added', 'Last update', 'Status', 'Rating']}
-                            sortingCallback={[titleSort, addedSort, lastUpdateSort, statusSort, ratingSort]}
-                        />
-                        {entries.map((entry: any, index: number) => {
+                <div className="w-full block *:m-1 *:inline-block">
+                    <AccentButton className={filter == -1 && "bg-white/10"} onClick={() => setFilter(-1)}>All</AccentButton>
+                    <AccentButton className={filter == 0 && "bg-white/10"} onClick={() => setFilter(0)}>Finished</AccentButton>
+                    <AccentButton className={filter == 1 && "bg-white/10"} onClick={() => setFilter(1)}>In progress</AccentButton>
+                    <AccentButton className={filter == 2 && "bg-white/10"} onClick={() => setFilter(2)}>Not read</AccentButton>
+                    <AccentButton className={filter == 3 && "bg-white/10"} onClick={() => setFilter(3)}>Dropped</AccentButton>
+                </div>
+                <Table>
+                    <Headers
+                        sort={{
+                            type:
+                                sorting.type == "rating" ? 4 :
+                                    sorting.type == "created_at" ? 1 :
+                                        sorting.type == "updated_at" ? 2 :
+                                            sorting.type == "status" && 3
+                            , asc: sorting.asc
+                        }}
+                        isEditable={isMe}
+                        fields={['Added', 'Last update', 'Status', 'Rating']}
+                        sortingCallback={[titleSort, addedSort, lastUpdateSort, statusSort, ratingSort]}
+                    />
+                    {entries && entries.length > 0 ? (
+                        entries.map((entry: any, index: number) => {
                             return (
                                 <Entry key={index} entry={entry} isMe={isMe} setIsEditing={setIsEditing} setEditingVid={setEditingVid} />
                             )
-                        })}
-                    </Table>
-                ) : (
-                    isLoading ? (
-                        <p>Loading...</p>
+                        })
                     ) : (
-                        <div>
-                            <p>No vns in vault :(</p>
-                        </div>
+                        isLoading ? (
+                            <p className="text-center">Loading...</p>
+                        ) : (
+                            <div>
+                                <p>No vns in vault :(</p>
+                            </div>
+                        )
                     )
-                )
-                }
+                    }
+                </Table>
             </div >
         </div >
     )

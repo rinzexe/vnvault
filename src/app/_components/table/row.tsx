@@ -21,8 +21,8 @@ export default function Row({ href, title, subtitle, iconUrl, fields, editingCal
             {fields ? (
                 <div className="flex items-center gap-4 hover:bg-white/10 hover:cursor-pointer p-2 rounded-lg duration-300">
                     <Link className="flex-grow" href={href} >
-                        <div className="grid  grid-cols-2 w-full  items-center gap-4 select-none ">
-                            <div className="flex gap-4 items-center">
+                        <div className="flex lg:grid  lg:grid-cols-2 w-full  items-center gap-4 select-none ">
+                            <div className="flex flex-grow gap-4 items-center">
                                 {iconUrl ?
                                     <img src={iconUrl} alt="" width={50} height={50} />
                                     :
@@ -42,10 +42,10 @@ export default function Row({ href, title, subtitle, iconUrl, fields, editingCal
                                 </div>
                             </div>
                             <div
-                                style={{ gridTemplateColumns: "repeat(" + fields.length + ", minmax(0, 1fr))" }}
-                                className="grid gap-4 w-full h-full items-center">
+                                style={{ gridTemplateColumns: "repeat(" + (window.innerWidth > 1024 ? fields.length : 1) + ", minmax(0, 1fr))" }}
+                                className="grid  gap-4 lg:w-full h-full items-center">
                                 {fields.map((field: any, id: number) => (
-                                    <div className="text-center" key={id}>
+                                    <div className="lg:flex flex-row items-center hidden last:flex justify-center last:!justify-end text-center" key={id}>
                                         {field}
                                     </div>
                                 ))}
@@ -53,7 +53,7 @@ export default function Row({ href, title, subtitle, iconUrl, fields, editingCal
                         </div>
                     </Link>
                     {editingCallback && (
-                        <div onClick={editingCallback} className="group w-fit flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
+                        <div onClick={editingCallback} className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
                             <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
                                 Edit
                             </h4>
