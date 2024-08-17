@@ -12,7 +12,8 @@ import { useAuth } from "@/app/_components/auth-provider";
 import { createPortal } from "react-dom";
 import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
-import { getGameLinks, getVnData } from "@/utils/vndb";
+import {  getVnData } from "@/utils/vndb";
+import { getGameLinks } from "./actions";
 
 export default function ClientNovel({ params }: { params: { slug: string } }) {
     const [vnData, setVnData] = useState<any>(null)
