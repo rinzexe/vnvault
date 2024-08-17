@@ -44,7 +44,7 @@ export default function Header() {
             )
         } else {
             return (
-                <div className="flex flex-row items-center gap-8">
+                <div className="flex flex-row pointer-events-auto items-center gap-8">
                     <Link href="/signin">
                         Login
                     </Link>
@@ -101,8 +101,8 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
     function ProfileButton() {
         if (userProfile) {
             return (
-                <div className="panel flex flex-col gap-2 w-full">
-                    <Link href="/profile">
+                <div className="panel pointer-events-auto flex flex-col gap-2 w-full">
+                    <Link onClick={() => { setMobileMenuOpen(false) }} href="/profile">
                         <div className="flex-row flex items-center gap-6">
                             <Image className="rounded-full" src={userProfile.avatar} alt="" width={80} height={80} />
                             <h2>
@@ -125,10 +125,10 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
         } else {
             return (
                 <div className="flex flex-col panel w-full gap-2 items-center ">
-                    <Link href="/signin">
+                    <Link onClick={() => { setMobileMenuOpen(false) }} href="/signin">
                         Login
                     </Link>
-                    <Link href="/signup">
+                    <Link onClick={() => { setMobileMenuOpen(false) }} href="/signup">
                         <AccentButton>
                             Sign up
                         </AccentButton>
@@ -142,7 +142,7 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
             <div className="flex flex-col w-full h-full gap-4 relative panel">
                 <div className="grid grid-cols-3 items-center content-center">
                     <div></div>
-                    <Link className="select-none text-center" href="/">
+                    <Link onClick={() => { setMobileMenuOpen(false) }} className="select-none text-center" href="/">
                         <h1>
                             VNVault
                         </h1>
@@ -153,9 +153,9 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
                         </svg>
                     </button>
                 </div>
-                <div className="h-full flex w-full flex-col gap-4 items-center  pointer-events-none">
+                <div className="h-full flex w-full flex-col gap-4 items-center">
                     <ProfileButton />
-                    <Link href="/search" className="pointer-events-auto w-full ">
+                    <Link onClick={() => { setMobileMenuOpen(false) }} href="/search" className="pointer-events-auto w-full ">
                         <AccentButton className="w-full">
                             <h3 className="p-3 text-left w-full">
                                 VN Search
