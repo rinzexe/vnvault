@@ -12,6 +12,7 @@ import { createPortal } from "react-dom";
 import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 import { Metadata } from "next";
+import ClientNovel from "./client-page";
 
 export async function generateMetadata({ params }: any) {
     const res = await getVnData(params.slug)
@@ -28,6 +29,8 @@ export async function generateMetadata({ params }: any) {
     const vnData = { ...res, title: mainTitle }
     return {
         openGraph: {
+            siteName: "VNVault",
+            description: vnData.description,
             title: vnData.mainTitle,
             images: [
                 {
@@ -40,33 +43,7 @@ export async function generateMetadata({ params }: any) {
 
 export default async function Novel({ params }: { params: { slug: string } }) {
 
-    var isInVault = false
-
-    /*     const auth = useAuth() */
-
-    const res = await getVnData(params.slug)
-
-    const englishTitle = res.titles.find((title: any) => title.lang == "en")
-
-    var mainTitle = res.title
-
-    if (englishTitle) {
-        mainTitle = englishTitle.title
-    }
-
-
-    const vnData = { ...res, title: mainTitle }
-
-    console.log(vnData)
-
-    const res2 = await getGameLinks(mainTitle)
-
-    const gameLinks = res2
-
-
     return (
-        <div>
-
-        </div>
+        <ClientNovel params={{ slug: params.slug }} />
     );
 }

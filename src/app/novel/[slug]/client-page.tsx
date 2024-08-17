@@ -14,7 +14,7 @@ import { createPortal } from "react-dom";
 import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 
-export default function Novel({ params }: { params: { slug: string } }) {
+export default function ClientNovel({ params }: { params: { slug: string } }) {
     const [vnData, setVnData] = useState<any>(null)
     const [gameLinks, setGameLinks] = useState<any>(null)
     const [isEditing, setIsEditing] = useState<any>(null)
