@@ -66,42 +66,42 @@ function Stats({ userData }: any) {
             });
 
             const vnData = await vnListSearchById(queries, { type: "title", asc: false })
-       
+
             var totalMinutes = 0
-            
+
             vnData.forEach((vn: any) => {
                 totalMinutes += vn.length_minutes
             });
 
             console.log(totalMinutes)
 
-            setVnStats({totalMinutes, novelsRead: res.data.length})
+            setVnStats({ totalMinutes, novelsRead: res.data.length })
         }
 
         fetchVnStats()
     }, [])
 
-    if (vnStats) {
-        return (
-            <div className='max-w-[50rem]'>
-                <h1 className='mb-4 text-center'>Stats</h1>
-                <div className=" flex flex-col lg:flex-row items-center gap-4">
-                    <div className='grid grid-rows-3 grid-cols-2 lg:grid-rows-2 lg:grid-cols-3 gap-3 panel'>
-                        <Stat title='Total XP' value={userData?.xp} symbol='' />
-                        <Stat title='Total guesses' value={userData?.total_incorrect + userData?.total_correct} symbol='' />
-                        <Stat title='Longest streak' value={userData?.longest_streak} symbol='' />
-                        <Stat title='Total hits' value={userData?.total_correct} symbol='' />
-                        <Stat title='Total misses' value={userData?.total_incorrect} symbol='' />
-                        <Stat title='Hit %' value={Math.round(userData?.total_correct / (userData?.total_incorrect + userData?.total_correct) * 1000) / 10} symbol='%' />
-                    </div>
+    return (
+        <div className='max-w-[50rem]'>
+            <h1 className='mb-4 text-center'>Stats</h1>
+            <div className=" flex flex-col lg:flex-row items-center gap-4">
+                <div className='grid grid-rows-3 grid-cols-2 lg:grid-rows-2 lg:grid-cols-3 gap-3 panel'>
+                    <Stat title='Total XP' value={userData?.xp} symbol='' />
+                    <Stat title='Total guesses' value={userData?.total_incorrect + userData?.total_correct} symbol='' />
+                    <Stat title='Longest streak' value={userData?.longest_streak} symbol='' />
+                    <Stat title='Total hits' value={userData?.total_correct} symbol='' />
+                    <Stat title='Total misses' value={userData?.total_incorrect} symbol='' />
+                    <Stat title='Hit %' value={Math.round(userData?.total_correct / (userData?.total_incorrect + userData?.total_correct) * 1000) / 10} symbol='%' />
+                </div>
+                {vnStats && (
                     <div className='grid grid-rows-1 grid-cols-2 lg:grid-rows-2 lg:grid-cols-1 gap-3 panel'>
                         <Stat title='Time spent reading' value={Math.round(vnStats.totalMinutes / 60 * 10) / 10} symbol='h' />
                         <Stat title='Novels read' value={vnStats.novelsRead} symbol='' />
                     </div>
-                </div>
+                )}
             </div>
-        )
-    }
+        </div>
+    )
 }
 
 function Stat({ title, value, symbol }: any) {

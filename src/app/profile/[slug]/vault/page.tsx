@@ -20,7 +20,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [editingVid, setEditingVid] = useState<any>()
     const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [filter, setFilter] = useState<number>(0)
+    const [filter, setFilter] = useState<number>(-1)
     const [sorting, setSorting] = useState({ type: "rating", asc: false })
 
     const auth = useAuth()

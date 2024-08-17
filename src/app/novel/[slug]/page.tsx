@@ -1,5 +1,4 @@
 
-import { getGameLinks, getVnData } from "./actions";
 import Image from "next/image";
 import RatingBadge from "@/app/_components/rating-badge";
 import Badge from "@/app/_components/badge";
@@ -13,6 +12,7 @@ import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 import { Metadata } from "next";
 import ClientNovel from "./client-page";
+import { getVnData } from "@/utils/vndb";
 
 export async function generateMetadata({ params }: any) {
     const res = await getVnData(params.slug)
