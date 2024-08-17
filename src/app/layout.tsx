@@ -14,7 +14,7 @@ const calSans = LocalFont({
 
 export const metadata: Metadata = {
   title: "VNVault",
-  description: "For vn lovers",
+  description: "Everything vns",
 };
 
 
