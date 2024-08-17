@@ -192,30 +192,31 @@ function InfoRow({ label, value }: any) {
 }
 
 function formatDescription(text: string) {
-    console.log(text)
-    text = text.replace("[From", "^")
-    text = text.replace("[Edited from", "^")
-    text = text.replace("[Translated from", "^")
+    
+    text = text.replaceAll("[From", "^")
+    text = text.replaceAll("[Edited from", "^")
+    text = text.replaceAll("[Translated from", "^")
     
     text = text.replace("]]", "^")
-    text = text.replace(/\^([^\^]+)\^/g, '');
+    text = text.replaceAll(/\^([^\^]+)\^/g, '');
 
-    text = text.replace("[spoiler]", "")
-    text = text.replace("[/spoiler]", "")
+    text = text.replaceAll("[spoiler]", "")
+    text = text.replaceAll("[/spoiler]", "")
 
-    text = text.replace("[b]", "")
-    text = text.replace("[/b]", "")
+    text = text.replaceAll("[b]", "")
+    text = text.replaceAll("[/b]", "")
 
-    text = text.replace("<s>", "")
-    text = text.replace("</s>", "")
-    text = text.replace(/\^([^\^]+)\^/g, '');
+    text = text.replaceAll("<s>", "")
+    text = text.replaceAll("</s>", "")
+    text = text.replaceAll(/\^([^\^]+)\^/g, '');
 
-    text = text.replace("[url=/", "^")
-    text = text.replace("]", "^")
-    text = text.replace(/\^([^\^]+)\^/g, '');
+    text = text.replaceAll("[/url]", "")
 
-    text = text.replace("[/url]", "")
+    text = text.replaceAll("[url=/", "^")
+    text = text.replaceAll("]", "^")
+    text = text.replaceAll(/\^([^\^]+)\^/g, '');
 
-    text = text.replace('^', "")
+
+    text = text.replaceAll('^', "")
     return text;
 }
