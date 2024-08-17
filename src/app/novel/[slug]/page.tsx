@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: any) {
 
     const vnData = { ...res, title: mainTitle }
     return {
-        title: vnData.maintitle,
+        title: "VNVault | " + vnData.maintitle,
         openGraph: {
             siteName: "VNVault",
             description: vnData.description,

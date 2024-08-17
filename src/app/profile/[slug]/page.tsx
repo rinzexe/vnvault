@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: any) {
         const pfpurl = await supabase.storage.from('user_profiles').getPublicUrl(url)
         console.log(pfpurl)
         return {
-            title: res.data[0].username,
+            title: "VNVault | " + res.data[0].username,
             openGraph: {
                 siteName: "VNVault",
                 title: res.data[0].username,
