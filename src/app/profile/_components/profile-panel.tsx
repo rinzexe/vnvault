@@ -34,7 +34,7 @@ export default function ProfilePanel({ userData, auth, slug }: any) {
                         <h3 className="group-hover:text-blue-500 group-hover:font-bold duration-300">
                             Open vault
                         </h3>
-                        <OpenSVG className="fill-white group-hover:fill-blue-500 stroke-0 group-hover:stroke-1 storke-white group-hover:stroke-blue-500 duration-300" />
+                        <OpenSVG className="fill-white group-hover:fill-blue-500  storke-white duration-300" />
                     </div>
                 </AccentButton>
             </Link>

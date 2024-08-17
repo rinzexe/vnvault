@@ -1,10 +1,9 @@
-'use client'
-
 import Image from "next/image";
 import PlayCard from "./play/play-card";
 
 export default function Home() {
 
+  
   return (
     <main className="flex flex-col gap-8 items-center lg:p-24">
       <div>

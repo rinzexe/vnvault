@@ -34,8 +34,8 @@ export default function AvatarUpload({ children }: any) {
             ), modalContent)}
             {children}
             <div className="w-full h-full absolute top-0 group">
-                <input className="opacity-0 w-full h-full absolute hover:cursor-pointer group" accept="image/jpeg" type="file" onChange={(event) => event.target.files && startEditing(event.target.files[0])} />
-                <div className="opacity-0 group-hover:opacity-100 flex items-center justify-center w-full h-full absolute rounded-full pointer-events-none group-hover:bg-black/50">
+                <input className="opacity-0 w-full h-full duration-300 absolute hover:cursor-pointer group" accept="image/jpeg" type="file" onChange={(event) => event.target.files && startEditing(event.target.files[0])} />
+                <div className="opacity-0 duration-300 group-hover:opacity-100 flex items-center justify-center w-full h-full absolute rounded-full pointer-events-none group-hover:bg-black/50">
                     <svg className="feather feather-edit" fill="none" height="36" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="36" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                 </div>
             </div>
