@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: any) {
         openGraph: {
             siteName: "VNVault",
             description: vnData.description,
-            title: vnData.mainTitle,
+            title: vnData.title,
             images: [
                 {
                     url: vnData.image.url

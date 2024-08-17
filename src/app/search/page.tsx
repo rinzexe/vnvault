@@ -53,9 +53,9 @@ export default function Search() {
         <div className="flex flex-col items-center]">
             <div className="flex flex-col gap-4 items-center">
                 <h1>Search</h1>
-                <form className="flex gap-4 mb-4 flex-col lg:flex-row max-w-[85vw] w-[40rem]" action={(e) => setSearchQuery({ searchTerm: e.get('searchTerm') })}>
+                <form className="flex gap-4 mb-4 flex-col items-center lg:flex-row max-w-[85vw] w-[40rem]" action={(e) => setSearchQuery({ searchTerm: e.get('searchTerm') })}>
                     <input name="searchTerm" placeholder={getRandomSuggestionPlaceholder()} className="panel px-4 max-w-full w-[30rem] py-2 focus:outline-none flex-grow" type="text" />
-                    <button type="submit" className="panel px-4 py-2 focus:outline-none">Search</button>
+                    <button type="submit" className="panel px-4 py-2 focus:outline-none lg:w-fit max-w-full w-[30rem]">Search</button>
                 </form>
                 <div className=" block *:m-1 *:inline-block w-[60rem] max-w-[85vw]">
                     <AccentButton className={type == 0 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(0) }}>Visual novels</AccentButton>
@@ -82,6 +82,7 @@ export default function Search() {
 }
 
 function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
+    console.log(searchResults)
     return (
         <Table>
             <Headers

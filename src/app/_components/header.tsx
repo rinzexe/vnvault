@@ -61,7 +61,7 @@ export default function Header() {
     return (
         <div>
             {mobileMenuOpen && <MobileMenu userProfile={userProfile} setMobileMenuOpen={setMobileMenuOpen} />}
-            <div className="flex flex-row justify-between z-30 w-full  lg:p-0 lg:px-4 items-center  h-20 top-0 fixed panel rounded-none border-t-0 border-r-0 border-l-0">
+            <div className="flex flex-row justify-between z-30 w-full  lg:p-0 lg:px-4 items-center  h-20 top-0 fixed panel !bg-black/75 !rounded-none border-t-0 border-r-0 border-l-0">
                 <div className="flex flex-row items-center gap-16">
                     <Link className="select-none ml-4" href="/">
                         <h1>
