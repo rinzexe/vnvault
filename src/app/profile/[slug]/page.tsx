@@ -1,57 +1,35 @@
-'use client'
+import { createClient } from "@/utils/supabase/server";
+import ClientProfile from "./client-page";
 
-import { useEffect, useState } from "react";
-import ProfilePanel from "../_components/profile-panel";
-import { useAuth } from "@/app/_components/auth-provider";
-import { useRouter } from "next/navigation";
+export async function generateMetadata({ params }: any) {
+    const supabase = createClient()
 
-export default function Profile({ params }: { params: { slug: string } }) {
-    const [userData, setProfile] = useState<any>(null)
-    const [loaded, setLoaded] = useState<boolean>(false)
+    const res = await supabase.from('users').select('*').eq('username', params.slug)
 
-    const auth = useAuth()
-    const router = useRouter()
+    console.log(res)
 
-    useEffect(() => {
-        async function fetchProfile() {
-            const data = await auth.getUserDataWithUsername(params.slug)
-
-            setProfile(data)
-            setLoaded(true)
+    if (res.data) {
+        const url = 'avatars/' + res.data[0].id + '.png?t=' + res.data[0].updated_at
+        const pfpurl = await supabase.storage.from('user_profiles').getPublicUrl(url)
+        console.log(pfpurl)
+        return {
+            title: res.data[0].username,
+            openGraph: {
+                siteName: "VNVault",
+                title: res.data[0].username,
+                images: [
+                    {
+                        url: pfpurl.data.publicUrl
+                    }
+                ]
+            }
         }
+    }
+}
 
-        fetchProfile()
-    }, [auth])
+export default async function Profile({ params }: { params: { slug: string } }) {
 
     return (
-        <div>
-            {userData ? <ProfilePanel slug={params.slug} userData={userData} auth={auth} /> :
-                (
-                    loaded ? (
-                        <div className='grid grid-rows-1 grid-cols-1 p-4'>
-                            <div className="grid-center w-full h-full flex justify-center items-center z-30">
-                                <h1>
-                                    User not found
-                                </h1>
-                            </div>
-                            <div className='backdrop-blur-md bg-black/50 grid-center z-20'>
-
-                            </div>
-                            <div className='grid-center m-4'>
-                                <ProfilePanel slug={params.slug} userData={{ avatar: "https://cbdyelxczooainxtfjgp.supabase.co/storage/v1/object/public/user_profiles/default.jpg", created_at: "26-06-1999T", xp: 2627, total_incorrect: 256, total_correct: 367, longest_streak: 23 }} auth={auth} />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className='grid grid-rows-1 grid-cols-1 p-4'>
-                            <div className='backdrop-blur-md grid-center z-20'>
-
-                            </div>
-                            <div className='grid-center m-4'>
-                                <ProfilePanel slug={params.slug} userData={{ avatar: "https://cbdyelxczooainxtfjgp.supabase.co/storage/v1/object/public/user_profiles/default.jpg", created_at: "26-06-1999T", xp: 2627, total_incorrect: 256, total_correct: 367, longest_streak: 23 }} auth={auth} />
-                            </div>
-                        </div>
-                    )
-                )}
-        </div>
-    )
+        <ClientProfile params={{ slug: params.slug }} />
+    );
 }
