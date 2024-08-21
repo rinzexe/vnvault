@@ -55,7 +55,7 @@ export default function VNStats({ stats }: { stats: Stats }) {
                                 Average rating
                             </h2>
                             <p>
-                                {stats.averageRating}
+                                {Math.round(stats.averageRating * 10) / 10}
                             </p>
                         </div>
                     </div>
