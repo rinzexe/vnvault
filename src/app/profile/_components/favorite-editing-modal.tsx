@@ -128,7 +128,7 @@ export default function FavoriteEditingModal({ type, favorites }: any) {
                             }
                             else {
                                 return (
-                                    <div >
+                                    <div key={id}>
                                         <Row
                                             hasIcon={true}
                                             key={id}
