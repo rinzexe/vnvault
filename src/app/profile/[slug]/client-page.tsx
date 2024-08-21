@@ -149,8 +149,9 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
             ];
 
             ratedEntries.forEach((entry: any, id: number) => {
-
-                ratedEntryStats[10 - entry.rating].value += 1
+                if (entry.rating != null) {
+                    ratedEntryStats[10 - entry.rating].value += 1
+                }
             })
 
             const vaultStats: any = [];

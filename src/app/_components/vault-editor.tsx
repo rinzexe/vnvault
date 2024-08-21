@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 
 export default function VaultEditor({ isInVault, vid, setIsEditing, callback }: any) {
-    const [selectedRating, setSelectedRating] = useState<number>(0)
+    const [selectedRating, setSelectedRating] = useState<number>(-1)
     const [selectedStatus, setSelectedStatus] = useState<number>(2)
     const [finishedEditing, setFinishedEditing] = useState<boolean>(false)
 
