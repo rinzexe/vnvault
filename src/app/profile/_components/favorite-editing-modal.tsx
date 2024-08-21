@@ -100,7 +100,7 @@ export default function FavoriteEditingModal({ type, favorites }: any) {
                         {searchResults.map((result: any, id: number) => {
                             if (type == 0) {
                                 return (
-                                    <div >
+                                    <div key={id} >
                                         <Row
                                             hasIcon={true}
                                             key={id}
