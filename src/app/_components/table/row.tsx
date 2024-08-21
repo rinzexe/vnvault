@@ -5,7 +5,7 @@ import EditSVG from "../svgs/edit";
 import Avatar from "@/app/leaderboard/avatar";
 
 interface RowProps {
-    href: string
+    href?: string
     iconUrl?: string
     fields: any[]
     title: string
@@ -14,24 +14,44 @@ interface RowProps {
     avatarUser?: any
     numbered?: boolean
     roundIcons?: boolean
+    hasIcon?: boolean
+    actionContent?: any
 }
 
-export default function Row({ href, title, subtitle, iconUrl, fields, editingCallback, avatarUser, numbered, ...props }: RowProps) {
+export default function Row({ href, title, subtitle, hasIcon, iconUrl, fields, editingCallback, avatarUser, numbered, actionContent, ...props }: RowProps) {
+
+    function CondLink({ children }: any) {
+        if (href) {
+            return <Link className="flex-grow" href={href} >{children}</Link>
+        }
+        else {
+            return (
+                <div className="flex-grow">
+                    {children}
+                </div>
+            )
+        }
+    }
+
+    console.log(iconUrl)
+
     return (
         <div {...props} className="w-full">
             {fields ? (
-                <div className="flex items-center gap-4 hover:bg-white/10 hover:cursor-pointer p-2 rounded-lg duration-300">
-                    <Link className="flex-grow" href={href} >
+                <div  className="flex items-center gap-4 hover:bg-white/10 hover:cursor-pointer p-2 rounded-lg duration-300">
+                    <CondLink>
                         <div className="flex lg:grid  lg:grid-cols-2 w-full  items-center gap-4 select-none ">
                             <div className="flex flex-grow gap-4 items-center">
-                                {iconUrl ?
+                                {iconUrl && hasIcon ?
                                     <img src={iconUrl} alt="" width={50} height={50} />
                                     :
-                                    avatarUser ? (
+                                    avatarUser && hasIcon ? (
                                         <></>
                                     ) : (
-                                        <div className="w-[50px]">
-                                        </div>
+                                        hasIcon && (
+                                            <div className="w-[50px]">
+                                            </div>
+                                        )
                                     )
                                 }
                                 {avatarUser && !iconUrl && (
@@ -52,15 +72,8 @@ export default function Row({ href, title, subtitle, iconUrl, fields, editingCal
                                 ))}
                             </div>
                         </div>
-                    </Link>
-                    {editingCallback && (
-                        <div onClick={editingCallback} className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
-                            <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
-                                Edit
-                            </h4>
-                            <EditSVG className="w-8 h-8 pl-2 stroke-white  stroke-2 group-hover:stroke-[3px]  group-hover:stroke-blue-500 duration-300" />
-                        </div>
-                    )}
+                    </CondLink>
+                    {actionContent!}
                 </div>
             ) : (
                 <div className="h-[50px]">

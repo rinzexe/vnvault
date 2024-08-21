@@ -7,9 +7,10 @@ import RatingBadge from "../_components/rating-badge"
 import Table from "../_components/table/table"
 import Headers from "../_components/table/headers"
 import Row from "../_components/table/row"
-import { vnSearchByName } from "@/utils/vndb"
+import { characterSearchByName, vnSearchByName } from "@/utils/vndb"
 import AccentButton from "../_components/accent-button"
 import { useAuth } from "../_components/auth-provider"
+import { getEnglishTitle } from "@/utils/vn-data"
 
 export default function Search() {
     const [searchQuery, setSearchQuery] = useState<any>(" ")
@@ -23,15 +24,17 @@ export default function Search() {
     useEffect(() => {
         setIsLoading(true)
         async function search() {
-            console.log(type)
             if (type == 0) {
                 const results = await vnSearchByName(searchQuery.searchTerm, 50, sorting)
                 setSearchResults(results)
             }
-            else {
+            else if (type == 1) {
                 const results = await auth.searchUsers(searchQuery.searchTerm)
                 setSearchResults(results)
-                console.log(results)
+            }
+            else if (type == 2) {
+                const results = await characterSearchByName(searchQuery.searchTerm, 50)
+                setSearchResults(results)
             }
             setIsLoading(false)
         }
@@ -60,12 +63,17 @@ export default function Search() {
                 <div className=" block *:m-1 *:inline-block w-[60rem] max-w-[85vw]">
                     <AccentButton className={type == 0 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(0) }}>Visual novels</AccentButton>
                     <AccentButton className={type == 1 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(1) }}>Users</AccentButton>
+                    <AccentButton className={type == 2 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(2) }}>Characters</AccentButton>
                 </div>
                 {searchResults && searchResults.length > 0 && isLoading == false ? (
                     type == 0 ? (
                         <VNTable titleSort={titleSort} ratingSort={ratingSort} searchResults={searchResults} sorting={sorting} />
                     ) : (
-                        <UserTable sorting={sorting} titleSort={titleSort} searchResults={searchResults} />
+                        type == 1 ? (
+                            <UserTable sorting={sorting} titleSort={titleSort} searchResults={searchResults} />
+                        ) : (
+                            <CharacterTable titleSort={titleSort} searchResults={searchResults} sorting={sorting} />
+                        )
                     )
                 ) : (
                     isLoading ? (
@@ -82,7 +90,6 @@ export default function Search() {
 }
 
 function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
-    console.log(searchResults)
     return (
         <Table>
             <Headers
@@ -96,6 +103,7 @@ function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
             {searchResults.map((result: any, id: number) => {
                 return (
                     <Row
+                        hasIcon={true}
                         key={id}
                         href={"/novel/" + result.id}
                         iconUrl={result.image && result.image.url}
@@ -121,7 +129,7 @@ function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
                             <RatingBadge key={id} rating={result.rating / 10} />)
 
                         ]}
-                        title={result.title}
+                        title={getEnglishTitle(result)}
                         subtitle={result.alttitle}
                     />
                 )
@@ -131,7 +139,34 @@ function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
 }
 
 function UserTable({ searchResults, titleSort, sorting }: any) {
-    console.log(searchResults)
+    return (
+        <Table>
+            <Headers
+                sort={{
+                    type: 0,
+                    asc: sorting.asc
+                }}
+                fields={[]}
+                sortingCallback={[titleSort]} />
+            {searchResults.map((result: any, id: number) => {
+                return (
+                    <Row
+                        hasIcon={true}
+                        key={id}
+                        href={"/profile/" + result.username}
+                        avatarUser={result}
+                        fields={[]}
+                        title={result.username}
+                        subtitle={result.alttitle}
+                    />
+                )
+            })}
+        </Table>
+    )
+
+}
+
+function CharacterTable({ searchResults, titleSort, sorting }: any) {
 
     return (
         <Table>
@@ -145,16 +180,15 @@ function UserTable({ searchResults, titleSort, sorting }: any) {
             {searchResults.map((result: any, id: number) => {
                 return (
                     <Row
+                        hasIcon={true}
                         key={id}
-                        href={"/profile/" + result.username}
-                        avatarUser={result}
+                        href={"/character/" + result.id}
+                        iconUrl={result.image && result.image.url}
                         fields={[]}
-                        title={result.username}
-                        subtitle={result.alttitle}
+                        title={result.name}
                     />
                 )
             })}
         </Table>
     )
-
 }

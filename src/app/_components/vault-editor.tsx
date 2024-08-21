@@ -15,9 +15,6 @@ export default function VaultEditor({ isInVault, vid, setIsEditing, callback }: 
             const userData = await auth.getUserData(auth.user.id)
             const res = await auth.getVault(userData.username)
 
-            console.log(userData,res)
-            console.log(vid)
-
             const vaultVnData = res.find((entry: any) => entry.vid == vid)
 
             setSelectedRating(vaultVnData.rating - 1)

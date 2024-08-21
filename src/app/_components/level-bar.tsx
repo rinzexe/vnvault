@@ -3,7 +3,7 @@ import { calculateLevel } from "@/utils/levels"
 export default function LevelBar({ xp, ...props }: any) {
     const xpInfo = calculateLevel(xp)
     return (
-        <div className="lg:w-64 w-full" {...props}>
+        <div className="w-full" {...props}>
             <h3>
                 Level {xpInfo.level}
             </h3>

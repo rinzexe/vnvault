@@ -19,7 +19,6 @@ export default function SignUp() {
                 <input className="panel w-full py-1 px-2 text-xs" id="password" name="password" type="password" required />
                 <AccentButton className="mt-5" formAction={async (formData: any) => {
                     const res = await auth.signUp(formData)
-                    console.log(res)
                 }}>Sign up</AccentButton>
             </form>
         </div>

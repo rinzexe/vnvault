@@ -38,7 +38,7 @@ export default function Header() {
                         <h2>
                             {userProfile.username}
                         </h2>
-                        <Image className="rounded-full" src={userProfile.avatar} alt="" width={50} height={50} />
+                        <img className="rounded-full" src={userProfile.avatar} alt="" width={50} height={50} />
                     </div>
                 </Link>
             )
@@ -104,7 +104,7 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
                 <div className="panel !bg-black pointer-events-auto flex flex-col gap-2 w-full">
                     <Link onClick={() => { setMobileMenuOpen(false) }} href="/profile">
                         <div className="flex-row flex items-center gap-6">
-                            <Image className="rounded-full" src={userProfile.avatar} alt="" width={80} height={80} />
+                            <img className="rounded-full" src={userProfile.avatar} alt="" width={80} height={80} />
                             <h2>
                                 {userProfile.username}
                             </h2>

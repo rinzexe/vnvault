@@ -6,12 +6,10 @@ export async function generateMetadata({ params }: any) {
 
     const res = await supabase.from('users').select('*').eq('username', params.slug)
 
-    console.log(res)
-
     if (res.data) {
         const url = 'avatars/' + res.data[0].id + '.png?t=' + res.data[0].updated_at
         const pfpurl = await supabase.storage.from('user_profiles').getPublicUrl(url)
-        console.log(pfpurl)
+
         return {
             title: "VNVault | " + res.data[0].username,
             openGraph: {

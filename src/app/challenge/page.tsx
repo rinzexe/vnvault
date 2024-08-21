@@ -26,7 +26,6 @@ export default function Challenge() {
     const [userData, setUserData] = useState<any>(0)
     const [streak, setStreak] = useState<number>(0)
     const [answerChecked, setAnswerChecked] = useState<boolean>(false)
-    console.log(answerChecked)
 
     const auth = useAuth()
 
@@ -59,7 +58,6 @@ export default function Challenge() {
     }, [lastRounds, setAnswerChecked])
 
     function checkAnswer(answerTitle: string) {
-        console.log("answer checked")
         if (answerTitle === vnData?.title) {
             setStreak(streak + 1)
 
@@ -162,7 +160,6 @@ function Timer({ vnData, checkAnswer, answerChecked }: any) {
                 setTimeout(() => setTimer(timer - 1), 100)
             }
             else {
-                console.log("timer answer checked")
                 checkAnswer("")
                 setTimerSet(false)
             }
@@ -192,7 +189,7 @@ function LastRounds({ lastRounds }: any) {
                         <div className="w-0 absolute h-0 flex-col justify-end hidden group-hover:flex">
                             <div className="absolute -translate-x-[50%] hidden group-hover:flex flex-col pb-6 gap-3 w-[30rem]">
                                 <div className="panel">
-                                    <Image className="rounded-xl h-full w-auto" src={round.screenshot} alt={""} width={1000} height={500} />
+                                    <img className="rounded-xl h-full w-auto" src={round.screenshot} alt={""} width={1000} height={500} />
                                     <div className="flex flex-row w-full justify-between pt-6 items-center">
                                         <div>
                                             <p className="text-white">

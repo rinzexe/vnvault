@@ -112,6 +112,7 @@ export const AuthProvider = ({ children }: any) => {
         getVault,
         updateVault,
         searchUsers,
+        updateUser,
         supabase,
         user,
     };
@@ -154,6 +155,11 @@ async function getAvatar(userData: any) {
         const url = 'avatars/' + userData.id + '.png?t=' + userData.updated_at
         return await supabase.storage.from('user_profiles').getPublicUrl(url)
     }
+}
+
+async function updateUser(uuid: string, userData: any) {
+    console.log(userData)
+    const res = await supabase.from('users').update(userData).eq('id', uuid)
 }
 
 async function updateStats(uuid: string, streak: number, correct: boolean, xpValue: number) {
@@ -207,7 +213,6 @@ async function getVault(username: string, sort?: any, statusFilter?: number) {
     const userdata = await supabase.from('users').select('*').eq('username', username).single()
 
     var res: any
-    console.log(statusFilter)
     sort && statusFilter! > -1 ?
         res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter).order(sort?.type, { ascending: sort?.asc }) :
         statusFilter! > -1 ? res = await supabase.from('vault_entries').select('*').eq('owner_id', userdata?.data.id).eq("status", statusFilter) :

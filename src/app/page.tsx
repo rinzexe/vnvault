@@ -3,7 +3,7 @@ import PlayCard from "./play/play-card";
 
 export default function Home() {
 
-  
+
   return (
     <main className="flex flex-col gap-8 items-center lg:p-24">
       <div>
@@ -14,7 +14,7 @@ export default function Home() {
           Your go-to place for everything visual novels
         </p>
       </div>
-      <Image src="/vnvlogo.png" alt="logo" width={500} height={500} />
+      <img src="/vnvlogo.png" alt="logo" width={500} height={500} />
     </main>
   );
 }

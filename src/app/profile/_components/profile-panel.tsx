@@ -2,115 +2,140 @@ import AccentButton from "@/app/_components/accent-button"
 import AvatarUpload from "@/app/profile/_components/avatar-upload"
 import LevelBar from "@/app/_components/level-bar"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import OpenSVG from "@/app/_components/svgs/open"
 import { useAuth } from "@/app/_components/auth-provider"
 import { vnListSearchById } from "@/utils/vndb"
+import PieChartComponent from "@/app/_components/charts/pie-chart"
+import Info from "./tabs/info"
+import VNStats from "./tabs/vnstats"
+import GameStats from "./tabs/game-stats"
+import Reviews from "./tabs/reviews"
+import EditSVG from "@/app/_components/svgs/edit"
 
-export default function ProfilePanel({ userData, auth, slug }: any) {
+export default function ProfilePanel({ userData, slug, stats }: any) {
+    const [currentTab, setCurrentTab] = useState<number>(0)
+    const [isEditingBio, setIsEditingBio] = useState<boolean>(false)
+    const auth = useAuth()
+
+    const bioEditRef = useRef<any>()
+
     var isMe = false
 
     if (userData.id == auth.user?.id) {
         isMe = true
     }
-    return (
-        <div className='flex flex-col items-center gap-12'>
-            <div className='flex flex-col w-full lg:w-auto lg:flex-row lg:items-center gap-8 lg:h-[300px]'>
-                {userData && !isMe && <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full w-full lg:h-full lg:w-auto' />}
-                {userData && isMe && (
-                    <AvatarUpload>
-                        <Image src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full w-full lg:h-full lg:w-auto' />
-                    </AvatarUpload>
-                )}
-                <div>
-                    <h1>{userData?.username}</h1>
-                    <p className="lg:text-base text-sm">
-                        {"Joined on " + userData?.created_at.split('T')[0]}
-                    </p>
-                </div>
-            </div>
-            <Link href={"/profile/" + slug + "/vault"} >
-                <AccentButton>
-                    <div className="group flex items-center gap-2">
-                        <h3 className="group-hover:text-blue-500 group-hover:font-bold duration-300">
-                            Open vault
-                        </h3>
-                        <OpenSVG className="fill-white group-hover:fill-blue-500  storke-white duration-300" />
-                    </div>
-                </AccentButton>
-            </Link>
-            <LevelBar xp={userData?.xp} />
-            <Stats userData={userData} />
-            {auth && isMe && <AccentButton onClick={() => { auth.signOut() }}>Sign Out</AccentButton>}
-        </div>
-    )
-}
 
-function Stats({ userData }: any) {
-    const [vnStats, setVnStats] = useState<any>()
+    const Tab = useCallback(() => {
+        switch (currentTab) {
+            case 0: return <Info username={slug} isMe={isMe} stats={stats} />
+            case 1: return <VNStats stats={stats} />
+            case 2: return <GameStats userData={userData} />
+            case 3: return <Reviews />
+        }
+    }, [currentTab])
 
-    const auth = useAuth()
-
-    console.log(userData)
+    function setBio(e: any) {
+        auth.updateUser(auth.user.id, { bio: e.get('bio') })
+        setIsEditingBio(false)
+        userData.bio = e.get('bio')
+    }
 
     useEffect(() => {
-        async function fetchVnStats() {
-            const res = await auth.supabase.from('vault_entries').select('*').eq('owner_id', userData.id).eq('status', 0)
-            console.log(res)
+        console.log(bioEditRef)
+        bioEditRef.current?.addEventListener('keypress', (e: any) => {
+            var numberOfLines = (bioEditRef.current.value.match(/\n/g) || []).length + 1
+            var maxRows = 1;
 
-            var queries: any = []
+            if (e.which === 13 && numberOfLines === maxRows) {
+                e.preventDefault()
+                return false;
+            }
+        })
 
-            res.data && res.data.forEach((e: any) => {
-                queries.push(e.vid)
-            });
-
-            const vnData = await vnListSearchById(queries, { type: "title", asc: false })
-
-            var totalMinutes = 0
-
-            vnData.forEach((vn: any) => {
-                totalMinutes += vn.length_minutes
-            });
-
-            console.log(totalMinutes)
-
-            setVnStats({ totalMinutes, novelsRead: res.data.length })
-        }
-
-        fetchVnStats()
-    }, [])
+    }, [bioEditRef, isEditingBio])
 
     return (
-        <div className='max-w-[50rem]'>
-            <h1 className='mb-4 text-center'>Stats</h1>
-            <div className=" flex flex-col lg:flex-row items-center gap-4">
-                <div className='grid grid-rows-3 grid-cols-2 lg:grid-rows-2 lg:grid-cols-3 gap-3 panel'>
-                    <Stat title='Total XP' value={userData?.xp} symbol='' />
-                    <Stat title='Total guesses' value={userData?.total_incorrect + userData?.total_correct} symbol='' />
-                    <Stat title='Longest streak' value={userData?.longest_streak} symbol='' />
-                    <Stat title='Total hits' value={userData?.total_correct} symbol='' />
-                    <Stat title='Total misses' value={userData?.total_incorrect} symbol='' />
-                    <Stat title='Hit %' value={Math.round(userData?.total_correct / (userData?.total_incorrect + userData?.total_correct) * 1000) / 10} symbol='%' />
-                </div>
-                {vnStats && (
-                    <div className='grid grid-rows-1 grid-cols-2 lg:grid-rows-2 lg:grid-cols-1 gap-3 panel'>
-                        <Stat title='Time spent reading' value={Math.round(vnStats.totalMinutes / 60 * 10) / 10} symbol='h' />
-                        <Stat title='Novels read' value={vnStats.novelsRead} symbol='' />
+        <div className='flex flex-col items-center gap-12'>
+            <div className='flex flex-col items-center gap-12 w-full lg:w-[60rem]'>
+                <div className='flex  w-full lg:flex-row flex-col justify-between lg:items-center gap-8 '>
+                    <div className="flex w-full lg:flex-row flex-col items-center lg:h-48 lg:w-4/6 gap-8">
+                        <div className="w-48 h-48">
+                            {userData && !isMe && <img src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full flex-grow w-auto lg:h-full' />}
+                            {userData && isMe && (
+                                <AvatarUpload>
+                                    <img src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full flex-grow w-full h-auto  ' />
+                                </AvatarUpload>
+                            )}
+                        </div>
+                        <div className="flex w-full lg:w-3/6 flex-col gap-4">
+                            <div>
+                                <h1>{userData?.username}</h1>
+                                <p className="text-xs text-neutral-500">
+                                    {"Joined on " + userData?.created_at.split('T')[0]}
+                                </p>
+                            </div>
+                            <div className="flex w-full gap-4">
+                                {isEditingBio ? (
+                                    <form action={setBio}>
+                                        <textarea id="bio" name="bio" ref={bioEditRef} wrap="hard" cols={100} className="bg-black break-words resize-none w-full " maxLength={64}>
+                                            {userData.bio}
+                                        </textarea>
+                                        <AccentButton>
+                                            <input type="submit" value={"Save"} />
+                                        </AccentButton>
+                                    </form>
+                                ) : (
+                                    <>
+                                        <p>
+                                            {userData.bio != "" ? userData.bio : "No bio."}
+                                        </p>
+                                        {isMe && (
+                                            <button className="lg:block hidden" onClick={() => { setIsEditingBio(true) }}>
+                                                <EditSVG className="w-8 hover:stroke-blue-500 duration-300" />
+                                            </button>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
                     </div>
-                )}
+                    <Link href={"/profile/" + slug + "/vault"} >
+                        <AccentButton>
+                            <div className="group flex items-center gap-2">
+                                <h4 className="group-hover:text-blue-500 group-hover:font-bold duration-300">
+                                    VN Vault
+                                </h4>
+                                <OpenSVG className="fill-white group-hover:fill-blue-500  storke-white duration-300" />
+                            </div>
+                        </AccentButton>
+                    </Link>
+                </div>
+                <div className="w-full overflow-x-scroll lg:overflow-x-auto px-8 lg:px-0 flex lg:justify-center items-center gap-12">
+                    <MenuButton setCurrentTab={setCurrentTab} id={0} label="Info" active={currentTab == 0} />
+                    <MenuButton setCurrentTab={setCurrentTab} id={1} label="Reading Stats" active={currentTab == 1} />
+                    <MenuButton setCurrentTab={setCurrentTab} id={2} label="Challenge stats" active={currentTab == 2} />
+                    <MenuButton setCurrentTab={setCurrentTab} id={3} label="Reviews" active={currentTab == 3} />
+                </div>
+                <Tab />
+                {auth && isMe && <AccentButton onClick={() => { auth.signOut() }}>Sign Out</AccentButton>}
             </div>
-        </div>
+        </div >
     )
 }
 
-function Stat({ title, value, symbol }: any) {
+function MenuButton({ label, active, setCurrentTab, id }: any) {
     return (
-        <div>
-            <p className='text-sm'>{title}</p>
-            <h2 className=''>
-                {value + symbol}
+        <button className="group w-max" onClick={() => { setCurrentTab(id) }}>
+            <h2 className="w-max">
+                {label}
             </h2>
-        </div>
+            {active ?
+                <div className="w-full h-[3px] bg-blue-500 shadow-[0px_0px_5px_rgba(59,130,255,1),0px_0px_10px_rgba(59,130,255,1),0px_0px_25px_rgba(59,130,255,1.0),0px_0px_35px_rgba(59,130,255,1.0)]" /> :
+                <div className="w-full h-[1px] duration-300 group-hover:bg-blue-500 group-hover:shadow-[0px_0px_5px_rgba(59,130,255,1),0px_0px_10px_rgba(59,130,255,1),0px_0px_25px_rgba(59,130,255,1),0px_0px_35px_rgba(59,130,255,1)]" />}
+        </button>
     )
 }
+ 

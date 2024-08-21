@@ -36,10 +36,10 @@ export default function GamePanel({ vnData, checkAnswer, lastRounds, answerCheck
             <div className="lg:h-[50dvh] min-h-[20rem] lg:w-auto w-full flex flex-col relative items-center justify-center">
                 <FeedbackPopup lastRounds={lastRounds} />
                 {vnData && answerChecked == true ? (
-                    <Image style={{ filter: "blur(12px) brightness(25%)" }} className="rounded-xl h-full w-auto" src={lastRounds[lastRounds.length - 1].screenshot} alt={""} width={1000} height={500} />
+                    <img style={{ filter: "blur(12px) brightness(25%)" }} className="rounded-xl h-full w-auto" src={lastRounds[lastRounds.length - 1].screenshot} alt={""} width={1000} height={500} />
                 ) : (
                     vnData ? (
-                        <Image onLoad={(e: any) => { e.target.classList.remove("opacity-0") }} className="rounded-xl h-full w-auto opacity-0" src={vnData.screenshot} alt={vnData.title} width={1000} height={500} />
+                        <img onLoad={(e: any) => { e.target.classList.remove("opacity-0") }} className="rounded-xl h-full w-auto opacity-0" src={vnData.screenshot} alt={vnData.title} width={1000} height={500} />
                     ) : (
                         <h1>Loading...</h1>
                     )
@@ -51,7 +51,7 @@ export default function GamePanel({ vnData, checkAnswer, lastRounds, answerCheck
                     {suggestions.map((suggestion: any, id: number) => {
                         return (
                             <div key={id} onClick={() => { inputRef.current.value = ""; setSuggestions([]); checkAnswer(suggestion.title) }} className="flex flex-row hover:bg-white/10 p-2 rounded-lg items-center gap-4 select-none hover:cursor-pointer">
-                                <Image src={suggestion.image.url} alt="" width={50} height={50} />
+                                <img src={suggestion.image.url} alt="" width={50} height={50} />
                                 <div>
                                     <p className="text-white">{suggestion.title}</p>
                                     <p className="">{suggestion.alttitle}</p>

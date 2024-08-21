@@ -9,6 +9,7 @@ import Row from "@/app/_components/table/row"
 import Table from "@/app/_components/table/table"
 import VaultEditor from "@/app/_components/vault-editor"
 import { getVaultStatusText } from "@/utils/vault"
+import { getEnglishTitle } from "@/utils/vn-data"
 import { vnListSearchById } from "@/utils/vndb"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -59,7 +60,8 @@ export default function Vault({ params }: { params: { slug: string } }) {
                             ...e,
                             title: thisRes.title,
                             alttitle: thisRes.alttitle,
-                            imageUrl: thisRes.image.url
+                            imageUrl: thisRes.image.url,
+                            titles: thisRes.titles
                         })
                     });
                 }
@@ -86,8 +88,6 @@ export default function Vault({ params }: { params: { slug: string } }) {
         setIsLoading(true)
         fetchVault()
     }, [isEditing, sorting, filter])
-
-    console.log(isLoading)
 
     function ratingSort() {
         setSorting({ type: "rating", asc: !sorting.asc })
@@ -140,6 +140,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
                 </div>
                 <Table>
                     <Headers
+                    leftPadding={isMe ? 104 : 0}
                         sort={{
                             type:
                                 sorting.type == "rating" ? 4 :
@@ -148,7 +149,6 @@ export default function Vault({ params }: { params: { slug: string } }) {
                                             sorting.type == "status" && 3
                             , asc: sorting.asc
                         }}
-                        isEditable={isMe}
                         fields={['Added', 'Last update', 'Status', 'Rating']}
                         sortingCallback={[titleSort, addedSort, lastUpdateSort, statusSort, ratingSort]}
                     />
@@ -161,7 +161,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
                     ) : (
                         isLoading ? (
                             <p className="text-center">Loading...</p>
-                        ) : ( 
+                        ) : (
                             <div>
                                 <p className="text-center">No vns in vault :(</p>
                             </div>
@@ -180,6 +180,8 @@ function Entry({ entry, isMe, setIsEditing, setEditingVid, ...props }: any) {
         setIsEditing(true)
     }
 
+    console.log(entry)
+
     return (
         <div {...props}>
             {entry && <Row
@@ -191,9 +193,17 @@ function Entry({ entry, isMe, setIsEditing, setEditingVid, ...props }: any) {
                     getVaultStatusText(entry.status),
                     entry.rating ? <RatingBadge rating={entry.rating} /> : <p className="text-right ">Unrated</p>
                 ]}
-                title={entry.title}
+                hasIcon
+                title={getEnglishTitle(entry)}
                 subtitle={entry.alttitle}
-                editingCallback={isMe && toggleEditing}
+                actionContent={isMe && (
+                    <div onClick={toggleEditing} className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
+                        <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
+                            Edit
+                        </h4>
+                        <EditSVG className="w-8 h-8 pl-2 stroke-white  stroke-2 group-hover:stroke-[3px]  group-hover:stroke-blue-500 duration-300" />
+                    </div>
+                )}
             />}
         </div>
     )

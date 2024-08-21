@@ -46,8 +46,6 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
 
             setVnData({ ...res, title: mainTitle })
 
-            console.log(mainTitle)
-
             const res2 = await getGameLinks(mainTitle)
 
             setGameLinks(res2)
@@ -72,7 +70,7 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
                     <div className="w-full flex flex-col gap-8 items-center">
                         <div className="w-full flex flex-col gap-4 items-center">
                             <div className="flex flex-col gap-4 lg:grid grid-cols-2 lg:gap-8">
-                                <Image className="rounded-xl" src={vnData.image.url} alt="" width={500} height={800} />
+                                <img className="rounded-xl" src={vnData.image.url} alt="" width={500} height={800} />
                                 <div className="flex flex-col h-full justify-center">
                                     <h3 className="text-neutral-400">{vnData.alttitle}</h3>
                                     <h1>{vnData.title}</h1>
@@ -146,7 +144,7 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
                                 </h1>
                                 <div className="block w-full">
                                     {vnData.screenshots.map((screenshot: any, id: number) => (
-                                        screenshot.sexual < 1 && <Image width={500} height={400} className="inline-block p-2 lg:w-3/6 h-auto" key={id} src={screenshot.url} alt="" />
+                                        screenshot.sexual < 1 && <img width={500} height={400} className="inline-block p-2 lg:w-3/6 h-auto" key={id} src={screenshot.url} alt="" />
                                     ))}
                                 </div>
                             </div>
@@ -176,7 +174,7 @@ function GameLink({ logo, href, name }: any) {
     return (
         <Link href={href}>
             <div className="panel p-3 hover:bg-white/10 duration-300 flex gap-4 items-center">
-                <Image src={logo} alt="name" width={48} height={48} />
+                <img src={logo} alt="name" width={48} height={48} />
                 <h4>
                     {"Buy on " + name}
                 </h4>
