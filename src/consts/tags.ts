@@ -12,5 +12,6 @@ export const genreTags = [
     'Thriller',
     'Drama',
     'Murder Mystery',
-    'Military'
+    'Military',
+    'Game Over'
 ]

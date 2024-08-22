@@ -8,9 +8,9 @@ import Headers from "@/app/_components/table/headers"
 import Row from "@/app/_components/table/row"
 import Table from "@/app/_components/table/table"
 import VaultEditor from "@/app/_components/vault-editor"
+import { vnSearchByIdList } from "@/lib/vndb/search"
 import { getVaultStatusText } from "@/utils/vault"
 import { getEnglishTitle } from "@/utils/vn-data"
-import { vnListSearchById } from "@/utils/vndb"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
@@ -48,7 +48,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
                     queries.push(e.vid)
                 });
 
-                const vnData = await vnListSearchById(queries, sorting.type == "title" ? sorting : undefined)
+                const vnData = await vnSearchByIdList(queries, sorting.type == "title" ? sorting : undefined)
 
                 var finalEntryDataArray: any = []
 

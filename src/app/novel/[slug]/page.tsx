@@ -12,10 +12,10 @@ import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 import { Metadata } from "next";
 import ClientNovel from "./client-page";
-import { getVnData } from "@/utils/vndb";
+import { getVnDataById } from "@/lib/vndb/search";
 
 export async function generateMetadata({ params }: any) {
-    const res = await getVnData(params.slug)
+    const res = await getVnDataById(params.slug)
 
     const englishTitle = res.titles.find((title: any) => title.lang == "en")
 

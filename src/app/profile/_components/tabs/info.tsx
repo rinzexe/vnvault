@@ -8,8 +8,8 @@ import { createPortal } from "react-dom";
 import FavoriteEditingModal from "../favorite-editing-modal";
 import EditSVG from "@/app/_components/svgs/edit";
 import { useAuth } from "@/app/_components/auth-provider";
-import { characterListSearchById, vnListSearchById } from "@/utils/vndb";
 import { getEnglishTitle } from "@/utils/vn-data";
+import { characterSearchByIdList, vnSearchByIdList } from "@/lib/vndb/search";
 
 export default function Info({ stats, isMe, username }: any) {
     const [isEditingFavs, setIsEditingFavs] = useState<boolean>(false)
@@ -27,7 +27,7 @@ export default function Info({ stats, isMe, username }: any) {
             setProfile(fetchedUserData)
 
             if (fetchedUserData.favorite_novels?.length > 0) {
-                const res = await vnListSearchById(fetchedUserData.favorite_novels)
+                const res = await vnSearchByIdList(fetchedUserData.favorite_novels)
 
                 setFavNovelData(res)
             }
@@ -36,7 +36,8 @@ export default function Info({ stats, isMe, username }: any) {
             }
 
             if (fetchedUserData.favorite_characters?.length > 0) {
-                const res = await characterListSearchById(fetchedUserData.favorite_characters)
+                console.log(fetchedUserData.favorite_characters)
+                const res = await characterSearchByIdList(fetchedUserData.favorite_characters)
 
                 setFavCharacterData(res)
             }
@@ -87,7 +88,7 @@ export default function Info({ stats, isMe, username }: any) {
                         <h1 className="flex items-center gap-4">
                             Favorite novels
                             {isMe && (
-                                <button onClick={() => { setEditingType(0); setIsEditingFavs(true) }}>
+                                <button className="lg:block hidden" onClick={() => { setEditingType(0); setIsEditingFavs(true) }}>
                                     <EditSVG className="w-8 hover:stroke-blue-500 duration-300" />
                                 </button>
                             )}
@@ -123,7 +124,7 @@ export default function Info({ stats, isMe, username }: any) {
                         <h1 className="flex items-center gap-4">
                             Favorite characters
                             {isMe && (
-                                <button onClick={() => { setEditingType(1); setIsEditingFavs(true) }}>
+                                <button className="lg:block hidden" onClick={() => { setEditingType(1); setIsEditingFavs(true) }}>
                                     <EditSVG className="w-8 hover:stroke-blue-500 duration-300" />
                                 </button>
                             )}

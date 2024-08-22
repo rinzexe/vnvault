@@ -7,10 +7,10 @@ import RatingBadge from "../_components/rating-badge"
 import Table from "../_components/table/table"
 import Headers from "../_components/table/headers"
 import Row from "../_components/table/row"
-import { characterSearchByName, vnSearchByName } from "@/utils/vndb"
 import AccentButton from "../_components/accent-button"
 import { useAuth } from "../_components/auth-provider"
 import { getEnglishTitle } from "@/utils/vn-data"
+import { characterSearchByName, developerSearchByName, vnSearchByName } from "@/lib/vndb/search"
 
 export default function Search() {
     const [searchQuery, setSearchQuery] = useState<any>(" ")
@@ -34,6 +34,10 @@ export default function Search() {
             }
             else if (type == 2) {
                 const results = await characterSearchByName(searchQuery.searchTerm, 50)
+                setSearchResults(results)
+            }
+            else if (type == 3) {
+                const results = await developerSearchByName(searchQuery.searchTerm, 50)
                 setSearchResults(results)
             }
             setIsLoading(false)
@@ -64,6 +68,7 @@ export default function Search() {
                     <AccentButton className={type == 0 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(0) }}>Visual novels</AccentButton>
                     <AccentButton className={type == 1 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(1) }}>Users</AccentButton>
                     <AccentButton className={type == 2 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(2) }}>Characters</AccentButton>
+                    <AccentButton className={type == 3 && "bg-white/10"} onClick={() => { setIsLoading(true); setType(3) }}>Developers</AccentButton>
                 </div>
                 {searchResults && searchResults.length > 0 && isLoading == false ? (
                     type == 0 ? (
@@ -72,7 +77,11 @@ export default function Search() {
                         type == 1 ? (
                             <UserTable sorting={sorting} titleSort={titleSort} searchResults={searchResults} />
                         ) : (
-                            <CharacterTable titleSort={titleSort} searchResults={searchResults} sorting={sorting} />
+                            type == 2 ? (
+                                <CharacterTable titleSort={titleSort} searchResults={searchResults} sorting={sorting} />
+                            ) : (
+                                <DeveloperTable titleSort={titleSort} searchResults={searchResults} sorting={sorting} />
+                            )
                         )
                     )
                 ) : (
@@ -184,6 +193,25 @@ function CharacterTable({ searchResults, titleSort, sorting }: any) {
                         key={id}
                         href={"/character/" + result.id}
                         iconUrl={result.image && result.image.url}
+                        fields={[]}
+                        title={result.name}
+                    />
+                )
+            })}
+        </Table>
+    )
+}
+
+function DeveloperTable({ searchResults }: any) {
+
+    return (
+        <Table>
+            <Headers fields={[]} />
+            {searchResults.map((result: any, id: number) => {
+                return (
+                    <Row
+                        key={id}
+                        href={"/producer/" + result.id}
                         fields={[]}
                         title={result.name}
                     />

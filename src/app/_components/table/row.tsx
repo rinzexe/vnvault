@@ -33,8 +33,6 @@ export default function Row({ href, title, subtitle, hasIcon, iconUrl, fields, e
         }
     }
 
-    console.log(iconUrl)
-
     return (
         <div {...props} className="w-full">
             {fields ? (

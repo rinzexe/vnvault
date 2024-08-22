@@ -73,11 +73,15 @@ export default function Header() {
                             <h4>
                                 Search
                             </h4>
-                            <SearchSVG className="fill-white w-5 h-5" />
                         </Link>
                         <Link className="lg:hover:bg-white/10 rounded-xl px-3 py-1 duration-300" href="/play">
                             <h4>
                                 Play
+                            </h4>
+                        </Link>
+                        <Link className="lg:hover:bg-white/10 rounded-xl px-3 py-1 duration-300" href="/news">
+                            <h4>
+                                News
                             </h4>
                         </Link>
                     </div>

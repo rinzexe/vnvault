@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import ProfilePanel from "../_components/profile-panel";
 import { useAuth } from "@/app/_components/auth-provider";
 import { useRouter } from "next/navigation";
-import { vnListSearchById } from "@/utils/vndb";
 import { genreTags } from "@/consts/tags";
 import getStatusName from "@/consts/status";
+import { vnSearchByIdList } from "@/lib/vndb/search";
 
 export interface GenreStats {
     name: string
@@ -58,7 +58,7 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
             var vnData: any = []
 
             if (queries.length > 0) {
-                vnData = await vnListSearchById(queries, { type: "title", asc: false })
+                vnData = await vnSearchByIdList(queries, { type: "title", asc: false })
             }
             var readVnData: any = []
             readVaultEntries.forEach((entry: any) => {

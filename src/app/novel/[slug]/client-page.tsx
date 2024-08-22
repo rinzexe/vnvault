@@ -12,8 +12,8 @@ import { useAuth } from "@/app/_components/auth-provider";
 import { createPortal } from "react-dom";
 import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
-import {  getVnData } from "@/utils/vndb";
 import { getGameLinks } from "./actions";
+import { getVnDataById } from "@/lib/vndb/search";
 
 export default function ClientNovel({ params }: { params: { slug: string } }) {
     const [vnData, setVnData] = useState<any>(null)
@@ -25,7 +25,7 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
 
     useEffect(() => {
         async function fetchVnData() {
-            const res = await getVnData(params.slug)
+            const res = await getVnDataById(params.slug)
 
             const englishTitle = res.titles.find((title: any) => title.lang == "en")
 
@@ -97,7 +97,7 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
                             <div className="flex flex-col lg:grid gap-4 grid-cols-3 w-full">
                                 <div className="panel h-min">
                                     <InfoRow label="Released" value={vnData.released} />
-                                    <InfoRow label="Developer" value={vnData.developers[0].name} />
+                                    <Link href={"/producer/" + vnData.developers[0].id}><InfoRow label="Developer" className="text-blue-500" value={vnData.developers[0].name} /></Link>
                                     <InfoRow label="Developer jpn" value={vnData.developers[0].original} />
                                     <InfoRow label="Languages" value={vnData.languages.join(' ')} />
                                     <InfoRow label="Length" value={Math.round(vnData.length_minutes / 60) + "h"} />
@@ -183,11 +183,11 @@ function GameLink({ logo, href, name }: any) {
     )
 }
 
-function InfoRow({ label, value }: any) {
+function InfoRow({ label, value, className }: any) {
     return (
-        <div className="flex items-center gap-2 justify-between">
+        <div className={"flex items-center gap-2 justify-between"}>
             <p className="text-sm text-neutral-500">{label}</p>
-            <p className="text-end">{value}</p>
+            <p className={["text-end", className].join(' ')}>{value}</p>
         </div>
     )
 }

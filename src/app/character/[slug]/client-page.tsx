@@ -12,7 +12,7 @@ import { useAuth } from "@/app/_components/auth-provider";
 import { createPortal } from "react-dom";
 import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
-import { characterListSearchById } from "@/utils/vndb";
+import { characterSearchByIdList } from "@/lib/vndb/search";
 
 export default function ClientCharacter({ params }: { params: { slug: string } }) {
     const [charData, setCharData] = useState<any>(null)
@@ -21,7 +21,7 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
 
     useEffect(() => {
         async function fetchcharData() {
-            const res = await characterListSearchById([params.slug])
+            const res = await characterSearchByIdList([params.slug])
 
             setCharData(res[0])
         }
@@ -52,7 +52,7 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
                             <h1 >
                                 Related novels:
                             </h1>
-                            <div className="w-full grid grid-cols-3 gap-4">
+                            <div className="w-full columns-3 ">
                                 {charData.vns.map((vn: any, id: number) => (
                                     <CharacterCard key={id} vn={vn} />
                                 ))}
@@ -67,17 +67,19 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
 
 function CharacterCard({ vn, key }: any) {
     return (
-        <Link href={"/novel/" + vn.id} key={key} className="flex flex-col gap-2 w-full">
-            <img className="rounded-xl" src={vn.image.url} />
-            <div>
-                <h2>
-                    {vn.title}
-                </h2>
-                <p className=" text-neutral-500">
-                    {vn.role == "main" ? "Main character" : vn.role == "primary" ? "Primary character" : "Appearance"}
-                </p>
-            </div>
-        </Link>
+        <div className="inline-block p-4">
+            <Link href={"/novel/" + vn.id} key={key} className="flex flex-col gap-2 w-full">
+                <img className="rounded-xl" src={vn.image.url} />
+                <div>
+                    <h2>
+                        {vn.title}
+                    </h2>
+                    <p className=" text-neutral-500">
+                        {vn.role == "main" ? "Main character" : vn.role == "primary" ? "Primary character" : "Appearance"}
+                    </p>
+                </div>
+            </Link>
+        </div>
     )
 }
 

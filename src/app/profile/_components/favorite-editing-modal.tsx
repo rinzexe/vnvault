@@ -6,9 +6,9 @@ import TrashSVG from "@/app/_components/svgs/trash"
 import Headers from "@/app/_components/table/headers"
 import Row from "@/app/_components/table/row"
 import Table from "@/app/_components/table/table"
+import { characterSearchByName, vnSearchByName } from "@/lib/vndb/search"
 import { getRandomSuggestionPlaceholder } from "@/utils/placeholders"
 import { getEnglishTitle } from "@/utils/vn-data"
-import { characterSearchByName, vnListSearchById, vnSearchByName } from "@/utils/vndb"
 import { useEffect, useState } from "react"
 
 export default function FavoriteEditingModal({ type, favorites }: any) {
