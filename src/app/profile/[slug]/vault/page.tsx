@@ -149,8 +149,8 @@ export default function Vault({ params }: { params: { slug: string } }) {
                                             sorting.type == "status" && 3
                             , asc: sorting.asc
                         }}
-                        fields={['Added', 'Last update', 'Status', 'Rating']}
-                        sortingCallback={[titleSort, addedSort, lastUpdateSort, statusSort, ratingSort]}
+                        fields={['Updated', 'Status', 'Rating']}
+                        sortingCallback={[titleSort, lastUpdateSort, statusSort, ratingSort]}
                     />
                     {entries && entries.length > 0 ? (
                         entries.map((entry: any, index: number) => {
@@ -188,9 +188,8 @@ function Entry({ entry, isMe, setIsEditing, setEditingVid, ...props }: any) {
                 href={"/novel/" + entry.vid}
                 iconUrl={entry && entry.imageUrl}
                 fields={[
-                    <p>{entry.created_at.split('T')[0]}</p>,
-                    <p>{entry.updated_at.split('T')[0]}</p>,
-                    <p>{getVaultStatusText(entry.status)}</p>,
+                    <p className="">{entry.updated_at.split('T')[0]}</p>,
+                    <p className="">{getVaultStatusText(entry.status)}</p>,
                     entry.rating ? <RatingBadge rating={entry.rating} /> : <p className="text-right ">Unrated</p>
                 ]}
                 hasIcon
