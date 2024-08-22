@@ -61,23 +61,27 @@ export default function Header() {
     return (
         <div>
             {mobileMenuOpen && <MobileMenu userProfile={userProfile} setMobileMenuOpen={setMobileMenuOpen} />}
-            <div className="flex flex-row justify-center z-30 w-full lg:p-0 lg:px-4 items-center  h-20 top-0 fixed panel !bg-black/75 !rounded-none border-t-0 border-r-0 border-l-0">
-                <div className="max-w-[60rem] flex justify-between items-center jusitify-center w-full">
-                    <div className="flex flex-row items-center gap-12">
+            <div className="flex flex-row justify-center z-30 w-full lg:p-0 lg:px-4 items-center  h-20 top-0 fixed panel !rounded-none border-t-0 border-r-0 border-l-0">
+                <div className="max-w-[60rem] grid grid-cols-3 items-center w-full">
                         <Link className="select-none ml-4" href="/">
                             <h1>
                                 VNVault
                             </h1>
                         </Link>
-                        <div className="hidden lg:flex flex-row items-center gap-1">
-                            <Link className="lg:hover:*:text-white *:duration-300 rounded-xl flex items-center px-3 gap-2 py-1 duration-300" href="/search">
+                        <div className="hidden lg:flex justify-self-center flex-row items-center gap-1">
+                        <Link className="lg:hover:*:text-white *:duration-300 rounded-xl flex items-center px-3 gap-2 py-1 duration-300" href="/">
                                 <p>
-                                    Search
+                                    Home
                                 </p>
                             </Link>
                             <Link className="lg:hover:*:text-white *:duration-300 rounded-xl px-3 py-1 duration-300" href="/play">
                                 <p>
                                     Play
+                                </p>
+                            </Link>
+                            <Link className="lg:hover:*:text-white *:duration-300 rounded-xl flex items-center px-3 gap-2 py-1 duration-300" href="/search">
+                                <p>
+                                    Search
                                 </p>
                             </Link>
                             <Link className="lg:hover:*:text-white *:duration-300 rounded-xl px-3 py-1 duration-300" href="/news">
@@ -86,8 +90,7 @@ export default function Header() {
                                 </p>
                             </Link>
                         </div>
-                    </div>
-                    <div className="hidden lg:block hover:bg-white/10 duration-300 rounded-xl px-3 py-1">
+                    <div className="hidden justify-self-end lg:block hover:bg-white/10 duration-300 rounded-xl px-3 py-1">
                         <ProfileButton />
                     </div>
                     <div className="lg:hidden h-full">
