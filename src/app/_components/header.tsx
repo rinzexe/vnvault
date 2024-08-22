@@ -61,40 +61,42 @@ export default function Header() {
     return (
         <div>
             {mobileMenuOpen && <MobileMenu userProfile={userProfile} setMobileMenuOpen={setMobileMenuOpen} />}
-            <div className="flex flex-row justify-between z-30 w-full  lg:p-0 lg:px-4 items-center  h-20 top-0 fixed panel !bg-black/75 !rounded-none border-t-0 border-r-0 border-l-0">
-                <div className="flex flex-row items-center gap-16">
-                    <Link className="select-none ml-4" href="/">
-                        <h1>
-                            VNVault
-                        </h1>
-                    </Link>
-                    <div className="hidden lg:flex flex-row items-center gap-4">
-                        <Link className="lg:hover:bg-white/10 rounded-xl flex items-center px-3 gap-2 py-1 duration-300" href="/search">
-                            <h4>
-                                Search
-                            </h4>
+            <div className="flex flex-row justify-center z-30 w-full lg:p-0 lg:px-4 items-center  h-20 top-0 fixed panel !bg-black/75 !rounded-none border-t-0 border-r-0 border-l-0">
+                <div className="max-w-[60rem] flex justify-between items-center jusitify-center w-full">
+                    <div className="flex flex-row items-center gap-12">
+                        <Link className="select-none ml-4" href="/">
+                            <h1>
+                                VNVault
+                            </h1>
                         </Link>
-                        <Link className="lg:hover:bg-white/10 rounded-xl px-3 py-1 duration-300" href="/play">
-                            <h4>
-                                Play
-                            </h4>
-                        </Link>
-                        <Link className="lg:hover:bg-white/10 rounded-xl px-3 py-1 duration-300" href="/news">
-                            <h4>
-                                News
-                            </h4>
-                        </Link>
+                        <div className="hidden lg:flex flex-row items-center gap-4">
+                            <Link className="lg:hover:*:text-white *:duration-300 rounded-xl flex items-center px-3 gap-2 py-1 duration-300" href="/search">
+                                <p>
+                                    Search
+                                </p>
+                            </Link>
+                            <Link className="lg:hover:*:text-white *:duration-300 rounded-xl px-3 py-1 duration-300" href="/play">
+                                <p>
+                                    Play
+                                </p>
+                            </Link>
+                            <Link className="lg:hover:*:text-white *:duration-300 rounded-xl px-3 py-1 duration-300" href="/news">
+                                <p>
+                                    News
+                                </p>
+                            </Link>
+                        </div>
                     </div>
-                </div>
-                <div className="hidden lg:block  rounded-xl px-3 py-1">
-                    <ProfileButton />
-                </div>
-                <div className="lg:hidden h-full">
-                    <svg onClick={() => setMobileMenuOpen(true)} className="h-full w-auto" xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24" fill="rgb(255,255,255)">
-                        <path d="M4 18L20 18" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-                        <path d="M4 12L20 12" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-                        <path d="M4 6L20 6" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
+                    <div className="hidden lg:block hover:bg-white/10 duration-300 rounded-xl px-3 py-1">
+                        <ProfileButton />
+                    </div>
+                    <div className="lg:hidden h-full">
+                        <svg onClick={() => setMobileMenuOpen(true)} className="h-full w-auto" xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" viewBox="0 0 24 24" fill="rgb(255,255,255)">
+                            <path d="M4 18L20 18" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                            <path d="M4 12L20 12" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                            <path d="M4 6L20 6" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
@@ -166,7 +168,7 @@ function MobileMenu({ setMobileMenuOpen, userProfile }: any) {
                     <Link onClick={() => { setMobileMenuOpen(false) }} href="/search" className="pointer-events-auto w-full ">
                         <AccentButton className="w-full">
                             <h3 className="p-3 text-left w-full">
-                                VN Search
+                                Search
                             </h3>
                         </AccentButton>
                     </Link>

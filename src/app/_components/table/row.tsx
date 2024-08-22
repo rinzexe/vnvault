@@ -16,9 +16,10 @@ interface RowProps {
     roundIcons?: boolean
     hasIcon?: boolean
     actionContent?: any
+    tags?: any[]
 }
 
-export default function Row({ href, title, subtitle, hasIcon, iconUrl, fields, editingCallback, avatarUser, numbered, actionContent, ...props }: RowProps) {
+export default function Row({ href, title, subtitle, hasIcon, iconUrl, fields, editingCallback, avatarUser, numbered, actionContent, tags, ...props }: RowProps) {
 
     function CondLink({ children }: any) {
         if (href) {
@@ -34,14 +35,14 @@ export default function Row({ href, title, subtitle, hasIcon, iconUrl, fields, e
     }
 
     return (
-        <div {...props} className="w-full">
+        <div {...props} className="w-full ">
             {fields ? (
-                <div  className="flex items-center gap-4 hover:bg-white/10 hover:cursor-pointer p-2 rounded-lg duration-300">
+                <div className="flex items-center gap-4 panel hover:bg-white/10 hover:cursor-pointer p-2 rounded-lg duration-300">
                     <CondLink>
-                        <div className="flex lg:grid  lg:grid-cols-2 w-full  items-center gap-4 select-none ">
+                        <div className="flex lg:grid lg:grid-cols-2 w-full items-center gap-4 select-none ">
                             <div className="flex flex-grow gap-4 items-center">
                                 {iconUrl && hasIcon ?
-                                    <img src={iconUrl} alt="" width={50} height={50} />
+                                    <img src={iconUrl} className="rounded-md" alt="" width={50} height={50} />
                                     :
                                     avatarUser && hasIcon ? (
                                         <></>
@@ -57,7 +58,12 @@ export default function Row({ href, title, subtitle, hasIcon, iconUrl, fields, e
                                 )}
                                 <div>
                                     <p className="text-white">{title}</p>
-                                    {subtitle && <p className="">{subtitle}</p>}
+                                    {subtitle && <p className="text-sm">{subtitle}</p>}
+                                    {tags && (
+                                        tags.map((tag: any, id: number) => (
+                                            <p style={{ backgroundColor: tag.color }} key={id}>{tag.name}</p>
+                                        ))
+                                    )}
                                 </div>
                             </div>
                             <div

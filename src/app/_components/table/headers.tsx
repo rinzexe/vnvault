@@ -13,7 +13,7 @@ export default function Headers({ className, sort, fields, sortingCallback, left
     return (
         <div style={{paddingRight: leftPadding + "px"}} {...props} className="flex items-center gap-4">
             <div className={"grid select-none flex-grow p-2 grid-cols-2 gap-4 *:text-sm " + className}>
-                <div className="flex items-center">
+                <div className={["flex items-center", sortingCallback && sortingCallback[0] && 'hover:cursor-pointer'].join(' ')}>
                     <p onClick={sortingCallback && sortingCallback[0] && sortingCallback[0]} className="text-sm text-neutral-500">
                         Name
                     </p>
@@ -28,7 +28,7 @@ export default function Headers({ className, sort, fields, sortingCallback, left
                 <div
                     style={{ gridTemplateColumns: "repeat(" + fields.length + ", minmax(0, 1fr))" }} className="grid gap-4 h-full items-center ">
                     {fields.map((field: string, id: number) => (
-                        <div key={id} className={" flex flex-row items-center justify-center last:!justify-end"}>
+                        <div key={id} className={["flex flex-row items-center justify-center last:!justify-end", sortingCallback && sortingCallback[id + 1] && 'hover:cursor-pointer'].join(' ')}>
                             <p
                                 onClick={sortingCallback && sortingCallback[id + 1] && sortingCallback[id + 1]}
                                 className="text-center text-neutral-500">

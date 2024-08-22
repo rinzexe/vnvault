@@ -11,6 +11,7 @@ import AccentButton from "../_components/accent-button"
 import { useAuth } from "../_components/auth-provider"
 import { getEnglishTitle } from "@/utils/vn-data"
 import { characterSearchByName, developerSearchByName, vnSearchByName } from "@/lib/vndb/search"
+import { calculateLevel } from "@/utils/levels"
 
 export default function Search() {
     const [searchQuery, setSearchQuery] = useState<any>(" ")
@@ -115,7 +116,7 @@ function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
                         hasIcon={true}
                         key={id}
                         href={"/novel/" + result.id}
-                        iconUrl={result.image && result.image.url}
+                        iconUrl={result.image && result.image.thumbnail}
                         fields={[(
                             <div key={id} className="*:text-center">
                                 {result.length == "1" && (
@@ -155,8 +156,9 @@ function UserTable({ searchResults, titleSort, sorting }: any) {
                     type: 0,
                     asc: sorting.asc
                 }}
-                fields={[]}
-                sortingCallback={[titleSort]} />
+                fields={['Level']}
+                sortingCallback={[titleSort]}
+                leftPadding={12} />
             {searchResults.map((result: any, id: number) => {
                 return (
                     <Row
@@ -164,7 +166,7 @@ function UserTable({ searchResults, titleSort, sorting }: any) {
                         key={id}
                         href={"/profile/" + result.username}
                         avatarUser={result}
-                        fields={[]}
+                        fields={[<h3 className="pr-[12px] text-white">{calculateLevel(result.xp).level}</h3>]}
                         title={result.username}
                         subtitle={result.alttitle}
                     />

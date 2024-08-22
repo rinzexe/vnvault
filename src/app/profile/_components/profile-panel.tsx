@@ -128,9 +128,9 @@ export default function ProfilePanel({ userData, slug, stats }: any) {
 function MenuButton({ label, active, setCurrentTab, id }: any) {
     return (
         <button className="group w-max" onClick={() => { setCurrentTab(id) }}>
-            <h2 className="w-max">
+            <h3 className="w-max">
                 {label}
-            </h2>
+            </h3>
             {active ?
                 <div className="w-full h-[3px] bg-blue-500 shadow-[0px_0px_5px_rgba(59,130,255,1),0px_0px_10px_rgba(59,130,255,1),0px_0px_25px_rgba(59,130,255,1.0),0px_0px_35px_rgba(59,130,255,1.0)]" /> :
                 <div className="w-full h-[1px] duration-300 group-hover:bg-blue-500 group-hover:shadow-[0px_0px_5px_rgba(59,130,255,1),0px_0px_10px_rgba(59,130,255,1),0px_0px_25px_rgba(59,130,255,1),0px_0px_35px_rgba(59,130,255,1)]" />}

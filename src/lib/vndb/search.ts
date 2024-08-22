@@ -28,10 +28,11 @@ export async function vnSearchByName(search: string, results: number, sort?: { t
     const res = await infiniteSearch(
         ['search', '=', search],
         'vn',
-        'id, title, titles.title, titles.lang, released, rating, length, description, alttitle, image.url',
+        'id, title, titles.title, titles.lang, image.thumbnail, released, rating, length, description, alttitle, image.url',
         results,
         sort ? sort : { type: 'rating', asc: false }
     )
+    console.log(res)
 
     return res
 }
