@@ -26,7 +26,7 @@
   }
 
   .panel {
-    @apply bg-neutral-900/50 rounded-xl p-6 border-[0px] border-neutral-800 backdrop-blur-lg drop-shadow-[0_0px_9px_rgba(0,0,0,1.0)]
+    @apply bg-neutral-950/50 rounded-xl p-6 border-[1px] border-neutral-800 backdrop-blur-lg drop-shadow-[0_0px_9px_rgba(0,0,0,1.0)]
   }
 
   p {
