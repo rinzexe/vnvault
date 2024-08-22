@@ -14,7 +14,7 @@
   }
 
   h2 {
-    @apply font-calsans text-2xl
+    @apply font-calsans text-xl
   }
 
   h3 {
