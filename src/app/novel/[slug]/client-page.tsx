@@ -13,10 +13,12 @@ import { createPortal } from "react-dom";
 import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 import { getGameLinks } from "./actions";
-import { getVnDataById } from "@/lib/vndb/search";
+import { characterSearchByVnId, getVnDataById } from "@/lib/vndb/search";
+import { getCharacterRoleName } from "@/utils/character-roles";
 
 export default function ClientNovel({ params }: { params: { slug: string } }) {
     const [vnData, setVnData] = useState<any>(null)
+    const [characterData, setCharacterData] = useState<any>(null)
     const [gameLinks, setGameLinks] = useState<any>(null)
     const [isEditing, setIsEditing] = useState<any>(null)
     const [isInVault, setIsInVault] = useState<any>(false)
@@ -49,6 +51,19 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
             const res2 = await getGameLinks(mainTitle)
 
             setGameLinks(res2)
+
+            const charRes = await characterSearchByVnId(res.id)
+
+            charRes.sort((a: any, b: any) => {
+                const aRole = a.vns.filter((v: any) => v.id == res.id)[0].role
+                const bRole = b.vns.filter((v: any) => v.id == res.id)[0].role
+                
+                if (aRole == 'main') {
+                    return -1
+                }
+            })
+
+            setCharacterData(charRes)
         }
 
         fetchVnData()
@@ -116,35 +131,55 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
                             <p className="text-neutral-500 text-xs text-center">
                                 {"These are work in progress, and might not be accurate. Check the game's name before buying"}
                             </p>
-                            {gameLinks && (gameLinks.steam || gameLinks.gog) ?(
+                            {gameLinks && (gameLinks.steam || gameLinks.gog) ? (
                                 <div className="flex lg:flex-row flex-col gap-4">
                                     {gameLinks?.steam && <GameLink logo="/company logos/steam.png" href={gameLinks.steam} name="Steam" />}
                                     {gameLinks?.gog && <GameLink logo="/company logos/gog.png" href={gameLinks.gog} name="GOG" />}
                                 </div>
-                            ) : 
-                            gameLinks ? (
-                                <p>
-                                    No sales channels found
-                                </p>
-                            ) :(
-                                <div className="w-full relative">
-                                    <div className="p-2 absolute bottom-0 z-10 left-0 top-0 right-0 w-full h-full backdrop-blur-md bg-black/50">
+                            ) :
+                                gameLinks ? (
+                                    <p>
+                                        No sales channels found
+                                    </p>
+                                ) : (
+                                    <div className="w-full relative">
+                                        <div className="p-2 absolute bottom-0 z-10 left-0 top-0 right-0 w-full h-full backdrop-blur-md bg-black/50">
+                                        </div>
+                                        <div className="p-2 flex gap-4 justify-center">
+                                            <GameLink logo="/company logos/steam.png" href="/" name="Steam" />
+                                            <GameLink logo="/company logos/gog.png" href="/" name="GOG" />
+                                        </div>
                                     </div>
-                                    <div className="p-2 flex gap-4 justify-center">
-                                        <GameLink logo="/company logos/steam.png" href="/" name="Steam" />
-                                        <GameLink logo="/company logos/gog.png" href="/" name="GOG" />
-                                    </div>
-                                </div>
-                            )}
+                                )}
                         </div>
+                        {characterData && characterData.length > 0 && (
+                            <div className="flex flex-col items-center w-full">
+                                <h1>
+                                    Characters
+                                </h1>
+                                <div className=" w-full columns-3">
+                                    {characterData.map((character: any, id: number) => (
+                                        <Link key={id} href={"/character/" + character.id} className="inline-block mb-4 hover:bg-white/10 duration-300 w-full panel">
+                                            <img className="w-full rounded-lg" src={character.image.url} />
+                                            <h2 className="pt-2">
+                                                {character.name}
+                                            </h2>
+                                            <p className="">
+                                                {getCharacterRoleName(character.vns.filter((v: any) => v.id == vnData.id)[0].role)}
+                                            </p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         {vnData.screenshots.length > 0 && (
                             <div className="flex flex-col items-center w-full">
                                 <h1>
                                     Screenshots
                                 </h1>
-                                <div className="block w-full">
+                                <div className="w-full columns-2">
                                     {vnData.screenshots.map((screenshot: any, id: number) => (
-                                        screenshot.sexual < 1 && <img width={500} height={400} className="inline-block p-2 lg:w-3/6 h-auto" key={id} src={screenshot.url} alt="" />
+                                        screenshot.sexual < 1 && <img width={500} height={400} className="inline-block mb-4 w-full rounded-md" key={id} src={screenshot.url} alt="" />
                                     ))}
                                 </div>
                             </div>
@@ -193,11 +228,11 @@ function InfoRow({ label, value, className }: any) {
 }
 
 function formatDescription(text: string) {
-    
+
     text = text.replaceAll("[From", "^")
     text = text.replaceAll("[Edited from", "^")
     text = text.replaceAll("[Translated from", "^")
-    
+
     text = text.replace("]]", "^")
     text = text.replaceAll(/\^([^\^]+)\^/g, '');
 

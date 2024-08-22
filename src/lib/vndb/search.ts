@@ -11,7 +11,6 @@ export async function vnSearchByIdList(search: string[], sort?: { type: string, 
 }
 
 export async function vnSearchByDeveloper(devId: string, sort?: { type: string, asc: boolean }) {
-    console.log(sort)
     const res = await infiniteSearch(
         ['developer', '=', ['id', '=', devId]],
         'vn',
@@ -62,6 +61,18 @@ export async function characterSearchByIdList(search: string[]) {
     const res: any = await idSearch(search,
         'character',
         'id, name, vns.title, description, original, image.url, height, weight, bust, waist, hips, cup, age, birthday, vns.id, vns.title, vns.image.url, vns.role',
+        { type: 'name', asc: false }
+    )
+
+    return res
+}
+
+export async function characterSearchByVnId(id: string) {
+    const res = await infiniteSearch(
+        ['vn', '=', ['id', '=', id]],
+        'character',
+        'id, name, vns.title, description, original, image.url, height, weight, bust, waist, hips, cup, age, birthday, vns.id, vns.title, vns.image.url, vns.role',
+        9999,
         { type: 'name', asc: false }
     )
 

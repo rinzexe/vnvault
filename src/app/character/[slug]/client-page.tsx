@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 import { characterSearchByIdList } from "@/lib/vndb/search";
+import { getCharacterRoleName } from "@/utils/character-roles";
 
 export default function ClientCharacter({ params }: { params: { slug: string } }) {
     const [charData, setCharData] = useState<any>(null)
@@ -75,7 +76,7 @@ function CharacterCard({ vn, key }: any) {
                         {vn.title}
                     </h2>
                     <p className=" text-neutral-500">
-                        {vn.role == "main" ? "Main character" : vn.role == "primary" ? "Primary character" : "Appearance"}
+                        {getCharacterRoleName(vn.role)}
                     </p>
                 </div>
             </Link>

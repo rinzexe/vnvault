@@ -12,10 +12,10 @@ import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 import { Metadata } from "next";
 import ClientCharacter from "./client-page";
-import { characterListSearchById, getVnData } from "@/utils/vndb";
+import { characterSearchByIdList } from "@/lib/vndb/search";
 
 export async function generateMetadata({ params }: any) {
-    const res = await characterListSearchById([params.slug])
+    const res = await characterSearchByIdList([params.slug])
 
     return {
         openGraph: {
