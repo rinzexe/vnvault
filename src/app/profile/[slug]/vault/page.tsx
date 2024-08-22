@@ -188,9 +188,9 @@ function Entry({ entry, isMe, setIsEditing, setEditingVid, ...props }: any) {
                 href={"/novel/" + entry.vid}
                 iconUrl={entry && entry.imageUrl}
                 fields={[
-                    entry.created_at.split('T')[0],
-                    entry.updated_at.split('T')[0],
-                    getVaultStatusText(entry.status),
+                    <p>{entry.created_at.split('T')[0]}</p>,
+                    <p>{entry.updated_at.split('T')[0]}</p>,
+                    <p>{getVaultStatusText(entry.status)}</p>,
                     entry.rating ? <RatingBadge rating={entry.rating} /> : <p className="text-right ">Unrated</p>
                 ]}
                 hasIcon
