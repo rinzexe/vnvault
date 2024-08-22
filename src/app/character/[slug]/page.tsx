@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: any) {
             title: res[0].title,
             images: [
                 {
-                    url: res[0].image.url
+                    url: res[0].image && res[0].image.url
                 }
             ]
         }

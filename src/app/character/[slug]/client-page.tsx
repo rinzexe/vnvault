@@ -39,7 +39,7 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
                     <div className="w-full flex flex-col gap-8 items-center">
                         <div className="w-full flex flex-col gap-4 items-center">
                             <div className="flex flex-col gap-4 lg:grid grid-cols-2 lg:gap-8">
-                                <img className="rounded-xl" src={charData.image.url} alt="" width={500} height={800} />
+                                {charData. image && <img className="rounded-xl" src={charData.image.url} alt="" width={500} height={800} />}
                                 <div className="flex flex-col h-full justify-center">
                                     <h3 className="text-neutral-400">{charData.original}</h3>
                                     <h1>{charData.name}</h1>

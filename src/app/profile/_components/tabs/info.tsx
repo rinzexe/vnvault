@@ -68,7 +68,7 @@ export default function Info({ stats, isMe, username }: any) {
                             <h1>Recent updates</h1>
                             <div className="flex  items-end gap-4">
                                 {stats.recentUpdates.map((update: any, id: number) => (
-                                    <RecentUpdate update={stats.recentUpdates[id]} key={id} />
+                                    <RecentUpdate update={update} key={id} />
                                 ))}
                             </div>
                         </div>

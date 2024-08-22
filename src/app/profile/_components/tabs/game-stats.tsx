@@ -4,9 +4,9 @@ import StatPanel from "../stat";
 export default function GameStats({userData}: any) {
     return (
         <div>
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-rows-2 lg:grid-rows-1 lg:grid-cols-2 items-center gap-4">
             <LevelBar xp={userData?.xp} />
-                <div className=" flex flex-col items-end gap-4">
+                <div className=" flex w-full  lg:justify-end gap-4">
                     <div className='panel grid grid-rows-3 grid-cols-2 lg:grid-rows-2 lg:grid-cols-3 gap-3'>
                         <StatPanel title='Total XP' value={userData?.xp} symbol='' />
                         <StatPanel title='Total guesses' value={userData?.total_incorrect + userData?.total_correct} symbol='' />

@@ -57,7 +57,7 @@ export default function ProfilePanel({ userData, slug, stats }: any) {
 
     return (
         <div className='flex flex-col items-center gap-12'>
-            <div className='flex flex-col items-center gap-12 w-full lg:w-[60rem]'>
+            <div className='flex flex-col items-center gap-6 w-full lg:w-[60rem]'>
                 <div className='flex  w-full lg:flex-row flex-col justify-between lg:items-center gap-8 '>
                     <div className="flex w-full lg:flex-row flex-col items-center lg:h-48 lg:w-4/6 gap-8">
                         <div className="w-48 h-48">
@@ -118,7 +118,9 @@ export default function ProfilePanel({ userData, slug, stats }: any) {
                     <MenuButton setCurrentTab={setCurrentTab} id={2} label="Challenge stats" active={currentTab == 2} />
                     <MenuButton setCurrentTab={setCurrentTab} id={3} label="Reviews" active={currentTab == 3} />
                 </div>
-                <Tab />
+                <div className="lg:panel w-full">
+                    <Tab />
+                </div>
                 {auth && isMe && <AccentButton onClick={() => { auth.signOut() }}>Sign Out</AccentButton>}
             </div>
         </div >
@@ -137,4 +139,3 @@ function MenuButton({ label, active, setCurrentTab, id }: any) {
         </button>
     )
 }
- 

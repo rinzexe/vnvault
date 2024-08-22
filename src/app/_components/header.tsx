@@ -69,7 +69,7 @@ export default function Header() {
                                 VNVault
                             </h1>
                         </Link>
-                        <div className="hidden lg:flex flex-row items-center gap-4">
+                        <div className="hidden lg:flex flex-row items-center gap-1">
                             <Link className="lg:hover:*:text-white *:duration-300 rounded-xl flex items-center px-3 gap-2 py-1 duration-300" href="/search">
                                 <p>
                                     Search

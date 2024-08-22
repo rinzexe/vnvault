@@ -72,7 +72,14 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
                 totalMinutes += vn.length_minutes
             });
 
-            var recentUpdateData = vnData.filter((vn: any) => vn.id == vaultEntries[0].vid || vn.id == vaultEntries[1].vid || vn.id == vaultEntries[2].vid)
+            var recentUpdateData = vnData.filter((vn: any) => vn.id == vaultEntries[0].vid || vn.id == vaultEntries[1].vid || vn.id == vaultEntries[2].vid).sort((a: any, b: any) => {
+                if (a.id == vaultEntries[0].vid) {
+                    return -1
+                }
+                if (a.id == vaultEntries[1].vid && b.id == vaultEntries[2].vid) {
+                    return -1
+                }
+            })
 
             recentUpdateData.forEach((entry: any, id: number) => {
                 recentUpdateData[id] = { ...entry, status: vaultEntries[id].status, updatedAt: vaultEntries[id].updated_at }
