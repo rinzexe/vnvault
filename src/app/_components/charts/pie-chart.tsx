@@ -21,7 +21,7 @@ export default function PieChart({ data }: any) {
   const COLORS = ['rgb(59 130 246)', 'rgb(37 99 235)', 'rgb(29 78 216)', 'rgb(30 64 175)'];
   return (
     <div>
-      <PC className="!absolute z-10" width={400} height={300} >
+      <PC className="!absolute z-10" width={450} height={350} >
         <Pie
           data={data}
           outerRadius={120}
@@ -36,7 +36,7 @@ export default function PieChart({ data }: any) {
         </Pie>
         <Tooltip content={<CustomTooltip />} />
       </PC>
-      <PC className="" width={400} height={300} >
+      <PC className="" width={450} height={350} >
         <Pie
           data={data}
           innerRadius={80}

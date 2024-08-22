@@ -11,7 +11,7 @@ export default function VNStats({ stats }: { stats: Stats }) {
 
     return (
         <div className="flex flex-col items-center gap-12">
-            <div className='w-full flex lg:flex-row flex-col gap-4 items-center '>
+            <div className='w-full flex lg:flex-row flex-col gap-4 justify-between items-center '>
                 <div className="grid grid-cols-1 grid-rows-1 items-center align-middle justify-items-center relative">
                     <div className="absolute flex flex-col gap-0 justify-center items-center bottom-0 top-0 left-0 right-0 w-full h-full">
                         <h1>
