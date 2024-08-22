@@ -101,7 +101,7 @@ export default function ClientProducer({ params }: { params: { slug: string } })
                                                 href={"/novel/" + result.id}
                                                 iconUrl={result.image && result.image.url}
                                                 fields={[(
-                                                    <p>{result.released}</p>
+                                                    <p key={id}>{result.released}</p>
                                                 ), (
                                                     <RatingBadge key={id} rating={result.rating / 10} />)
 

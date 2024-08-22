@@ -166,7 +166,7 @@ function UserTable({ searchResults, titleSort, sorting }: any) {
                         key={id}
                         href={"/profile/" + result.username}
                         avatarUser={result}
-                        fields={[<h3 className="pr-[12px] text-white">{calculateLevel(result.xp).level}</h3>]}
+                        fields={[<h3 key={id} className="pr-[12px] text-white">{calculateLevel(result.xp).level}</h3>]}
                         title={result.username}
                         subtitle={result.alttitle}
                     />

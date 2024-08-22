@@ -154,10 +154,10 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
                         </div>
                         {characterData && characterData.length > 0 && (
                             <div className="flex flex-col items-center w-full">
-                                <h1>
+                                <h1 >
                                     Characters
                                 </h1>
-                                <div className=" w-full columns-3">
+                                <div className=" w-full mt-2 columns-3">
                                     {characterData.map((character: any, id: number) => (
                                         <Link key={id} href={"/character/" + character.id} className="inline-block mb-4 hover:bg-white/10 duration-300 w-full panel">
                                             <img className="w-full rounded-lg" src={character.image.url} />
