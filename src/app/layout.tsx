@@ -4,6 +4,7 @@ import LocalFont from "next/font/local";
 import "./globals.css";
 import Header from "./_components/header";
 import { AuthProvider } from "./_components/auth-provider";
+import Footer from "./_components/footer";
 
 const poppins = Poppins({ weight: "300", variable: '--font-poppins', subsets: ["latin"] })
 
@@ -34,8 +35,9 @@ export default function RootLayout({
         </div>
         <AuthProvider>
           <Header />
-          <div className="top-24 relative p-6">
+          <div className="top-24 relative p-6 flex flex-col justify-between">
             {children}
+{/*             <Footer /> */}
           </div>
         </AuthProvider>
       </body>

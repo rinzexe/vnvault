@@ -49,6 +49,7 @@ export default function Search() {
         }
     }, [searchQuery, sorting, type])
 
+
     function ratingSort() {
         setSorting({ type: "rating", asc: !sorting.asc })
     }
@@ -105,11 +106,11 @@ function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
             <Headers
                 sort={{
                     type:
-                        sorting.type == "rating" ? 2 : 0
+                        sorting.type == "rating" ? 3 : 0
                     , asc: sorting.asc
                 }}
-                fields={['Length', 'Rating']}
-                sortingCallback={[titleSort, , ratingSort]} />
+                fields={['Length', 'Released', 'Rating']}
+                sortingCallback={[titleSort, , , ratingSort]} />
             {searchResults.map((result: any, id: number) => {
                 return (
                     <Row
@@ -135,6 +136,8 @@ function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
                                     <p>Very long</p>
                                 )}
                             </div>
+                        ), (
+                            <p>{result.released}</p>
                         ), (
                             <RatingBadge key={id} rating={result.rating / 10} />)
 

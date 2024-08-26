@@ -1,10 +1,5 @@
 export async function infiniteSearch(filters: any, endpoint: string, fields: string, results: number, sort: { type: string, asc: boolean }) {
 
-    console.log(filters)
-    console.log(endpoint)
-    console.log(fields)
-    console.log(results)
-    console.log(sort)
     async function query(page: number) {
 
         const res: any = await fetch('https://api.vndb.org/kana/' + endpoint, {
@@ -50,8 +45,6 @@ export async function idSearch(ids: string[], endpoint: string, fields: string, 
     })
 
     const res = await infiniteSearch(filter, endpoint, fields, 9999, sort ? sort : { type: 'rating', asc: false })
-
-    console.log(res)
 
     return res
 }

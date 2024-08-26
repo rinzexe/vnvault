@@ -101,3 +101,17 @@ export async function developerSearchByIdList(search: string[]) {
 
     return res
 }
+
+export async function getRecentVnReleases() {
+    const today = new Date()
+    console.log(today)
+    const res: any = await infiniteSearch(
+        ['released', '<=', '2024-08-24'],
+        'vn',
+        'id, title, titles.title, titles.lang, image.thumbnail, released, rating, length, description, alttitle, image.url',
+        4,
+        { type: 'released', asc: false }
+    )
+    
+    return res
+}

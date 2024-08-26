@@ -14,15 +14,15 @@
   }
 
   h2 {
-    @apply font-calsans text-xl
+    @apply font-calsans text-lg 
   }
 
   h3 {
-    @apply font-bold text-xl
+    @apply font-bold text-lg
   }
 
   h4 {
-    @apply text-lg
+    @apply text-base
   }
 
   .panel {
@@ -30,7 +30,7 @@
   }
 
   p {
-    @apply text-neutral-400
+    @apply text-neutral-400 text-sm
   }
 
   .grid-center {
