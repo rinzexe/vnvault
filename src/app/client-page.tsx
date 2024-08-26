@@ -77,15 +77,16 @@ export default function ClientPage() {
                     {recentReleaseData && recentReleaseData.map((data: any, id: number) => {
                         return (
                             <VNCard
+                                key={id}
                                 title={getEnglishTitle(data)}
                                 alttitle={data.alttitle}
                                 imageUrl={data.image && data.image.url}
                                 href={"/novel/" + data.id}
                                 fields={[
-                                <p className="text-neutral-500">
-                                    {data.released}
-                                </p>
-                            ]}
+                                    <p key={id} className="text-neutral-500">
+                                        {data.released}
+                                    </p>
+                                ]}
                             />
                         )
                     })}

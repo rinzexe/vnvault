@@ -137,7 +137,7 @@ function VNTable({ searchResults, sorting, titleSort, ratingSort }: any) {
                                 )}
                             </div>
                         ), (
-                            <p>{result.released}</p>
+                            <p key={id}>{result.released}</p>
                         ), (
                             <RatingBadge key={id} rating={result.rating / 10} />)
 

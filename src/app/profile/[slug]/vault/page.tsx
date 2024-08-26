@@ -174,7 +174,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
     )
 }
 
-function Entry({ entry, isMe, setIsEditing, setEditingVid, ...props }: any) {
+function Entry({ entry, isMe, setIsEditing, setEditingVid, key, ...props }: any) {
     function toggleEditing() {
         setEditingVid(entry.vid)
         setIsEditing(true)
@@ -183,13 +183,13 @@ function Entry({ entry, isMe, setIsEditing, setEditingVid, ...props }: any) {
     console.log(entry)
 
     return (
-        <div {...props}>
+        <div {...props} key={key}>
             {entry && <Row
                 href={"/novel/" + entry.vid}
                 iconUrl={entry && entry.imageUrl}
                 fields={[
-                    <p className="">{entry.updated_at.split('T')[0]}</p>,
-                    <p className="">{getVaultStatusText(entry.status)}</p>,
+                    <p key={key} className="">{entry.updated_at.split('T')[0]}</p>,
+                    <p key={key} className="">{getVaultStatusText(entry.status)}</p>,
                     entry.rating ? <RatingBadge rating={entry.rating} /> : <p className="text-right ">Unrated</p>
                 ]}
                 hasIcon
