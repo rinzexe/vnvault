@@ -92,13 +92,12 @@ export default function Info({ stats, isMe, username }: any) {
                                 acceptedTypes={{ row: true, card: false }}
                                 entries={
                                     stats.recentUpdates.map((update: any, id: number) => {
-                                        console.log(update)
                                         return {
                                             title: update.title,
                                             hasIcon: true,
                                             iconUrl: update.image.thumbnail,
                                             dims: update.image.thumbnail_dims,
-                                            fields: [<p>{update.updatedAt.split('T')[0]}</p>, <p>{getStatusName(update.status)}</p>],
+                                            fields: [<p key={id}>{update.updatedAt.split('T')[0]}</p>, <p key={id}>{getStatusName(update.status)}</p>],
                                             key: id,
                                             href: "/profile/" + username + "/vault"
                                         }
@@ -156,7 +155,7 @@ export default function Info({ stats, isMe, username }: any) {
                                             hasIcon: true,
                                             iconUrl: update.image.thumbnail,
                                             dims: update.image.thumbnail_dims,
-                                            fields: [<p>{update.updatedAt.split('T')[0]}</p>, <RatingBadge rating={update.rating} />],
+                                            fields: [<p key={id}>{update.updatedAt.split('T')[0]}</p>, <RatingBadge key={id} rating={update.rating} />],
                                             key: id,
                                             href: "/profile/" + username + "/vault"
                                         }

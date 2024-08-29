@@ -189,15 +189,15 @@ function VNTable({ searchResults, releasedSort, sorting, filters, titleSort, rat
                         dims: result.image && result.image.thumbnail_dims,
                         iconUrl: result.image && result.image.thumbnail,
                         fields: [(
-                            <div className="*:text-center">
+                            <div key={id} className="*:text-center">
                                 <p>
                                     {getVnLengthName(result.length)}
                                 </p>
                             </div>
                         ), (
-                            <p >{result.released}</p>
+                            <p key={id}>{result.released}</p>
                         ), (
-                            <RatingBadge rating={result.rating / 10} />
+                            <RatingBadge key={id} rating={result.rating / 10} />
                         )],
                         title: getEnglishTitle(result),
                         subtitle: result.alttitle

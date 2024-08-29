@@ -45,10 +45,10 @@ export default function TableEntry({ href, title, subtitle, dims, hasIcon, iconU
 
     switch (table.get.currentType) {
         case "row": {
-            return <RowEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} fields={fields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags}  />
+            return <RowEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} fields={fields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags} />
         }
         case "card": {
-            return <CardEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} cardFields={cardFields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags}  />
+            return <CardEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} cardFields={cardFields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags} />
         }
     }
 }

@@ -67,9 +67,9 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
                                         charData.vns.map((vn: any, id: number) => {
                                             return {
                                                 cardFields: {
-                                                    right: <RatingBadge className="mt-4" rating={vn.rating / 10} />,
+                                                    right: <RatingBadge key={id} className="mt-4" rating={vn.rating / 10} />,
                                                     left:
-                                                        (<div className="*:text-center">
+                                                        (<div key={id} className="*:text-center">
                                                             <p>
                                                                 {getCharacterRoleName(vn.role)}
                                                             </p>
@@ -80,13 +80,13 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
                                                 dims: vn.image && vn.image.thumbnail_dims,
                                                 iconUrl: vn.image && vn.image.thumbnail,
                                                 fields: [(
-                                                    <div className="*:text-center">
+                                                    <div key={id} className="*:text-center">
                                                         <p>
                                                             {getCharacterRoleName(vn.role)}
                                                         </p>
                                                     </div>
                                                 ), (
-                                                    <RatingBadge rating={vn.rating / 10} />
+                                                    <RatingBadge key={id} rating={vn.rating / 10} />
                                                 )],
                                                 title: getEnglishTitle(vn),
                                                 subtitle: vn.alttitle

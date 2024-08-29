@@ -11,7 +11,6 @@ interface VNCardProps {
 }
 
 export default function VNCard({ title, alttitle, imageUrl, href, fields, dims, ...props }: VNCardProps) {
-    console.log(dims)
     return (
         <Link {...props} href={href} className="justify-start w-full h-full flex-col panel p-2 lg:p-4 hover:bg-white/10 duration-300 flex gap-2">
             {imageUrl && dims ? (
