@@ -1,11 +1,16 @@
 export function getEnglishTitle(vnData: any) {
-    const englishTitle = vnData.titles.find((title: any) => title.lang == "en")
+    if (vnData.titles) {
+        const englishTitle = vnData.titles.find((title: any) => title.lang == "en")
 
-    var mainTitle = vnData.title
+        var mainTitle = vnData.title
 
-    if (englishTitle) {
-        mainTitle = englishTitle.title
+        if (englishTitle) {
+            mainTitle = englishTitle.title
+        }
+
+        return mainTitle
     }
-
-    return mainTitle
+    else {
+        return vnData.title
+    }
 }

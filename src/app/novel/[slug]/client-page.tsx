@@ -15,6 +15,9 @@ import EditSVG from "@/app/_components/svgs/edit";
 import { getGameLinks } from "./actions";
 import { characterSearchByVnId, getVnDataById } from "@/lib/vndb/search";
 import { getCharacterRoleName } from "@/utils/character-roles";
+import ExpandableSection from "@/app/_components/expandable-section";
+import ImageWithSkeleton from "@/app/_components/image-with-skeleton";
+import Skeleton from "react-loading-skeleton";
 
 export default function ClientNovel({ params }: { params: { slug: string } }) {
     const [vnData, setVnData] = useState<any>(null)
@@ -22,6 +25,7 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
     const [gameLinks, setGameLinks] = useState<any>(null)
     const [isEditing, setIsEditing] = useState<any>(null)
     const [isInVault, setIsInVault] = useState<any>(false)
+    const [isLoadingCharacters, setIsLoadingCharacters] = useState<boolean>(true)
 
     const auth = useAuth()
 
@@ -57,13 +61,14 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
             charRes.sort((a: any, b: any) => {
                 const aRole = a.vns.filter((v: any) => v.id == res.id)[0].role
                 const bRole = b.vns.filter((v: any) => v.id == res.id)[0].role
-                
+
                 if (aRole == 'main') {
                     return -1
                 }
             })
 
             setCharacterData(charRes)
+            setIsLoadingCharacters(false)
         }
 
         fetchVnData()
@@ -80,13 +85,13 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
                     <VaultEditor isInVault={isInVault} setIsEditing={setIsEditing} vid={vnData.id} />
                 </div>
             ), modalContent)}
-            <div className="max-w-[60rem]">
+            <div className="">
                 {vnData && (
-                    <div className="w-full flex flex-col gap-8 items-center">
+                    <div className="w-full flex flex-col gap-12 items-center">
                         <div className="w-full flex flex-col gap-4 items-center">
-                            <div className="flex flex-col gap-4 lg:grid grid-cols-2 lg:gap-8">
-                                <img className="rounded-xl" src={vnData.image.url} alt="" width={500} height={800} />
-                                <div className="flex flex-col h-full justify-center">
+                            <div className="flex flex-col gap-4 lg:grid grid-cols-3 lg:items-center lg:gap-8">
+                                <ImageWithSkeleton className="rounded-xl w-full" src={vnData.image.url} dims={vnData.image.dims} />
+                                <div className="flex flex-col h-full justify-center max-w-96">
                                     <h3 className="text-neutral-400">{vnData.alttitle}</h3>
                                     <h1>{vnData.title}</h1>
                                     <div className="flex mb-2 gap-2 items-center">
@@ -107,82 +112,97 @@ export default function ClientNovel({ params }: { params: { slug: string } }) {
 
                                         </div>
                                     )}
-                                </div>
-                            </div>
-                            <div className="flex flex-col lg:grid gap-4 grid-cols-3 w-full">
-                                <div className="panel h-min">
-                                    <InfoRow label="Released" value={vnData.released} />
-                                    <Link href={"/producer/" + vnData.developers[0].id}><InfoRow label="Developer" className="text-blue-500" value={vnData.developers[0].name} /></Link>
-                                    <InfoRow label="Developer jpn" value={vnData.developers[0].original} />
-                                    <InfoRow label="Languages" value={vnData.languages.join(' ')} />
-                                    <InfoRow label="Length" value={Math.round(vnData.length_minutes / 60) + "h"} />
-                                    <InfoRow label="Development status" value={getStatusName(vnData.devstatus)} />
-                                    <InfoRow label="Orgininal language" value={vnData.olang} />
-                                </div>
-                                <div className="col-start-2 col-end-4">
-                                    {vnData.description && <p dangerouslySetInnerHTML={{ __html: formatDescription(vnData.description) }} className="text-sm"></p>}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-col w-full items-center gap-2">
-                            <h1>
-                                Distribution
-                            </h1>
-                            <p className="text-neutral-500 text-xs text-center">
-                                {"These are work in progress, and might not be accurate. Check the game's name before buying"}
-                            </p>
-                            {gameLinks && (gameLinks.steam || gameLinks.gog) ? (
-                                <div className="flex lg:flex-row flex-col gap-4">
-                                    {gameLinks?.steam && <GameLink logo="/company logos/steam.png" href={gameLinks.steam} name="Steam" />}
-                                    {gameLinks?.gog && <GameLink logo="/company logos/gog.png" href={gameLinks.gog} name="GOG" />}
-                                </div>
-                            ) :
-                                gameLinks ? (
-                                    <p>
-                                        No sales channels found
+                                    <p className="mt-4">
+                                        {vnData.description && <p dangerouslySetInnerHTML={{ __html: formatDescription(vnData.description) }} className="text-sm"></p>}
                                     </p>
-                                ) : (
-                                    <div className="w-full relative">
-                                        <div className="p-2 absolute bottom-0 z-10 left-0 top-0 right-0 w-full h-full backdrop-blur-md bg-black/50">
-                                        </div>
-                                        <div className="p-2 flex gap-4 justify-center">
-                                            <GameLink logo="/company logos/steam.png" href="/" name="Steam" />
-                                            <GameLink logo="/company logos/gog.png" href="/" name="GOG" />
-                                        </div>
+                                </div>
+                                <div className="flex flex-col w-full">
+                                    <div className="panel w-full h-min">
+                                        <InfoRow label="Released" value={vnData.released} />
+                                        <Link href={"/producer/" + vnData.developers[0].id}><InfoRow label="Developer" className="text-blue-500" value={vnData.developers[0].name} /></Link>
+                                        <InfoRow label="Developer jpn" value={vnData.developers[0].original} />
+                                        <InfoRow label="Languages" value={vnData.languages.join(' ')} />
+                                        <InfoRow label="Length" value={Math.round(vnData.length_minutes / 60) + "h"} />
+                                        <InfoRow label="Development status" value={getStatusName(vnData.devstatus)} />
+                                        <InfoRow label="Orgininal language" value={vnData.olang} />
                                     </div>
-                                )}
+                                </div>
+                            </div>
                         </div>
-                        {characterData && characterData.length > 0 && (
+                        <div className="flex justify-center">
+                            <div className="flex flex-col w-full items-center gap-2">
+                                <h1>
+                                    Distribution
+                                </h1>
+                                <p className="text-neutral-500 text-xs text-center">
+                                    {"These are work in progress, and might not be accurate. Check the game's name before buying"}
+                                </p>
+                                {gameLinks && (gameLinks.steam || gameLinks.gog) ? (
+                                    <div className="flex lg:flex-row flex-col gap-4">
+                                        {gameLinks?.steam && <GameLink logo="/company logos/steam.png" href={gameLinks.steam} name="Steam" />}
+                                        {gameLinks?.gog && <GameLink logo="/company logos/gog.png" href={gameLinks.gog} name="GOG" />}
+                                    </div>
+                                ) :
+                                    gameLinks ? (
+                                        <p>
+                                            No sales channels found
+                                        </p>
+                                    ) : (
+                                        <div className="w-full relative">
+                                            <div className="p-2 absolute bottom-0 z-10 left-0 top-0 right-0 w-full h-full backdrop-blur-md bg-black/50">
+                                            </div>
+                                            <div className="p-2 flex gap-4 justify-center">
+                                                <GameLink logo="/company logos/steam.png" href="/" name="Steam" />
+                                                <GameLink logo="/company logos/gog.png" href="/" name="GOG" />
+                                            </div>
+                                        </div>
+                                    )}
+                            </div>
+                        </div>
+                        { !isLoadingCharacters ? characterData && characterData.length > 0 && (
+                            <ExpandableSection>
+                                <div className="flex flex-col items-center w-full">
+                                    <h1 >
+                                        Characters
+                                    </h1>
+                                    <div className=" w-full mt-2 columns-2 lg:columns-4">
+                                        {characterData.map((character: any, id: number) => (
+                                            <Link key={id} href={"/character/" + character.id} className="inline-block mb-4 p-4 lg:p-6 hover:bg-white/10 duration-300 w-full panel">
+                                                {character.image && <ImageWithSkeleton src={character.image.url} dims={character.image.dims} className="w-full rounded-lg" />}
+                                                <h2 className="pt-2">
+                                                    {character.name}
+                                                </h2>
+                                                <p className="">
+                                                    {getCharacterRoleName(character.vns.filter((v: any) => v.id == vnData.id)[0].role)}
+                                                </p>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            </ExpandableSection>
+                        ) : (
                             <div className="flex flex-col items-center w-full">
                                 <h1 >
                                     Characters
                                 </h1>
-                                <div className=" w-full mt-2 columns-3">
-                                    {characterData.map((character: any, id: number) => (
-                                        <Link key={id} href={"/character/" + character.id} className="inline-block mb-4 hover:bg-white/10 duration-300 w-full panel">
-                                            {character.image && <img className="w-full rounded-lg" src={character.image.url} />}
-                                            <h2 className="pt-2">
-                                                {character.name}
-                                            </h2>
-                                            <p className="">
-                                                {getCharacterRoleName(character.vns.filter((v: any) => v.id == vnData.id)[0].role)}
-                                            </p>
-                                        </Link>
-                                    ))}
-                                </div>
+                                <p>
+                                    Loading...
+                                </p>
                             </div>
                         )}
                         {vnData.screenshots.length > 0 && (
-                            <div className="flex flex-col items-center w-full">
-                                <h1>
-                                    Screenshots
-                                </h1>
-                                <div className="w-full columns-2">
-                                    {vnData.screenshots.map((screenshot: any, id: number) => (
-                                        screenshot.sexual < 1 && <img width={500} height={400} className="inline-block mb-4 w-full rounded-md" key={id} src={screenshot.url} alt="" />
-                                    ))}
+                            <ExpandableSection>
+                                <div className="flex flex-col items-center w-full">
+                                    <h1>
+                                        Screenshots
+                                    </h1>
+                                    <div className="w-full columns-1 lg:columns-2">
+                                        {vnData.screenshots.map((screenshot: any, id: number) => (
+                                            screenshot.sexual < 1 && <img width={500} height={400} className="inline-block mb-4 w-full rounded-md" key={id} src={screenshot.url} alt="" />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            </ExpandableSection>
                         )}
                     </div>
                 )}

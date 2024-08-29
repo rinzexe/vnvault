@@ -14,6 +14,9 @@ import VaultEditor from "../../_components/vault-editor";
 import EditSVG from "@/app/_components/svgs/edit";
 import { characterSearchByIdList } from "@/lib/vndb/search";
 import { getCharacterRoleName } from "@/utils/character-roles";
+import Table from "@/app/_components/table/table";
+import { getVnLengthName } from "@/utils/vn-length";
+import { getEnglishTitle } from "@/utils/vn-data";
 
 export default function ClientCharacter({ params }: { params: { slug: string } }) {
     const [charData, setCharData] = useState<any>(null)
@@ -33,30 +36,66 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
     const modalContent: any = document.getElementById('modal-content');
 
     return (
-        <div className="w-full flex flex-col gap-4 items-center">
-            <div className="max-w-[60rem]">
+        <div className="w-full flex flex-col max-w-page gap-4 items-center">
+            <div className="w-full">
                 {charData && (
                     <div className="w-full flex flex-col gap-8 items-center">
                         <div className="w-full flex flex-col gap-4 items-center">
-                            <div className="flex flex-col gap-4 lg:grid grid-cols-2 lg:gap-8">
-                                {charData. image && <img className="rounded-xl" src={charData.image.url} alt="" width={500} height={800} />}
+                            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-center">
+                                {charData.image && <img className="rounded-xl" src={charData.image.url} alt="" width={500} height={800} />}
                                 <div className="flex flex-col h-full justify-center">
                                     <h3 className="text-neutral-400">{charData.original}</h3>
                                     <h1>{charData.name}</h1>
-                                    <div className="col-start-2 col-end-4">
+                                    <div className="col-start-2 col-end-4 max-w-96">
                                         {charData.description && <p dangerouslySetInnerHTML={{ __html: formatDescription(charData.description) }} className="text-sm"></p>}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-4 items-center">
-                            <h1 >
+                        <div className="flex flex-col w-full gap-4 items-center">
+                            <h1>
                                 Related novels:
                             </h1>
+                            <div className="w-full max-w-[1000px]">
+                                <Table
+                                    isLoading={charData == null}
+                                    acceptedTypes={{ row: true, card: false }}
+                                    headers={{
+                                        fields: ['Role', 'Rating'],
+                                    }}
+                                    entries={
+                                        charData.vns.map((vn: any, id: number) => {
+                                            return {
+                                                cardFields: {
+                                                    right: <RatingBadge className="mt-4" rating={vn.rating / 10} />,
+                                                    left:
+                                                        (<div className="*:text-center">
+                                                            <p>
+                                                                {getCharacterRoleName(vn.role)}
+                                                            </p>
+                                                        </div>)
+                                                },
+                                                hasIcon: true,
+                                                href: "/novel/" + vn.id,
+                                                dims: vn.image && vn.image.thumbnail_dims,
+                                                iconUrl: vn.image && vn.image.thumbnail,
+                                                fields: [(
+                                                    <div className="*:text-center">
+                                                        <p>
+                                                            {getCharacterRoleName(vn.role)}
+                                                        </p>
+                                                    </div>
+                                                ), (
+                                                    <RatingBadge rating={vn.rating / 10} />
+                                                )],
+                                                title: getEnglishTitle(vn),
+                                                subtitle: vn.alttitle
+                                            }
+                                        })
+                                    }
+                                />
+                            </div>
                             <div className="w-full columns-3 ">
-                                {charData.vns.map((vn: any, id: number) => (
-                                    <CharacterCard key={id} vn={vn} />
-                                ))}
                             </div>
                         </div>
                     </div>
@@ -64,33 +103,6 @@ export default function ClientCharacter({ params }: { params: { slug: string } }
             </div>
         </div>
     );
-}
-
-function CharacterCard({ vn, key }: any) {
-    return (
-        <div className="inline-block p-4">
-            <Link href={"/novel/" + vn.id} key={key} className="flex flex-col gap-2 w-full">
-                <img className="rounded-xl" src={vn.image.url} />
-                <div>
-                    <h2>
-                        {vn.title}
-                    </h2>
-                    <p className=" text-neutral-500">
-                        {getCharacterRoleName(vn.role)}
-                    </p>
-                </div>
-            </Link>
-        </div>
-    )
-}
-
-function InfoRow({ label, value }: any) {
-    return (
-        <div className="flex items-center gap-2 justify-between">
-            <p className="text-sm text-neutral-500">{label}</p>
-            <p className="text-end">{value}</p>
-        </div>
-    )
 }
 
 function formatDescription(text: string) {

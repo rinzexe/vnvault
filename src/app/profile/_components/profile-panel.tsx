@@ -57,9 +57,9 @@ export default function ProfilePanel({ userData, slug, stats }: any) {
 
     return (
         <div className='flex flex-col items-center gap-12'>
-            <div className='flex flex-col items-center gap-6 w-full lg:w-[60rem]'>
-                <div className='flex  w-full lg:flex-row flex-col justify-between lg:items-center gap-8 '>
-                    <div className="flex w-full lg:flex-row flex-col items-center lg:h-48 lg:w-4/6 gap-8">
+            <div className='flex flex-col items-center gap-6 w-full max-w-page'>
+                <div className='flex  w-full lg:flex-row flex-col justify-center lg:items-center gap-8 '>
+                    <div className="flex w-full lg:flex-row flex-col items-center lg:h-48 lg:w-fit gap-8">
                         <div className="w-48 h-48">
                             {userData && !isMe && <img src={userData.avatar} alt='avatar' width={300} height={300} className='rounded-full flex-grow w-auto lg:h-full' />}
                             {userData && isMe && (
@@ -101,22 +101,18 @@ export default function ProfilePanel({ userData, slug, stats }: any) {
                         </div>
 
                     </div>
-                    <Link href={"/profile/" + slug + "/vault"} >
-                        <AccentButton>
-                            <div className="group flex items-center gap-2">
-                                <h4 className="group-hover:text-blue-500 group-hover:font-bold duration-300">
-                                    VN Vault
-                                </h4>
-                                <OpenSVG className="fill-white group-hover:fill-blue-500  storke-white duration-300" />
-                            </div>
-                        </AccentButton>
-                    </Link>
                 </div>
                 <div className="w-full overflow-x-scroll lg:overflow-x-auto px-8 lg:px-0 flex lg:justify-center items-center gap-12">
-                    <MenuButton setCurrentTab={setCurrentTab} id={0} label="Info" active={currentTab == 0} />
+                    <MenuButton setCurrentTab={setCurrentTab} id={0} label="Profile" active={currentTab == 0} />
                     <MenuButton setCurrentTab={setCurrentTab} id={1} label="Reading Stats" active={currentTab == 1} />
                     <MenuButton setCurrentTab={setCurrentTab} id={2} label="Challenge stats" active={currentTab == 2} />
                     <MenuButton setCurrentTab={setCurrentTab} id={3} label="Reviews" active={currentTab == 3} />
+                    <Link className="flex items-center group" href={"/profile/" + userData.username + "/vault"}>
+                        <h3 className="w-max">
+                            Vault
+                        </h3>
+                        <OpenSVG className="fill-white group-hover:fill-blue-500 h-8 storke-white duration-300" />
+                    </Link>
                 </div>
                 <div className="lg:panel w-full">
                     <Tab />

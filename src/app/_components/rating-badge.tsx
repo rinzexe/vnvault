@@ -1,6 +1,6 @@
-export default function RatingBadge({ rating, justify }: { rating: number, justify?: "start" | "end" | undefined }) {
+export default function RatingBadge({ rating, justify, className }: { rating: number, justify?: "start" | "end" | undefined, className?: string }) {
     return (
-        <h3 style={{color: "rgba(255, 255, 255," + rating / 8 + ")"}} className={"flex flex-row items-center gap-2  justify-" + (justify ? justify : "end")}>
+        <h3 style={{color: "rgba(255, 255, 255," + rating / 8 + ")"}} className={["flex flex-row items-center gap-2  justify-" + (justify ? justify : "end"), className!].join(' ')}>
             {Math.round(rating * 100) / 100}
             <svg className="mb-[0.1rem]" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"
                 fill={"rgba(59,130,255," + (rating * 10 / 80 - 0.5) + ")"}>

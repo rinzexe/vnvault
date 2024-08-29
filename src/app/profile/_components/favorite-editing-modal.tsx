@@ -4,7 +4,7 @@ import MinusSVG from "@/app/_components/svgs/minus"
 import PlusSVG from "@/app/_components/svgs/plus"
 import TrashSVG from "@/app/_components/svgs/trash"
 import Headers from "@/app/_components/table/headers"
-import Row from "@/app/_components/table/row"
+import Row from "@/app/_components/table/table-entry"
 import Table from "@/app/_components/table/table"
 import { characterSearchByName, vnSearchByName } from "@/lib/vndb/search"
 import { getRandomSuggestionPlaceholder } from "@/utils/placeholders"
@@ -85,80 +85,77 @@ export default function FavoriteEditingModal({ type, favorites }: any) {
     }
 
     return (
-        <div className="w-[60rem] h-[50rem] panel flex flex-col items-center">
+        <div className="max-w-[1000px] h-[50rem] w-full panel flex flex-col items-center">
             <form className="flex gap-4 mb-4 flex-col items-center lg:flex-row max-w-[85vw] w-[40rem]" action={(e) => setSearchQuery({ searchTerm: e.get('searchTerm') })}>
                 <input name="searchTerm" placeholder={getRandomSuggestionPlaceholder()} className="panel px-4 max-w-full w-[30rem] py-2 focus:outline-none flex-grow" type="text" />
                 <button type="submit" className="panel px-4 py-2 focus:outline-none lg:w-fit max-w-full w-[30rem]">Search</button>
             </form>
             <div className="grid w-full flex-grow flex-shrink min-h-0 gap-8 grid-rows-2">
-                {searchResults && searchResults.length > 0 && isLoading == false ? (
-                    <Table className="!w-full overflow-scroll">
-                        <Headers
-                            fields={['']}
-                            sortingCallback={[]}
-                            leftPadding={180} />
-                        {searchResults.map((result: any, id: number) => {
-                            if (type == 0) {
-                                return (
-                                    <div key={id} >
-                                        <Row
-                                            hasIcon={true}
-                                            key={id}
-                                            iconUrl={result.image && result.image.url}
-                                            fields={[]}
-                                            title={getEnglishTitle(result)}
-                                            actionContent={(
-                                                <div onClick={() =>
-                                                    updateFavorites(result, !tempFavorites.some((fav: any) => fav.title == result.title))
-                                                }
-                                                    className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
-                                                    <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
-                                                        {tempFavorites.some((fav: any) => fav.title == result.title) ? "Remove" : "Add"}
-                                                    </h4>
-                                                    {tempFavorites.some((fav: any) => fav.title == result.title) ? (
-                                                        <MinusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
-                                                    ) : (
-                                                        <PlusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
-                                                    )}
-                                                </div>
-                                            )}
-                                        />
-                                    </div>
-                                )
-                            }
-                            else {
-                                return (
-                                    <div key={id}>
-                                        <Row
-                                            hasIcon={true}
-                                            key={id}
-                                            iconUrl={result.image && result.image.url}
-                                            fields={[]}
-                                            title={result.name}
-                                            actionContent={(
-                                                <div onClick={() =>
-                                                    updateFavorites(result, !tempFavorites.some((fav: any) => fav.name == result.name))
-                                                }
-                                                    className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
-                                                    <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
-                                                        {tempFavorites.some((fav: any) => fav.name == result.name) ? "Remove" : "Add"}
-                                                    </h4>
-                                                    {tempFavorites.some((fav: any) => fav.name == result.name) ? (
-                                                        <MinusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
-                                                    ) : (
-                                                        <PlusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
-                                                    )}
-                                                </div>
-                                            )}
-                                        />
-                                    </div>
-                                )
-                            }
-                        })}
-                    </Table>
-                ) : (
-                    <div className="h-full"></div>
-                )}
+                <div className="w-full overflow-y-auto">
+                    <Table
+                        acceptedTypes={{ row: true, card: false }}
+                        isLoading={isLoading}
+                        headers={{
+                            fields: [''],
+                            leftPadding: 180
+                        }}
+                        entries={
+                            searchResults && searchResults.map((result: any, id: number) => {
+                                if (type == 0) {
+                                    return {
+                                        hasIcon: true,
+                                        href: "/",
+                                        key: id,
+                                        iconUrl: result.image && result.image.thumbnail,
+                                        dims: result.image && result.image.thumbnail_dims,
+                                        fields: [],
+                                        title: getEnglishTitle(result),
+                                        actionContent: (
+                                            <div onClick={() =>
+                                                updateFavorites(result, !tempFavorites.some((fav: any) => fav.title == result.title))
+                                            }
+                                                className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
+                                                <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
+                                                    {tempFavorites.some((fav: any) => fav.title == result.title) ? "Remove" : "Add"}
+                                                </h4>
+                                                {tempFavorites.some((fav: any) => fav.title == result.title) ? (
+                                                    <MinusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
+                                                ) : (
+                                                    <PlusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
+                                                )}
+                                            </div>
+                                        )
+                                    }
+                                }
+                                else {
+                                    return {
+                                        hasIcon: true,
+                                        key: id,
+                                        iconUrl: result.image && result.image.url,
+                                        dims: result.image && result.image.dims,
+                                        fields: [],
+                                        title: result.name,
+                                        actionContent: (
+                                            <div onClick={() =>
+                                                updateFavorites(result, !tempFavorites.some((fav: any) => fav.name == result.name))
+                                            }
+                                                className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
+                                                <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
+                                                    {tempFavorites.some((fav: any) => fav.name == result.name) ? "Remove" : "Add"}
+                                                </h4>
+                                                {tempFavorites.some((fav: any) => fav.name == result.name) ? (
+                                                    <MinusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
+                                                ) : (
+                                                    <PlusSVG className="w-12 h-10 stroke-white fill-white group-hover:fill-blue-500 stroke-1 group-hover:stroke-2  group-hover:stroke-blue-500 duration-300" />
+                                                )}
+                                            </div>
+                                        )
+                                    }
+                                }
+                            })
+                        }
+                    />
+                </div>
                 {tempFavorites && (
                     <div className="w-full gap-4 grid grid-cols-3 ">
                         <div className="h-full w-full relative panel p-8 ">
@@ -218,9 +215,9 @@ function SelectedEntry({ iconUrl, title, favorites, updateFavorites, type }: any
                     </div>
                 </div>
             </div>
-            <p className="text-center mt-2">
+            <h2 className="text-center mt-2">
                 {title}
-            </p>
+            </h2>
         </div>
     )
 }

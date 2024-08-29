@@ -8,7 +8,7 @@ import { calculateLevel } from "@/utils/levels"
 import { useRouter } from "next/navigation"
 import Table from "../_components/table/table"
 import Headers from "../_components/table/headers"
-import Row from "../_components/table/row"
+import Row from "../_components/table/table-entry"
 
 export default function Leaderboard() {
     const [leaderboardData, setLeaderboardData] = useState<any>(null)

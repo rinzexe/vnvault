@@ -10,6 +10,9 @@ import EditSVG from "@/app/_components/svgs/edit";
 import { useAuth } from "@/app/_components/auth-provider";
 import { getEnglishTitle } from "@/utils/vn-data";
 import { characterSearchByIdList, vnSearchByIdList } from "@/lib/vndb/search";
+import Table from "@/app/_components/table/table";
+import RatingBadge from "@/app/_components/rating-badge";
+import ImageWithSkeleton from "@/app/_components/image-with-skeleton";
 
 export default function Info({ stats, isMe, username }: any) {
     const [isEditingFavs, setIsEditingFavs] = useState<boolean>(false)
@@ -28,6 +31,8 @@ export default function Info({ stats, isMe, username }: any) {
 
             if (fetchedUserData.favorite_novels?.length > 0) {
                 const res = await vnSearchByIdList(fetchedUserData.favorite_novels)
+
+                console.log(res)
 
                 setFavNovelData(res)
             }
@@ -52,6 +57,22 @@ export default function Info({ stats, isMe, username }: any) {
 
     const modalContent: any = document.getElementById('modal-content');
 
+    /*     href: string
+        iconUrl?: string
+        fields: any[]
+        title: string
+        subtitle?: string
+        editingCallback?: any
+        avatarUser?: any
+        numbered?: boolean
+        roundIcons?: boolean
+        hasIcon?: boolean
+        actionContent?: any
+        cardFields?: { hover?: any, right?: any, left?: any }
+        tags?: any[]
+        dims?: any
+        key: number */
+
     return (
         <>
             {modalContent && isEditingFavs && createPortal((
@@ -62,99 +83,123 @@ export default function Info({ stats, isMe, username }: any) {
                 </div>
             ), modalContent)}
             <div>
-                <div className="flex-col flex items-center gap-8">
-                    <div className="grid grid-rows-2 lg:grid-rows-1 lg:grid-cols-2">
-                        <div className="flex-col flex gap-2">
-                            <h1>Recent updates</h1>
-                            <div className="flex  items-end gap-4">
-                                {stats.recentUpdates.map((update: any, id: number) => (
-                                    <RecentUpdate update={update} key={id} />
-                                ))}
+                <div className="flex-col flex items-center gap-12">
+                    <div className="flex flex-col lg:grid grid-cols-2 gap-12 w-full">
+                        <div className="flex-col flex gap-2 w-full">
+                            <h1>Recently updated</h1>
+                            <Table
+                                isLoading={false}
+                                acceptedTypes={{ row: true, card: false }}
+                                entries={
+                                    stats.recentUpdates.map((update: any, id: number) => {
+                                        console.log(update)
+                                        return {
+                                            title: update.title,
+                                            hasIcon: true,
+                                            iconUrl: update.image.thumbnail,
+                                            dims: update.image.thumbnail_dims,
+                                            fields: [<p>{update.updatedAt.split('T')[0]}</p>, <p>{getStatusName(update.status)}</p>],
+                                            key: id,
+                                            href: "/profile/" + username + "/vault"
+                                        }
+                                    })
+                                }
+                            />
+                        </div>
+                        <div className="flex-col flex w-full lg:items-center gap-2">
+                            <h1 className="flex lg:items-center gap-4">
+                                Favorite novels
+                                {isMe && (
+                                    <button className="lg:block hidden" onClick={() => { setEditingType(0); setIsEditingFavs(true) }}>
+                                        <EditSVG className="w-8 hover:stroke-blue-500 duration-300" />
+                                    </button>
+                                )}
+                            </h1>
+                            <div className="flex w-full max-w-[90vw] lg:grid lg:overflow-x-auto overflow-x-scroll grid-cols-3 gap-4">
+                                {favNovelData?.length > 0 ? favNovelData?.map((novel: any, id: number) => {
+                                    return (
+                                        <Link href={"/novel/" + novel.id} key={id} className="flex-col lg:min-w-[0px] min-w-[300px] flex gap-2">
+                                            <ImageWithSkeleton className="rounded-xl" src={novel.image.thumbnail} dims={novel.image.thumbnail_dims} />
+                                            <div>
+                                                <h2>
+                                                    {getEnglishTitle(novel)}
+                                                </h2>
+                                                <p className=" text-neutral-500">
+                                                    {novel.alttitle}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    )
+                                }) : (
+                                    <>
+                                        <div>
+
+                                        </div>
+                                        <p className="text-center">
+                                            No favorite novels :(
+                                        </p>
+                                    </>
+                                )}
                             </div>
                         </div>
-                        <div className="grid  grid-cols-1 grid-rows-1 items-center align-middle justify-items-center relative">
-                            <div className="absolute flex flex-col gap-0 justify-center items-center bottom-0 top-0 left-0 right-0 w-full h-full">
-                                <h1>
-                                    {stats.totalVnsInList}
-                                </h1>
-                                <p className=" text-neutral-500 text-sm">
-                                    Novels in vault
-                                </p>
+                    </div>
+                    <div className="flex flex-col lg:grid grid-cols-2 w-full gap-12">
+                        <div className="flex-col flex gap-2 w-full">
+                            <h1>Recently rated</h1>
+                            <Table
+                                isLoading={false}
+                                acceptedTypes={{ row: true, card: false }}
+                                entries={
+                                    stats.recentRates.map((update: any, id: number) => {
+                                        return {
+                                            title: update.title,
+                                            hasIcon: true,
+                                            iconUrl: update.image.thumbnail,
+                                            dims: update.image.thumbnail_dims,
+                                            fields: [<p>{update.updatedAt.split('T')[0]}</p>, <RatingBadge rating={update.rating} />],
+                                            key: id,
+                                            href: "/profile/" + username + "/vault"
+                                        }
+                                    })
+                                }
+                            />
+                        </div>
+                        <div className="flex-col flex lg:items-center gap-2 w-full">
+                            <h1 className="flex lg:items-center gap-4">
+                                Favorite characters
+                                {isMe && (
+                                    <button className="lg:block hidden" onClick={() => { setEditingType(1); setIsEditingFavs(true) }}>
+                                        <EditSVG className="w-8 hover:stroke-blue-500 duration-300" />
+                                    </button>
+                                )}
+                            </h1>
+                            <div className="flex w-full max-w-[90vw] lg:grid lg:overflow-x-auto overflow-x-scroll grid-cols-3 gap-4">
+                                {favCharacterData?.length > 0 ? favCharacterData?.map((character: any, id: number) => {
+                                    return (
+                                        <Link href={"/character/" + character.id} key={id} className="flex-col lg:min-w-[0px] min-w-[300px] flex gap-2">
+                                           <ImageWithSkeleton className="rounded-xl" src={character.image.url} dims={character.image.dims} />
+                                            <div>
+                                                <h2>
+                                                    {character.name}
+                                                </h2>
+                                            </div>
+                                        </Link>
+                                    )
+                                }) : (
+                                    <>
+                                        <div>
+
+                                        </div>
+                                        <p className="text-center">
+                                            No favorite characters :(
+                                        </p>
+                                    </>
+                                )}
                             </div>
-                            <PieChart data={stats.vaultStats} />
                         </div>
                     </div>
-                    <div className="flex-col flex w-full items-center gap-2">
-                        <h1 className="flex items-center gap-4">
-                            Favorite novels
-                            {isMe && (
-                                <button className="lg:block hidden" onClick={() => { setEditingType(0); setIsEditingFavs(true) }}>
-                                    <EditSVG className="w-8 hover:stroke-blue-500 duration-300" />
-                                </button>
-                            )}
-                        </h1>
-                        <div className="flex w-full max-w-[90vw] lg:grid lg:overflow-x-auto overflow-x-scroll grid-cols-3 gap-4">
-                            {favNovelData?.length > 0 ? favNovelData?.map((novel: any, id: number) => {
-                                return (
-                                    <Link href={"/novel/" + novel.id} key={id} className="flex-col lg:min-w-[0px] min-w-[300px] flex gap-2">
-                                        <img className="rounded-xl" src={novel.image.url} alt="" width="300" height="300" />
-                                        <div>
-                                            <h2>
-                                                {getEnglishTitle(novel)}
-                                            </h2>
-                                            <p className=" text-neutral-500">
-                                                {novel.alttitle}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                )
-                            }) : (
-                                <>
-                                    <div>
-
-                                    </div>
-                                    <p className="text-center">
-                                        No favorite novels :(
-                                    </p>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex-col flex w-full items-center gap-2">
-                        <h1 className="flex items-center gap-4">
-                            Favorite characters
-                            {isMe && (
-                                <button className="lg:block hidden" onClick={() => { setEditingType(1); setIsEditingFavs(true) }}>
-                                    <EditSVG className="w-8 hover:stroke-blue-500 duration-300" />
-                                </button>
-                            )}
-                        </h1>
-                        <div className="flex w-full max-w-[90vw] lg:grid lg:overflow-x-auto overflow-x-scroll grid-cols-3 gap-4">
-                            {favCharacterData?.length > 0 ? favCharacterData?.map((character: any, id: number) => {
-                                return (
-                                    <Link href={"/character/" + character.id} key={id} className="flex-col lg:min-w-[0px] min-w-[300px] flex gap-2">
-                                        <img className="rounded-xl" src={character.image.url} alt="" width="300" height="300" />
-                                        <div>
-                                            <h2>
-                                                {character.name}
-                                            </h2>
-                                        </div>
-                                    </Link>
-                                )
-                            }) : (
-                                <>
-                                    <div>
-
-                                    </div>
-                                    <p className="text-center">
-                                        No favorite characters :(
-                                    </p>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     )
 }

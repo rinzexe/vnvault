@@ -24,8 +24,11 @@ export interface Stats {
     genreStats: GenreStats[]
     ratingStats: any
     averageRating: number
+    recentRates: any
     ratedVns: number
     vaultStats: any
+    averageVotecount: number
+    averageRatingPlayed: number
 }
 
 export default function ClientProfile({ params }: { params: { slug: string } }) {
@@ -48,6 +51,8 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
             const inProgressVaultEntries = vaultEntries.filter((entry: any) => entry.status == 1)
             const toReadVaultEntries = vaultEntries.filter((entry: any) => entry.status == 2)
             const droppedVaultEntries = vaultEntries.filter((entry: any) => entry.status == 3)
+            const ratedVaultEntries = vaultEntries.filter((entry: any) => entry.rating != 0)
+            const readAndDroppedEntries = [...readVaultEntries, ...droppedVaultEntries]
 
             var queries: any = []
 
@@ -83,6 +88,21 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
 
             recentUpdateData.forEach((entry: any, id: number) => {
                 recentUpdateData[id] = { ...entry, status: vaultEntries[id].status, updatedAt: vaultEntries[id].updated_at }
+            });
+
+
+
+            var recentRatedData = vnData.filter((vn: any) => vn.id == ratedVaultEntries[0].vid || vn.id == ratedVaultEntries[1].vid || vn.id == ratedVaultEntries[2].vid).sort((a: any, b: any) => {
+                if (a.id == ratedVaultEntries[0].vid) {
+                    return -1
+                }
+                if (a.id == ratedVaultEntries[1].vid && b.id == ratedVaultEntries[2].vid) {
+                    return -1
+                }
+            })
+
+            recentRatedData.forEach((entry: any, id: number) => {
+                recentRatedData[id] = { ...entry, rating: ratedVaultEntries.find((rentry: any) => rentry.vid == entry.id).rating, status: ratedVaultEntries[id].status, updatedAt: ratedVaultEntries[id].updated_at }
             });
 
             var favoriteTags: any = {}
@@ -174,6 +194,24 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
             }
             var averageRating = total / ratedEntries.length;
 
+            var averageVotecount = 0
+
+            readAndDroppedEntries.forEach((entry: any, id: number) => {
+                averageVotecount += vnData.find((data: any) => data.id == entry.vid).votecount
+            })
+
+            averageVotecount /= readAndDroppedEntries.length
+            averageVotecount = Math.round(averageVotecount)
+
+            var averageRatingPlayed = 0
+
+            readAndDroppedEntries.forEach((entry: any, id: number) => {
+                averageRatingPlayed += vnData.find((data: any) => data.id == entry.vid).rating
+            })
+
+            averageRatingPlayed /= readAndDroppedEntries.length
+            averageRatingPlayed = Math.round(averageRatingPlayed)
+
             setStats({
                 totalVnsRead: readVaultEntries.length,
                 totalVnsInProgress: inProgressVaultEntries.length,
@@ -182,11 +220,14 @@ export default function ClientProfile({ params }: { params: { slug: string } }) 
                 totalVnsInList: vaultEntries.length,
                 totalMinutesRead: totalMinutes,
                 recentUpdates: recentUpdateData,
+                recentRates: recentRatedData,
                 genreStats: favoriteTags,
                 vaultStats: vaultStats,
                 ratingStats: ratedEntryStats,
                 averageRating: averageRating,
-                ratedVns: ratedEntries.length
+                ratedVns: ratedEntries.length,
+                averageVotecount: averageVotecount,
+                averageRatingPlayed: averageRatingPlayed
             })
 
             setLoaded(true)

@@ -35,9 +35,11 @@ export default function RootLayout({
         </div>
         <AuthProvider>
           <Header />
-          <div className="top-24 relative p-6 flex flex-col justify-between">
-            {children}
-{/*             <Footer /> */}
+          <div className="lg:top-24 relative p-6 flex flex-col items-center justify-between">
+            <div className="max-w-page w-full">
+              {children}
+            </div>
+            {/*             <Footer /> */}
           </div>
         </AuthProvider>
       </body>

@@ -3,8 +3,11 @@ import RatingBadge from "../rating-badge";
 import { getVaultStatusText } from "@/utils/vault";
 import EditSVG from "../svgs/edit";
 import Avatar from "@/app/leaderboard/avatar";
+import { useTable } from "./table";
+import VNCard from "../vn-card";
+import ImageWithSkeleton from "../image-with-skeleton";
 
-interface RowProps {
+export interface EntryProps {
     href?: string
     iconUrl?: string
     fields: any[]
@@ -16,33 +19,70 @@ interface RowProps {
     roundIcons?: boolean
     hasIcon?: boolean
     actionContent?: any
+    cardFields?: { hover?: any, right?: any, left?: any }
     tags?: any[]
+    dims?: any
+    key: number
 }
 
-export default function Row({ href, title, subtitle, hasIcon, iconUrl, fields, editingCallback, avatarUser, numbered, actionContent, tags, ...props }: RowProps) {
+function CondLink({ children, href }: any) {
+    if (href != undefined) {
+        return <Link className="flex-grow" href={href} >{children}</Link>
+    }
+    else {
+        return (
+            <div className="flex-grow">
+                {children}
+            </div>
+        )
+    }
+}
 
-    function CondLink({ children }: any) {
-        if (href) {
-            return <Link className="flex-grow" href={href} >{children}</Link>
+export default function TableEntry({ href, title, subtitle, dims, hasIcon, iconUrl, cardFields, fields, editingCallback, avatarUser, numbered, actionContent, tags, ...props }: EntryProps) {
+
+    const table = useTable()
+
+
+    switch (table.get.currentType) {
+        case "row": {
+            return <RowEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} fields={fields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags}  />
         }
-        else {
-            return (
-                <div className="flex-grow">
-                    {children}
-                </div>
-            )
+        case "card": {
+            return <CardEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} cardFields={cardFields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags}  />
         }
     }
+}
 
+function CardEntry({ href, dims, title, subtitle, hasIcon, iconUrl, cardFields, editingCallback, avatarUser, numbered, actionContent, tags }: any) {
+    return (
+        <div className="relative">
+            <div className="absolute hidden lg:block top-6 right-6 z-10">
+                {actionContent}
+            </div>
+            <VNCard dims={dims} title={title} alttitle={subtitle} href={href} imageUrl={iconUrl} fields={[<BottomCard cardFields={cardFields} />]} />
+        </div>
+    )
+}
+
+function BottomCard({ cardFields }: any) {
+    return (
+        <div className="flex w-full items-end justify-between">
+            {cardFields?.left}
+            {cardFields?.right}
+        </div>
+    )
+}
+
+function RowEntry({ href, title, dims, subtitle, hasIcon, iconUrl, fields, editingCallback, avatarUser, numbered, actionContent, tags, ...props }: any) {
     return (
         <div {...props} className="w-full ">
             {fields ? (
-                <div className="flex items-center gap-4 panel hover:bg-white/10 hover:cursor-pointer p-2 rounded-lg duration-300">
-                    <CondLink>
+                <div className="flex items-center gap-4 panel p-2 hover:bg-white/10 hover:cursor-pointer rounded-lg duration-300">
+                    <CondLink href={href}>
                         <div className="flex lg:grid lg:grid-cols-2 w-full items-center gap-4 select-none ">
                             <div className="flex flex-grow gap-4 items-center">
                                 {iconUrl && hasIcon ?
-                                    <img src={iconUrl} className="rounded-md" alt="" width={50} height={50} />
+                                    <ImageWithSkeleton src={iconUrl} dims={dims} className="!w-14" allClassName="!rounded-md" />
                                     :
                                     avatarUser && hasIcon ? (
                                         <></>

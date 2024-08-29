@@ -1,4 +1,5 @@
 import Link from "next/link"
+import ImageWithSkeleton from "./image-with-skeleton"
 
 interface VNCardProps {
     title: string
@@ -6,12 +7,18 @@ interface VNCardProps {
     imageUrl?: string
     href: string
     fields?: any[]
+    dims?: number[]
 }
 
-export default function VNCard({ title, alttitle, imageUrl, href, fields, ...props }: VNCardProps) {
+export default function VNCard({ title, alttitle, imageUrl, href, fields, dims, ...props }: VNCardProps) {
+    console.log(dims)
     return (
-        <Link {...props} href={href} className="justify-start h-full flex-col lg:min-w-[0px] min-w-[300px] flex gap-2">
-            {imageUrl && <img className="rounded-xl" src={imageUrl} alt="" width="300" height="300" />}
+        <Link {...props} href={href} className="justify-start w-full h-full flex-col panel p-2 lg:p-4 hover:bg-white/10 duration-300 flex gap-2">
+            {imageUrl && dims ? (
+                <ImageWithSkeleton src={imageUrl} dims={dims} />
+            ) : (
+                imageUrl && <img className="rounded-xl" src={imageUrl} alt="" width={"300"} height={"300"} />
+            )}
             <div>
                 <h2>
                     {title}
@@ -21,9 +28,9 @@ export default function VNCard({ title, alttitle, imageUrl, href, fields, ...pro
                 </p>
                 {fields && fields.map((field: any, id: number) => {
                     return (
-                        <>
+                        <div key={id}>
                             {field}
-                        </>
+                        </div>
                     )
                 })}
             </div>

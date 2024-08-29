@@ -14,8 +14,9 @@ import EditSVG from "@/app/_components/svgs/edit";
 import Table from "@/app/_components/table/table";
 import Headers from "@/app/_components/table/headers";
 import { developerSearchByIdList, vnSearchByDeveloper } from "@/lib/vndb/search";
-import Row from "@/app/_components/table/row";
+import Row from "@/app/_components/table/table-entry";
 import { getEnglishTitle } from "@/utils/vn-data";
+import { getVnLengthName } from "@/utils/vn-length";
 
 export default function ClientProducer({ params }: { params: { slug: string } }) {
     const [prodData, setProdData] = useState<any>(null)
@@ -39,12 +40,13 @@ export default function ClientProducer({ params }: { params: { slug: string } })
     }, [])
 
     useEffect(() => {
+        setIsLoading(true)
         async function fetchVns() {
             const vnRes = await vnSearchByDeveloper(prodData.id, sorting)
 
             setEntries(vnRes)
+            setIsLoading(false)
         }
-        console.log(sorting)
         prodData && fetchVns()
     }, [sorting, prodData])
 
@@ -57,13 +59,13 @@ export default function ClientProducer({ params }: { params: { slug: string } })
     }
 
     function releaseDateSort() {
-        console.log("res")
         setSorting({ type: "released", asc: !sorting.asc })
     }
 
+
     return (
         <div className="w-full flex flex-col gap-4 items-center">
-            <div className="max-w-[60rem]">
+            <div className="w-full">
                 {prodData && (
                     <div className="w-full flex flex-col gap-8 items-center">
                         <div className="w-full flex flex-col gap-4 items-center">
@@ -77,47 +79,54 @@ export default function ClientProducer({ params }: { params: { slug: string } })
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-4 items-center">
+                        <div className="flex flex-col w-full max-w-[1000px] gap-4 items-center">
                             <h1 >
                                 Developed novels:
                             </h1>
                             <div className="w-full ">
-                                <Table>
-                                    <Headers
-                                        sort={{
+                                <Table
+                                    isLoading={isLoading}
+                                    acceptedTypes={{ row: true, card: false }}
+                                    headers={{
+                                        sort: {
                                             type:
-                                                sorting.type == "rating" ? 2 :
+                                                sorting.type == "rating" ? 3 :
                                                     sorting.type == "title" ? 0 :
-                                                        sorting.type == "released" && 1
+                                                        2
                                             , asc: sorting.asc
-                                        }}
-                                        fields={['Release date', 'Rating']}
-                                        sortingCallback={[titleSort, releaseDateSort, ratingSort]} />
-                                    {entries && entries.map((result: any, id: number) => {
-                                        return (
-                                            <Row
-                                                hasIcon={true}
-                                                key={id}
-                                                href={"/novel/" + result.id}
-                                                iconUrl={result.image && result.image.url}
-                                                fields={[(
-                                                    <p key={id}>{result.released}</p>
+                                        },
+                                        sortingCallback: [titleSort, , releaseDateSort, ratingSort],
+                                        fields: ['Length', 'Released', 'Rating'],
+                                    }}
+                                    entries={
+                                        entries && entries.map((vn: any, id: number) => {
+                                            return {
+                                                hasIcon: true,
+                                                href: "/novel/" + vn.id,
+                                                dims: vn.image && vn.image.thumbnail_dims,
+                                                iconUrl: vn.image && vn.image.thumbnail,
+                                                fields: [(
+                                                    <p key={id}>{getVnLengthName(vn.length)}</p>
                                                 ), (
-                                                    <RatingBadge key={id} rating={result.rating / 10} />)
+                                                    <p key={id}>{vn.released}</p>
+                                                ), (
+                                                    <div className="flex justify-end">
+                                                        <RatingBadge key={id} rating={vn.rating / 10} />
+                                                    </div>)
 
-                                                ]}
-                                                title={getEnglishTitle(result)}
-                                                subtitle={result.alttitle}
-                                            />
-                                        )
-                                    })}
-                                </Table>
+                                                ],
+                                                title: getEnglishTitle(vn),
+                                                subtitle: vn.alttitle
+                                            }
+                                        })
+                                    }
+                                />
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }
 

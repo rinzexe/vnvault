@@ -1,7 +1,8 @@
+
 export async function infiniteSearch(filters: any, endpoint: string, fields: string, results: number, sort: { type: string, asc: boolean }) {
 
-    async function query(page: number) {
-
+    async function query(page: number, resultsAmount: number) {
+        console.log("made a request")
         const res: any = await fetch('https://api.vndb.org/kana/' + endpoint, {
             method: 'POST',
             headers: {
@@ -13,23 +14,22 @@ export async function infiniteSearch(filters: any, endpoint: string, fields: str
                 "count": true,
                 "sort": sort.type,
                 "reverse": !sort.asc,
-                "results": 100,
+                "results": resultsAmount,
                 "page": 1 + page
             })
         });
-
 
         const json = await res.json()
 
         return json
     }
 
-    const res = await query(0)
+    const res = await query(0, results < 100 ? results : 100)
 
     var data: any = res.results
     var iterationCount = 1
     while (iterationCount * 100 < res.count && iterationCount * 100 < results) {
-        const nextDataRes = await query(iterationCount)
+        const nextDataRes = await query(iterationCount, results - iterationCount * 100 < 100 ? results : 100)
         data = [...data, ...nextDataRes.results]
         iterationCount++
     }

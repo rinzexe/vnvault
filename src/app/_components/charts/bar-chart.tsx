@@ -2,10 +2,9 @@ import { ResponsiveContainer, BarChart as BC, Bar, YAxis, Tooltip, XAxis } from 
 
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-        console.log(payload)
       return (
         <div className="panel p-3 !opacity-100">
-          <p >{`Rated ${payload[0].payload.name}: ${payload[0].value}`}</p>
+          <p >{`Rated ${payload[0].payload.name}: ${Math.round(payload[0].value * 10) / 10}`}</p>
         </div>
       );
     }
@@ -15,7 +14,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export default function BarChart({ data }: any) {
     return (
-        <ResponsiveContainer  width="100%" height="100%">
+        <ResponsiveContainer  width="120%" height="100%">
             <BC layout="vertical" data={data}>
                 <XAxis type="number" />
                 <YAxis dataKey="name" type="category" />
