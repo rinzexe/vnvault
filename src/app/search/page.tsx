@@ -86,7 +86,7 @@ export default function Search() {
     }
 
     function ratingFilter(values: number[]) {
-        setFilters({ ...filters, minRating: { name: "rating", operator: ">", value: Math.round((values[0]) * 10).toString() }, maxRating: { name: "rating", operator: "<", value: Math.round((values[1]) * 10).toString() } })
+        setFilters({ ...filters, minRating: { name: "rating", operator: ">=", value: Math.round((values[0]) * 10).toString() }, maxRating: { name: "rating", operator: "<=", value: Math.round((values[1]) * 10).toString() } })
     }
 
     return (
