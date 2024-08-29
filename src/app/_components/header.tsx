@@ -151,9 +151,9 @@ function MobileMenu({ }: any) {
             }
         } */
     return (
-        <div className=" z-40">
+        <div className="pointer-events-none z-40">
             {isOpen ? (
-                <div onClick={() => setIsOpen(false)}  className="panel p-4 gap-4 grid grid-cols-2 grid-rows-2">
+                <div onClick={() => setIsOpen(false)}  className="panel p-4 gap-4 grid grid-cols-2 grid-rows-2 pointer-events-auto">
                     <Link  href="/" className="flex flex-col items-center">
                         <HomeSVG className="fill-white" />
                         <p className="text-xs text-center text-white">
@@ -180,7 +180,7 @@ function MobileMenu({ }: any) {
                     </div>
                 </div>
             ) : (
-                <div className="panel flex items-center justify-center p-0 h-16 w-16 ">
+                <div className="panel flex items-center justify-center p-0 h-16 w-16 pointer-events-auto">
                     <BurgerMenuSVG onClick={() => setIsOpen(true)} className="w-12 h-12 stroke-white" />
                 </div>
             )}
