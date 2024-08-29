@@ -56,6 +56,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
 
                 if (filters.nsfw == 0) {
                     filteredVnData = vnData
+                    filteredResData = res
                 }
                 else if (filters.nsfw == 1) {
                     vnData.forEach((data: any, id: number) => {
