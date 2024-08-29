@@ -52,6 +52,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
                 const vnData = await vnSearchByIdList(queries, sorting.type == "title" ? sorting : undefined)
 
                 var filteredVnData: any = []
+                var filteredResData: any = []
 
                 if (filters.nsfw == 0) {
                     filteredVnData = vnData
@@ -59,9 +60,10 @@ export default function Vault({ params }: { params: { slug: string } }) {
                 else if (filters.nsfw == 1) {
                     vnData.forEach((data: any, id: number) => {
                         if (data.tags.find((tag: any) => tag.id == "g23")) {
-                            res.splice(res.indexOf(res.find((r: any) => r.vid == data.id)), 1)
+
                         }
                         else {
+                            filteredResData.push(res.find((r:any) => r.vid == data.id))
                             filteredVnData.push(data)
                         }
                     });
@@ -69,10 +71,11 @@ export default function Vault({ params }: { params: { slug: string } }) {
                 else if (filters.nsfw == 2) {
                     vnData.forEach((data: any, id: number) => {
                         if (data.tags.find((tag: any) => tag.id == "g23")) {
+                            filteredResData.push(res.find((r:any) => r.vid == data.id))
                             filteredVnData.push(data)
                         }
                         else {
-                            res.splice(res.indexOf(res.find((r: any) => r.vid == data.id)), 1)
+
                         }
                     });
                 }
