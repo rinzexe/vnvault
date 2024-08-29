@@ -64,7 +64,7 @@ export default function Header() {
 
     return (
         <div>
-            <div className="lg:hidden fixed flex justify-end p-12 items-end h-full w-full z-40">
+            <div className="lg:hidden fixed pointer-events-none flex justify-end p-12 items-end h-full w-full z-40">
                 <MobileMenu />
             </div>
             <div className="flex-row hidden lg:flex justify-center z-30 w-full lg:p-0 lg:px-4 items-center !bg-black/75 h-20 top-0 fixed panel !rounded-none border-t-0 border-r-0 border-l-0">
@@ -107,51 +107,8 @@ export default function Header() {
 
 function MobileMenu({ }: any) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
-    /*     function ProfileButton() {
-            if (userProfile) {
-                return (
-                    <div className="panel !bg-black pointer-events-auto flex flex-col gap-2 w-full">
-                        <Link onClick={() => { setMobileMenuOpen(false) }} href="/profile">
-                            <div className="flex-row flex items-center gap-6">
-                                <img className="rounded-full" src={userProfile.avatar} alt="" width={80} height={80} />
-                                <h2>
-                                    {userProfile.username}
-                                </h2>
-                            </div>
-                        </Link>
-                        <Link className="pointer-events-auto w-full mt-4 " onClick={() => { setMobileMenuOpen(false) }} href="/profile">
-                            <h3 className=" w-full">
-                                Profile
-                            </h3>
-                        </Link>
-                        <Link className="pointer-events-auto w-full" onClick={() => { setMobileMenuOpen(false) }} href={"/profile/" + userProfile.username + "/vault"}>
-                            <h3 className=" w-full">
-                                Vault
-                            </h3>
-                        </Link>
-                    </div>
-                )
-            } else {
-                return (
-                    <div className="flex flex-row panel w-full gap-4 items-center ">
-                        <Link onClick={() => { setMobileMenuOpen(false) }} href="/signup">
-                            <AccentButton>
-                                <h3 className="p-1">
-                                    Sign up
-                                </h3>
-                            </AccentButton>
-                        </Link>
-                        <Link onClick={() => { setMobileMenuOpen(false) }} href="/signin">
-                            <h3>
-                                Login
-                            </h3>
-                        </Link>
-                    </div>
-                )
-            }
-        } */
     return (
-        <div className="pointer-events-none z-40">
+        <div className="z-40">
             {isOpen ? (
                 <div onClick={() => setIsOpen(false)}  className="panel p-4 gap-4 grid grid-cols-2 grid-rows-2 pointer-events-auto">
                     <Link  href="/" className="flex flex-col items-center">
