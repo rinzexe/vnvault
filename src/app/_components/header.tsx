@@ -95,6 +95,11 @@ export default function Header() {
                                 News
                             </p>
                         </Link>
+                        <Link className="lg:hover:*:text-white *:duration-300 rounded-xl px-3 py-1 duration-300" href="/feedback">
+                            <p>
+                                Feedback
+                            </p>
+                        </Link>
                     </div>
                     <div className="hidden justify-self-end lg:block hover:bg-white/10 duration-300 rounded-xl px-3 py-1">
                         <ProfileButton />
