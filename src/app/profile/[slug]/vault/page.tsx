@@ -83,7 +83,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
                 var finalEntryDataArray: any = []
 
                 if (sorting.type != "title") {
-                    res.forEach((e: any, id: number) => {
+                    filteredResData.forEach((e: any, id: number) => {
                         const thisRes = filteredVnData.find((y: any) => e.vid == y.id)
                         console.log(e)
                         finalEntryDataArray.push({
@@ -98,7 +98,7 @@ export default function Vault({ params }: { params: { slug: string } }) {
                 }
                 else {
                     filteredVnData.forEach((e: any, id: number) => {
-                        const thisRes = res.find((y: any) => y.vid == e.id)
+                        const thisRes = filteredResData.find((y: any) => y.vid == e.id)
                         finalEntryDataArray.push({
                             ...e,
                             imageUrl: e.image.url,
