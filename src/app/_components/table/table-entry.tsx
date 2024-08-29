@@ -38,28 +38,28 @@ function CondLink({ children, href }: any) {
     }
 }
 
-export default function TableEntry({ href, title, subtitle, dims, hasIcon, iconUrl, cardFields, fields, editingCallback, avatarUser, numbered, actionContent, tags, ...props }: EntryProps) {
+export default function TableEntry({ href, title, subtitle, dims, hasIcon, iconUrl, cardFields, fields, editingCallback, avatarUser, numbered, key, actionContent, tags, ...props }: EntryProps) {
 
     const table = useTable()
 
 
     switch (table.get.currentType) {
         case "row": {
-            return <RowEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} fields={fields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags} />
+            return <RowEntry href={href} key={key} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} fields={fields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags} />
         }
         case "card": {
-            return <CardEntry href={href} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} cardFields={cardFields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags} />
+            return <CardEntry href={href} key={key} dims={dims} title={title} subtitle={subtitle} hasIcon={hasIcon} iconUrl={iconUrl} cardFields={cardFields} editingCallback={editingCallback} avatarUser={avatarUser} numbered={numbered} actionContent={actionContent} tags={tags} />
         }
     }
 }
 
-function CardEntry({ href, dims, title, subtitle, hasIcon, iconUrl, cardFields, editingCallback, avatarUser, numbered, actionContent, tags }: any) {
+function CardEntry({ href, dims, title, subtitle, hasIcon, iconUrl, cardFields, editingCallback, avatarUser, numbered, actionContent, key, tags }: any) {
     return (
         <div className="relative">
             <div className="absolute hidden lg:block top-6 right-6 z-10">
                 {actionContent}
             </div>
-            <VNCard dims={dims} title={title} alttitle={subtitle} href={href} imageUrl={iconUrl} fields={[<BottomCard cardFields={cardFields} />]} />
+            <VNCard dims={dims} title={title} alttitle={subtitle} href={href} imageUrl={iconUrl} fields={[<BottomCard key={key} cardFields={cardFields} />]} />
         </div>
     )
 }

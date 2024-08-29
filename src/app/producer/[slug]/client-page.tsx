@@ -110,8 +110,8 @@ export default function ClientProducer({ params }: { params: { slug: string } })
                                                 ), (
                                                     <p key={id}>{vn.released}</p>
                                                 ), (
-                                                    <div className="flex justify-end">
-                                                        <RatingBadge key={id} rating={vn.rating / 10} />
+                                                    <div key={id} className="flex justify-end">
+                                                        <RatingBadge rating={vn.rating / 10} />
                                                     </div>)
 
                                                 ],
