@@ -13,7 +13,7 @@ export interface IRequestParams {
 
 export async function request(params: IRequestParams) {
 
-    var body: any = {
+    let body: any = {
         'fields': fieldPresets[params.endpoint],
         "count": true,
         "results": 100
@@ -44,7 +44,7 @@ export async function request(params: IRequestParams) {
 }
 
 export function parseVn(jsonRes: any) {
-    var parsedResults: IVN[] = []
+    let parsedResults: IVN[] = []
 
     jsonRes.results.forEach((result: any) => {
         const parsedResult: IVN = {
@@ -71,7 +71,7 @@ export function parseVn(jsonRes: any) {
 }
 
 export function parseCharacter(jsonRes: any) {
-    var parsedResults: ICharacter[] = []
+    let parsedResults: ICharacter[] = []
 
     jsonRes.results.forEach((result: any) => {
         const parsedResult: ICharacter = {
@@ -91,7 +91,7 @@ export function parseCharacter(jsonRes: any) {
 function getEnglishTitle(jsonRes: any) {
     const englishTitle = jsonRes.titles.find((title: any) => title.lang == "en")
 
-    var mainTitle = jsonRes.title
+    let mainTitle = jsonRes.title
 
     if (englishTitle) {
         mainTitle = englishTitle.title

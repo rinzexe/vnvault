@@ -30,11 +30,11 @@ export class Users {
 
         const finishedAndDroppedEntries = [...finishedVaultEntries, ...droppedVaultEntries]
 
-        var finishedVnData: any = []
-        var readingVnData: any = []
-        var toReadVnData: any = []
-        var droppedVnData: any = []
-        var ratedVndata: any = []
+        let finishedVnData: any = []
+        let readingVnData: any = []
+        let toReadVnData: any = []
+        let droppedVnData: any = []
+        let ratedVndata: any = []
 
         finishedVaultEntries.forEach((entry: any) => {
             const tempVnData = vnData.filter((vn: any) => vn.id == parseInt(entry.vid.substring(1)))
@@ -58,20 +58,20 @@ export class Users {
         });
 
         // minutes to read
-        var totalMinutesRead = 0
+        let totalMinutesRead = 0
 
         finishedVnData.forEach((vn: any) => {
             totalMinutesRead += vn.length
         });
 
         // average popularity & rating
-        var total = 0;
-        for (var i = 0; i < ratedEntries.length; i++) {
+        let total = 0;
+        for (let i = 0; i < ratedEntries.length; i++) {
             total += ratedEntries[i].rating;
         }
-        var averageRating = total / ratedEntries.length;
+        let averageRating = total / ratedEntries.length;
 
-        var averageVotecount = 0
+        let averageVotecount = 0
 
         finishedAndDroppedEntries.forEach((entry: any, id: number) => {
             averageVotecount += vnData.find((data: any) => data.id == parseInt(entry.vid.substring(1)))?.rateCount ?? 0
@@ -80,7 +80,7 @@ export class Users {
         averageVotecount /= finishedAndDroppedEntries.length
         averageVotecount = Math.round(averageVotecount)
 
-        var averageRatingPlayed = 0
+        let averageRatingPlayed = 0
 
         finishedAndDroppedEntries.forEach((entry: any, id: number) => {
             averageRatingPlayed += vnData.find((data: any) => data.id == parseInt(entry.vid.substring(1)))?.rateCount ?? 0
@@ -90,7 +90,7 @@ export class Users {
         averageRatingPlayed = Math.round(averageRatingPlayed)
 
         // genre stats
-        var favoriteTags: any = {}
+        let favoriteTags: any = {}
 
         finishedVnData.forEach((vn: any) => {
             vn.tags.forEach((tag: any) => {
@@ -125,8 +125,8 @@ export class Users {
         })
 
         // recent activity
-        var recentActivityData: IRecentActivityEntry[] = []
-        var filteredVnData: any = vnData
+        let recentActivityData: IRecentActivityEntry[] = []
+        let filteredVnData: any = vnData
             .filter((vn: any) =>
                 vaultEntries.slice(0, 5).some((entry: any) => vn.id === parseInt(entry.vid.substring(1))))
             .sort((a: any, b: any) => {

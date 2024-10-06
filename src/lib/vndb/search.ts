@@ -8,7 +8,7 @@ export async function getVnById(id: number[]): Promise<IVN[]>;
 
 export async function getVnById(id: number | number[]): Promise<IVN | IVN[]> {
     if (Array.isArray(id)) {
-        var filters: any = ["or"]
+        let filters: any = ["or"]
 
         id.forEach((currentId: number) => {
             filters.push(["id", "=", "v" + currentId.toString()])
@@ -27,7 +27,7 @@ export async function getVnById(id: number | number[]): Promise<IVN | IVN[]> {
 
 export async function getCharactersByVnId(id: number | number[]) {
     if (Array.isArray(id)) {
-        var filters: any = ["or"]
+        let filters: any = ["or"]
 
         id.forEach((currentId: number) => {
             filters.push(['vn', '=', ['id', '=', "v" + currentId.toString()]])
@@ -48,7 +48,7 @@ export async function getCharactersByVnId(id: number | number[]) {
 
 export async function getCharactersById(id: number | number[]) {
     if (Array.isArray(id)) {
-        var filters: any = ["or"]
+        let filters: any = ["or"]
 
         id.forEach((currentId: number) => {
             filters.push(['id', '=', currentId.toString()])
@@ -74,9 +74,9 @@ export async function getCharacterBySearch(query: string): Promise<ICharacterBas
 }
 
 export async function getVnBySearch(query: string, filters?: IVNFilters, sort?: IVNSort): Promise<IVN[]> {
-    var requestData: IRequestParams = { endpoint: "vn"}
+    let requestData: IRequestParams = { endpoint: "vn"}
 
-    var parsedFilters: any[] = ["and", ["search", "=", query]]
+    let parsedFilters: any[] = ["and", ["search", "=", query]]
 
     if (filters) {
         if (filters.rating) {

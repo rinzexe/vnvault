@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     useEffect(() => {
-        var listener: any;
+        let listener: any;
 
         async function setupUser() {
             const session = await supabase.auth.getSession();
