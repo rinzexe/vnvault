@@ -117,8 +117,8 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
                     <TableHead></TableHead>
                 </TableHeader>
                 <TableBody>
-                    {filteredAndSortedEntries.map((entry: IVNVaultEntry) => (
-                        <VNRow vnData={entry.vn} rating={entry.rating} entry={entry} isMe={isMe} fields={[entry.status, new Date(entry.updatedAt).toLocaleDateString(), new Date(entry.createdAt).toLocaleDateString()]} />
+                    {filteredAndSortedEntries.map((entry, id: number) => (
+                        <VNRow key={id} vnData={entry.vn} rating={entry.rating} entry={entry} isMe={isMe} fields={[entry.status, new Date(entry.updatedAt).toLocaleDateString(), new Date(entry.createdAt).toLocaleDateString()]} />
                     ))}
                 </TableBody>
             </Table>
@@ -128,8 +128,8 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
     const renderCardView = () => (
         isLoading ? <VNCardSkeleton /> : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredAndSortedEntries.map((entry) => (
-                    <VNCard vnData={entry.vn} entry={entry} isMe={isMe} date={new Date(entry.updatedAt).toLocaleDateString()} rating={entry.rating} badgeText={entry.status} />
+                {filteredAndSortedEntries.map((entry, id: number) => (
+                    <VNCard key={id} vnData={entry.vn} entry={entry} isMe={isMe} date={new Date(entry.updatedAt).toLocaleDateString()} rating={entry.rating} badgeText={entry.status} />
                 ))}
             </div>
         )
@@ -138,8 +138,8 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
     const renderCompactView = () => (
         isLoading ? <VNCompactSkeleton /> : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-4">
-                {filteredAndSortedEntries.map((entry) => (
-                    <VNCompact vnData={entry.vn} entry={entry} isMe={isMe} rating={entry.rating} imageText={entry.status} />
+                {filteredAndSortedEntries.map((entry, id: number) => (
+                    <VNCompact key={id} vnData={entry.vn} entry={entry} isMe={isMe} rating={entry.rating} imageText={entry.status} />
                 ))}
             </div>
         )

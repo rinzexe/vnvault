@@ -103,8 +103,8 @@ export default function SearchPage() {
           <TableHead className="text-right">Rating</TableHead>
         </TableHeader>
         <TableBody>
-          {searchResults.map((vn: IVN) => (
-            <VNRow vnData={vn} fields={[vn.released]} rating={vn.rating} />
+          {searchResults.map((vn: IVN, id: number) => (
+            <VNRow key={id} vnData={vn} fields={[vn.released]} rating={vn.rating} />
           ))}
         </TableBody>
       </Table >
@@ -114,9 +114,9 @@ export default function SearchPage() {
   const renderCardView = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {isLoading ? <VNCardSkeleton /> : (
-        searchResults.map((vn: IVN) => (
+        searchResults.map((vn: IVN, id: number) => (
           <Link href={"/novel/" + vn.id}>
-            <VNCard vnData={vn} rating={vn.rating!} date={vn.released} />
+            <VNCard key={id} vnData={vn} rating={vn.rating!} date={vn.released} />
           </Link>
         ))
       )}
@@ -128,8 +128,8 @@ export default function SearchPage() {
       {isLoading ? (
         <VNCompactSkeleton />
       ) : (
-        searchResults.map((vn: IVN) => (
-          <VNCompact vnData={vn} rating={vn.rating} />
+        searchResults.map((vn: IVN, id: number) => (
+          <VNCompact key={id} vnData={vn} rating={vn.rating} />
         ))
       )}
     </div>
