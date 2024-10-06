@@ -56,11 +56,12 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
                     } else if (key in entry.vn) {
                         return entry.vn[key as keyof IVN];
                     }
-                    return null;
                 }
 
                 const valueA = getSortValue(a, sortBy);
                 const valueB = getSortValue(b, sortBy);
+
+                if (valueA === undefined || valueB === undefined) return 0; 
 
                 if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
                 if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
