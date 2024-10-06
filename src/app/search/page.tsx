@@ -115,8 +115,8 @@ export default function SearchPage() {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {isLoading ? <VNCardSkeleton /> : (
         searchResults.map((vn: IVN, id: number) => (
-          <Link href={"/novel/" + vn.id}>
-            <VNCard key={id} vnData={vn} rating={vn.rating!} date={vn.released} />
+          <Link key={id} href={"/novel/" + vn.id}>
+            <VNCard vnData={vn} rating={vn.rating!} date={vn.released} />
           </Link>
         ))
       )}

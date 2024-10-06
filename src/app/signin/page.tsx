@@ -80,7 +80,7 @@ export default function SignInPage() {
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
                     <div className="text-sm text-center text-muted-foreground">
-                        Don't have an account? <a href="/signup" className="underline">Sign up</a>
+                        {"Don't have an account?"} <a href="/signup" className="underline">Sign up</a>
                     </div>
                     <div className="text-sm text-center text-muted-foreground">
                         <a href="/forgot-password" className="underline">Forgot password?</a>
