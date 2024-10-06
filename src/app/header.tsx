@@ -85,7 +85,7 @@ export default function Header() {
     <Card className="absolute mt-2 w-full z-50">
       <CardContent className="p-2">
         {searchResults.map((result) => (
-          <Link key={result.id} href={`/vn/${result.id}`} className="flex items-center p-2 hover:bg-accent rounded-md" onClick={closeSheet}>
+          <Link key={result.id} href={`/novel/${result.id}`} className="flex items-center p-2 hover:bg-accent rounded-md" onClick={clearSearch}>
             <Image
               src={result.cover.url}
               alt={result.title}
@@ -176,15 +176,15 @@ export default function Header() {
       <div className="max-w-screen-xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/search" className="flex items-center space-x-2">
               <span className="font-bold text-xl text-primary">VNVault</span>
             </Link>
             <nav className="hidden md:flex space-x-4">
               <Link href="/search?q=fullmetaldaemonmuramasa" className="text-muted-foreground hover:text-primary transition-colors">
                 Browse
               </Link>
-              <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                About
+              <Link href="/changelog" className="text-muted-foreground hover:text-primary transition-colors">
+                Changelog
               </Link>
             </nav>
           </div>
@@ -211,8 +211,8 @@ export default function Header() {
                       <Link href="/search" className="text-muted-foreground hover:text-primary transition-colors" onClick={closeSheet}>
                         Browse
                       </Link>
-                      <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors" onClick={closeSheet}>
-                        About
+                      <Link href="/changelog" className="text-muted-foreground hover:text-primary transition-colors" onClick={closeSheet}>
+                        Changelog
                       </Link>
                       <Separator className="my-4" />
                       {auth.user ? (

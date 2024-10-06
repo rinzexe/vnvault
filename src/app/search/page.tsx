@@ -47,6 +47,7 @@ export default function SearchPage() {
     async function fetchData() {
       if (searchTerm) {
         setIsLoading(true)
+        router.push(`?q=${searchTerm}`)
         const res = await getVnBySearch(search[0], search[1], search[2])
 
         setSearchResults(res)
@@ -55,8 +56,6 @@ export default function SearchPage() {
         setSearchResults([])
       }
     }
-
-    router.push(`?q=${searchTerm}`)
 
     fetchData()
   }, [search])

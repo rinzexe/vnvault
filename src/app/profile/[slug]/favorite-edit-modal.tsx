@@ -50,6 +50,7 @@ export default function FavoriteEditModal({ username, type }: FavoriteEditModalP
                 ) as IVNBasic[]);
             } else if (type === "character") {
                 res = await getCharacterBySearch(search) as ICharacterBasic[];
+                console.log(res)
                 const favCharacters = userData.favoriteCharacters as ICharacterBasic[];
 
                 setTempFavorites([...tempFavorites, ...favCharacters].filter((item, index, self) =>
@@ -76,7 +77,8 @@ export default function FavoriteEditModal({ username, type }: FavoriteEditModalP
 
         if (type === "vn") {
             await auth.db.users.updateUser(auth.user?.id!, { favorite_novels: (newFavs as IVNBasic[]).map((fav) => "v" + fav.id) });
-        } else if (type === "character") {
+        } 
+        else if (type === "character") {
             await auth.db.users.updateUser(auth.user?.id!, { favorite_characters: (newFavs as ICharacterBasic[]).map((fav) => "c" + fav.id) });
         }
 
@@ -126,7 +128,7 @@ export default function FavoriteEditModal({ username, type }: FavoriteEditModalP
                                         />
                                     ) : (
                                         <img
-                                            src={result.image.url}
+                                            src={result.image?.url!}
                                             alt={result.name} 
                                             width={32}
                                         />

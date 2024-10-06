@@ -67,27 +67,18 @@ export async function getCharactersById(id: number | number[]) {
     }
 }
 
-export async function getCharacterBySearch(query: string): Promise<ICharacterBasic[]> {
-    const res: any = await request({ endpoint: "character", filters: ["search", "=", query] })
-
-    return parseCharacter(res)
-}
-
 export async function getVnBySearch(query: string, filters?: IVNFilters, sort?: IVNSort): Promise<IVN[]> {
-    let requestData: IRequestParams = { endpoint: "vn"}
+    let requestData: IRequestParams = { endpoint: "vn", filters:  ["and", ["search", "=", query]] }
 
-    let parsedFilters: any[] = ["and", ["search", "=", query]]
 
     if (filters) {
         if (filters.rating) {
-            parsedFilters.push(["rating", ">=", filters.rating[0] * 10])
-            parsedFilters.push(["rating", "<=", filters.rating[1] * 10])
+            requestData.filters?.push(["rating", ">=", filters.rating[0] * 10])
+            requestData.filters?.push(["rating", "<=", filters.rating[1] * 10])
         }
-
-        requestData.filters = parsedFilters
     }
 
-    
+
     if (sort) {
         requestData.sort = sort
     }
@@ -95,4 +86,12 @@ export async function getVnBySearch(query: string, filters?: IVNFilters, sort?: 
     const res: any = await request(requestData)
 
     return parseVn(res)
+}
+
+export async function getCharacterBySearch(query: string): Promise<ICharacterBasic[]> {
+    let requestData: IRequestParams = { endpoint: "character", filters: ["and", ["search", "=", query]] }
+
+    const res: any = await request(requestData)
+
+    return parseCharacter(res)
 }
