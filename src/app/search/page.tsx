@@ -1,384 +1,238 @@
 'use client'
 
-import { getRandomSuggestionPlaceholder } from "@/utils/placeholders"
-import { useEffect, useState } from "react"
+import { useState, useEffect, useMemo } from "react"
+import Image from "next/image"
+import { useRouter, useSearchParams } from "next/navigation" // Import hooks to manage URL and query params
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { Search, List, Grid, LayoutGrid, SortAsc, SortDesc } from "lucide-react"
+import { IVN, IVNFilters } from "@/types/vn"
+import { Range } from "@/components/ui/range"
+import { IVNSort } from "@/types/vn"
+import useDebouncedSearch from "@/hooks/use-debounced-search"
+import { getVnBySearch } from "@/lib/vndb/search"
 import Link from "next/link"
-import RatingBadge from "../_components/rating-badge"
-import Table from "../_components/table/table"
-import Headers from "../_components/table/headers"
-import Row from "../_components/table/table-entry"
-import AccentButton from "../_components/accent-button"
-import { useAuth } from "../_components/auth-provider"
-import { getEnglishTitle } from "@/utils/vn-data"
-import { characterSearchByName, developerSearchByName, IFilters, vnSearchByDeveloper, vnSearchByName } from "@/lib/vndb/search"
-import { calculateLevel } from "@/utils/levels"
-import { getVnLengthName } from "@/utils/vn-length"
-import Filters from "../_components/table/filters"
-import ImageWithSkeleton from "../_components/image-with-skeleton"
+import VNCard, { VNCardSkeleton } from "@/components/vn-card"
+import { useAuth } from "@/components/auth-provider"
+import VNCompact, { VNCompactSkeleton } from "@/components/vn-compact"
+import VNRow from "@/components/vn-row"
 
-export default function Search() {
-    const [searchQuery, setSearchQuery] = useState<any>(" ")
-    const [searchResults, setSearchResults] = useState<any>()
-    const [sorting, setSorting] = useState({ type: "rating", asc: false })
-    const [type, setType] = useState(0)
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [filters, setFilters] = useState<IFilters>()
+type ViewMode = "list" | "card" | "compact"
 
-    const auth = useAuth()
+export default function SearchPage() {
+  const [viewMode, setViewMode] = useState<ViewMode>("list")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchResults, setSearchResults] = useState<IVN[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [sort, setSort] = useState<IVNSort>({ type: "rating", asc: false })
+  const [filters, setFilters] = useState<IVNFilters>({ rating: [1, 10] })
 
-    useEffect(() => {
+  const search = useDebouncedSearch([searchTerm, filters, sort])
+
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const query = searchParams.get("q") || "" // Get the 'q' param from URL
+    setSearchTerm(query) // Set searchTerm based on query param
+  }, [searchParams])
+
+  useEffect(() => {
+    async function fetchData() {
+      if (searchTerm) {
         setIsLoading(true)
+        const res = await getVnBySearch(search[0], search[1], search[2])
+
+        setSearchResults(res)
+        setIsLoading(false)
+      } else {
         setSearchResults([])
-        async function search() {
-            if (type == 0) {
-                const results = await vnSearchByName(searchQuery.searchTerm, 50, sorting, filters)
-                setSearchResults(results)
-            }
-            else if (type == 1) {
-                const results = await auth.searchUsers(searchQuery.searchTerm)
-                setSearchResults(results)
-            }
-            else if (type == 2) {
-                const results = await characterSearchByName(searchQuery.searchTerm, 50)
-                setSearchResults(results)
-            }
-            else if (type == 3) {
-                const results = await developerSearchByName(searchQuery.searchTerm, 20)
-                console.log(results)
-                setSearchResults(results)
-            }
-            setIsLoading(false)
-        }
-        if (searchQuery) {
-            search()
-        }
-    }, [searchQuery, sorting, type, filters])
-
-    function updateType(id: number) {
-        setSearchResults([])
-        setType(id)
+      }
     }
 
-    function releasedSort() {
-        setSorting({ type: "released", asc: !sorting.asc })
-    }
+    router.push(`?q=${searchTerm}`)
 
-    function ratingSort() {
-        setSorting({ type: "rating", asc: !sorting.asc })
-    }
+    fetchData()
+  }, [search])
 
-    function titleSort() {
-        setSorting({ type: "title", asc: !sorting.asc })
-    }
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSearchTerm = e.target.value
+    setSearchTerm(newSearchTerm)
+    // Update the URL with the new search term
+  }
 
-    function nsfwFilter(id: number) {
-        if (id == 0) {
-            const newFilters = { ...filters }
-            delete newFilters['nsfw']
-            setFilters(newFilters)
-        }
-        else if (id == 1) {
-            setFilters({ ...filters, nsfw: { name: "tag", operator: "!=", value: "g23" } })
-        }
-        else if (id == 2) {
-            setFilters({ ...filters, nsfw: { name: "tag", operator: "=", value: "g23" } })
-        }
-    }
+  const SkeletonListView = () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Cover</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Rating</TableHead>
+          <TableHead>Release Date</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {Array.from({ length: 5 }).map((_, index) => (
+          <TableRow key={index}>
+            <TableCell><Skeleton className="h-[75px] w-[50px]" /></TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[150px] mt-2" />
+            </TableCell>
+            <TableCell><Skeleton className="h-4 w-[50px]" /></TableCell>
+            <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
 
-    function ratingFilter(values: number[]) {
-        setFilters({ ...filters, minRating: { name: "rating", operator: ">=", value: Math.round((values[0]) * 10).toString() }, maxRating: { name: "rating", operator: "<=", value: Math.round((values[1]) * 10).toString() } })
-    }
+  const renderListView = () => (
+    isLoading ? <SkeletonListView /> : (
+      <Table>
+        <TableHeader>
+          <TableHead>Cover</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead className="text-center">Release Date</TableHead>
+          <TableHead className="text-right">Rating</TableHead>
+        </TableHeader>
+        <TableBody>
+          {searchResults.map((vn: IVN) => (
+            <VNRow vnData={vn} fields={[vn.released]} rating={vn.rating} />
+          ))}
+        </TableBody>
+      </Table >
+    )
+  )
 
-    return (
-        <div className="flex flex-col items-center]">
-            <div className="flex flex-col gap-4 items-center">
-                <h1>Search</h1>
-                <form className="flex gap-4 mb-4 flex-col items-center lg:flex-row max-w-[85vw] w-[40rem]" action={(e) => setSearchQuery({ searchTerm: e.get('searchTerm') })}>
-                    <input name="searchTerm" placeholder={getRandomSuggestionPlaceholder()} className="panel px-4 max-w-full w-[30rem] py-2 focus:outline-none flex-grow" type="text" />
-                    <button type="submit" className="panel px-4 py-2 focus:outline-none hidden lg:block lg:w-fit max-w-full w-[30rem]">Search</button>
-                </form>
-                <div className="flex gap-4  w-full">
-                    <div className="w-full">
-                        {true ? (
-                            type == 0 ? (
-                                <VNTable releasedSort={releasedSort} type={type} ratingFilter={ratingFilter} updateType={updateType} filters={filters} nsfwFilter={nsfwFilter} titleSort={titleSort} isLoading={isLoading} ratingSort={ratingSort} searchResults={searchResults} sorting={sorting} />
-                            ) : (
-                                type == 1 ? (
-                                    <UserTable type={type} updateType={updateType} isLoading={isLoading} sorting={sorting} titleSort={titleSort} searchResults={searchResults} />
-                                ) : (
-                                    type == 2 ? (
-                                        <CharacterTable type={type} updateType={updateType} isLoading={isLoading} titleSort={titleSort} searchResults={searchResults} sorting={sorting} />
-                                    ) : (
-                                        <DeveloperTable type={type} updateType={updateType} isLoading={isLoading} titleSort={titleSort} searchResults={searchResults} sorting={sorting} />
-                                    )
-                                )
-                            )
-                        ) : (
-                            <div>
-                                <p>No results :(</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
+  const renderCardView = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {isLoading ? <VNCardSkeleton /> : (
+        searchResults.map((vn: IVN) => (
+          <Link href={"/novel/" + vn.id}>
+            <VNCard vnData={vn} rating={vn.rating!} date={vn.released} />
+          </Link>
+        ))
+      )}
+    </div>
+  )
+
+  const renderCompactView = () => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-2">
+      {isLoading ? (
+        <VNCompactSkeleton />
+      ) : (
+        searchResults.map((vn: IVN) => (
+          <VNCompact vnData={vn} rating={vn.rating} />
+        ))
+      )}
+    </div>
+  )
+
+  return (
+    <div className="container mx-auto py-8  max-w-screen-xl">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+        <h1 className="text-3xl font-bold">Search Visual Novels</h1>
+        <div className="hidden md:block">
+          <ToggleGroup type="single" value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
+            <ToggleGroupItem value="list" aria-label="List View">
+              <List className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="card" aria-label="Card View">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="compact" aria-label="Compact View">
+              <Grid className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
-    )
-}
-
-function VNTable({ searchResults, releasedSort, sorting, filters, titleSort, ratingSort, type, updateType, nsfwFilter, ratingFilter, isLoading }: any) {
-
-    return (
-        <Table
-            isLoading={isLoading}
-            acceptedTypes={{ card: true, row: true }}
-            filters={{
-                filters: [
-                    {
-                        label: "Type",
-                        dropdownSettings: {
-                            labels: ['Visual Novels', 'Users', 'Characters'],
-                            selected: type,
-                        },
-                        type: 'dropdown',
-                        callback: updateType
-                    },
-                    {
-                        label: "Content",
-                        dropdownSettings: {
-                            labels: ['SFW & NSFW', 'SFW', 'NSFW'],
-                            selected: filters?.nsfw ?
-                                filters.nsfw.operator == "=" ?
-                                    2 : 1 : 0,
-                        },
-                        type: 'dropdown',
-                        callback: nsfwFilter
-                    },
-                    {
-                        label: "Rating",
-                        type: 'range',
-                        rangeSettings: {
-                            valueLimits: [1, 10]
-                        },
-                        callback: ratingFilter
-                    }]
-            }}
-            headers={{
-                sort: {
-                    type:
-                        sorting.type == "rating" ? 3 :
-                            sorting.type == "released" ? 2 : 0,
-                    asc: sorting.asc
-                },
-                fields: ['Length', 'Released', 'Rating'],
-                sortingCallback: [titleSort, , releasedSort, ratingSort]
-            }}
-            entries={
-                searchResults && searchResults.map((result: any, id: number) => {
-                    return {
-                        cardFields: {
-                            right: <RatingBadge className="mt-4" rating={result.rating / 10} />,
-                            left:
-                                (<div className="*:text-center">
-                                    <p>
-                                        {getVnLengthName(result.length)}
-                                    </p>
-                                </div>)
-                        },
-                        hasIcon: true,
-                        href: "/novel/" + result.id,
-                        dims: result.image && result.image.thumbnail_dims,
-                        iconUrl: result.image && result.image.thumbnail,
-                        fields: [(
-                            <div key={id} className="*:text-center">
-                                <p>
-                                    {getVnLengthName(result.length)}
-                                </p>
-                            </div>
-                        ), (
-                            <p key={id}>{result.released}</p>
-                        ), (
-                            <RatingBadge key={id} rating={result.rating / 10} />
-                        )],
-                        title: getEnglishTitle(result),
-                        subtitle: result.alttitle
-                    }
-                })
-            }
-        />
-    )
-}
-
-function UserTable({ searchResults, titleSort, sorting, isLoading, type, updateType }: any) {
-    return (
-        <Table
-            isLoading={isLoading}
-            acceptedTypes={{ card: false, row: true }}
-            filters={{
-                filters: [
-                    {
-                        label: "Type",
-                        dropdownSettings: {
-                            labels: ['Visual Novels', 'Users', 'Characters'],
-                            selected: type,
-                        },
-                        type: 'dropdown',
-                        callback: updateType
-                    },
-                ]
-            }}
-            headers={{
-                sort: {
-                    type: 0,
-                    asc: sorting.asc
-                },
-                fields: ['Level'],
-                sortingCallback: [titleSort],
-                leftPadding: 12
-            }}
-            entries={
-                searchResults && searchResults.map((result: any, id: number) => {
-                    return {
-                        hasIcon: true,
-                        key: id,
-                        href: "/profile/" + result.username,
-                        avatarUser: result,
-                        fields: [<h3 key={id} className="pr-[12px] text-white">{calculateLevel(result.xp).level}</h3>],
-                        title: result.username,
-                        subtitle: result.alttitle
-                    }
-                })
-            } />
-    )
-
-}
-
-function CharacterTable({ searchResults, titleSort, sorting, isLoading, type, updateType }: any) {
-
-    return (
-        <Table
-            isLoading={isLoading}
-            acceptedTypes={{ card: true, row: true }}
-            filters={{
-                filters: [
-                    {
-                        label: "Type",
-                        dropdownSettings: {
-                            labels: ['Visual Novels', 'Users', 'Characters'],
-                            selected: type,
-                        },
-                        type: 'dropdown',
-                        callback: updateType
-                    },
-                ]
-            }}
-            headers={{
-                sort: {
-                    type: 0,
-                    asc: sorting.asc
-                },
-                fields: [],
-                sortingCallback: [titleSort],
-            }}
-            entries={
-                searchResults && searchResults.map((result: any, id: number) => {
-                    console.log(result)
-                    return {
-                        cardFields: {
-                            right: <p className="text-right text-sm text-neutral-500">{result.vns[0].title}</p>,
-                            left:
-                                (<div>
-
-                                </div>)
-                        },
-                        hasIcon: true,
-                        key: id,
-                        href: "/character/" + result.id,
-                        iconUrl: result.image && result.image.url,
-                        dims: result.image && result.image.dims,
-                        fields: [],
-                        title: result.name
-                    }
-                })
-            } />
-    )
-}
-
-function DeveloperTable({ searchResults, titleSort, sorting, isLoading, type, updateType }: any) {
-    const [isLoadingVns, setIsLoadingVns] = useState<boolean>(true)
-    const [vnData, setVnData] = useState<any>([])
-
-    useEffect(() => {
-        setIsLoadingVns(true)
-        async function fetchVnData() {
-            if (searchResults.length > 0) {
-                const vnDataRes = await vnSearchByDeveloper(searchResults.map((result: any) => result.id))
-
-                var vnDataArray: any = []
-                searchResults.forEach((result: any) => {
-                    var vnArray: any = []
-                    vnDataRes.forEach((vnRes: any) => {
-                        if (vnRes.developers.find((z: any) => z.id == result.id)) {
-                            vnArray.push(vnRes)
-                        }
-                    });
-                    vnDataArray.push(vnArray.slice(0, 3))
-                });
-
-                console.log(vnDataArray)
-                setVnData(vnDataArray)
-                setIsLoadingVns(false)
-            }
-        }
-        console.log(searchResults)
-        if (searchResults.length > 0) {
-            fetchVnData()
-        }
-
-    }, [searchResults])
-
-    return (
-        <Table
-            isLoading={isLoadingVns}
-            acceptedTypes={{ card: false, row: true }}
-            filters={{
-                filters: [
-                    {
-                        label: "Type",
-                        dropdownSettings: {
-                            labels: ['Visual Novels', 'Users', 'Characters', 'Developers'],
-                            selected: type,
-                        },
-                        type: 'dropdown',
-                        callback: updateType
-                    },
-                ]
-            }}
-            headers={{
-                sort: {
-                    type: 0,
-                    asc: sorting.asc
-                },
-                fields: ['Works'],
-                sortingCallback: [titleSort],
-            }}
-            entries={
-                searchResults.length > 0 ? searchResults.map((result: any, id: number) => {
-                    return {
-                        key: id,
-                        href: "/producer/" + result.id,
-                        fields: [!isLoadingVns &&
-                            (
-                                <div className="flex items-center gap-2">
-                                    {vnData[id].map((data: any, index: number) => {
-                                        return (
-                                            <ImageWithSkeleton key={index} className="!w-14" allClassName="!rounded-md" dims={data.image.thumbnail_dims} src={data.image && data.image.thumbnail}></ImageWithSkeleton>
-                                        )
-                                    })}
-                                </div>
-                            )],
-                        title: result.name
-                    }
-                }) : []
-            } />
-    )
+      </div>
+      <div className="flex flex-col lg:items-end lg:flex-row gap-4 mb-6">
+        <div className="flex-grow">
+          <div className="flex items-center space-x-2 w-full">
+            <Search className="w-5 h-5 text-gray-400" />
+            <Input
+              placeholder="Search visual novels..."
+              value={searchTerm}
+              onChange={handleSearchInput} // Updated to handle input change and update URL
+              className="w-full"
+            />
+          </div>
+        </div>
+        <div className="flex-grow">
+          <Label>Rating Range</Label>
+          <div className="flex items-center mt-2 space-x-4">
+            <Input
+              type="number"
+              min={1}
+              max={10}
+              step={0.1}
+              value={filters?.rating![0]}
+              onChange={(e) => setFilters({ ...filters, rating: [parseFloat(e.target.value), filters.rating![1]] })}
+              className="w-20"
+            />
+            <Range
+              min={1}
+              max={10}
+              step={0.1}
+              value={filters.rating}
+              defaultValue={[0.5, 0.6]}
+              onValueChange={(e) => setFilters({ rating: e })}
+              className="flex-grow"
+            />
+            <Input
+              type="number"
+              min={1}
+              max={10}
+              step={0.1}
+              value={filters.rating![1]}
+              onChange={(e) => setFilters({ rating: [filters.rating![0], parseFloat(e.target.value)] })}
+              className="w-20"
+            />
+          </div>
+        </div>
+        <div className="flex gap-2 justify-between">
+          <div className="flex gap-2">
+            <Select value={sort.type} onValueChange={(value: "title" | "rating" | "releaseDate") => setSort({ type: value, asc: sort.asc })}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">Title</SelectItem>
+                <SelectItem value="rating">Rating</SelectItem>
+                <SelectItem value="releaseDate">Release Date</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="icon" onClick={() => setSort({ asc: !sort.asc, type: sort.type })}>
+              {sort.asc === true ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+            </Button>
+          </div>
+          <div className="md:hidden">
+            <ToggleGroup type="single" value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
+              <ToggleGroupItem value="list" aria-label="List View">
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="card" aria-label="Card View">
+                <LayoutGrid className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="compact" aria-label="Compact View">
+                <Grid className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+        </div>
+      </div>
+      <div>
+        {viewMode === "list" && renderListView()}
+        {viewMode === "card" && renderCardView()}
+        {viewMode === "compact" && renderCompactView()}
+      </div>
+    </div>
+  )
 }

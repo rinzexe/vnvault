@@ -1,249 +1,208 @@
 'use client'
 
-import AccentButton from "@/app/_components/accent-button"
-import { useAuth } from "@/app/_components/auth-provider"
-import RatingBadge from "@/app/_components/rating-badge"
-import EditSVG from "@/app/_components/svgs/edit"
-import Headers from "@/app/_components/table/headers"
-import Row from "@/app/_components/table/table-entry"
-import Table from "@/app/_components/table/table"
-import VaultEditor from "@/app/_components/vault-editor"
-import { vnSearchByIdList } from "@/lib/vndb/search"
-import { getVaultStatusText } from "@/utils/vault"
-import { getEnglishTitle } from "@/utils/vn-data"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { createPortal } from "react-dom"
-import { getVnLengthName } from "@/utils/vn-length"
+import { useState, useMemo, useEffect } from "react"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Search, SortAsc, SortDesc, List, Grid, LayoutGrid } from "lucide-react"
+import { IVaultStatus, IVNVaultEntry } from "@/types/vault"
+import { IVN } from "@/types/vn"
+import { useAuth } from "@/components/auth-provider"
+import VaultEdit from "@/components/vault-edit"
+import VNCard, { VNCardSkeleton } from "@/components/vn-card"
+import VNCompact, { VNCompactSkeleton } from "@/components/vn-compact"
+import VNRow from "@/components/vn-row"
+import useIsMe from "@/hooks/use-is-me"
 
-export default function Vault({ params }: { params: { slug: string } }) {
-    const [entries, setEntries] = useState<any>()
-    const [isMe, setIsMe] = useState<boolean>(false)
-    const [isEditing, setIsEditing] = useState<boolean>(false)
-    const [editingVid, setEditingVid] = useState<any>()
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [filters, setFilters] = useState<{ state: number, nsfw: number }>({ state: -1, nsfw: 0 })
-    const [sorting, setSorting] = useState({ type: "rating", asc: false })
+type ViewMode = "list" | "card" | "compact"
+
+export default function VaultPage({ params }: { params: { slug: string } }) {
+    const [viewMode, setViewMode] = useState<ViewMode>("list")
+    const [searchTerm, setSearchTerm] = useState("")
+    const [sortBy, setSortBy] = useState<keyof IVNVaultEntry | keyof IVN>("rating")
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+    const [statusFilter, setStatusFilter] = useState<IVaultStatus | "All">("All")
+    const [entryData, setEntryData] = useState<IVNVaultEntry[]>([])
+    const [isLoading, setIsLoading] = useState(true)
 
     const auth = useAuth()
+    const isMe = useIsMe(params.slug)
 
     useEffect(() => {
-        async function fetchVault() {
-            var res: any
-            filters.state > -1 ?
-                res = await auth.getVault(params.slug, sorting.type != "title" ? sorting : { type: "rating", asc: false }, filters.state) :
-                res = await auth.getVault(params.slug, sorting.type != "title" ? sorting : { type: "rating", asc: false })
+        async function fetchData() {
+            const res = await auth.db.users.getUserProfileByName(params.slug)
 
-            if (res.length > 0) {
-                if (auth.user) {
-                    const userData = await auth.getUserData(auth.user.id)
-
-                    if (userData.username == params.slug) {
-                        setIsMe(true)
-                    }
-                }
-
-                var queries: any = []
-
-                res.forEach((e: any) => {
-                    queries.push(e.vid)
-                });
-
-                const vnData = await vnSearchByIdList(queries, sorting.type == "title" ? sorting : undefined)
-
-                var filteredVnData: any = []
-                var filteredResData: any = []
-
-                if (filters.nsfw == 0) {
-                    filteredVnData = vnData
-                    filteredResData = res
-                }
-                else if (filters.nsfw == 1) {
-                    vnData.forEach((data: any, id: number) => {
-                        if (data.tags.find((tag: any) => tag.id == "g23")) {
-
-                        }
-                        else {
-                            filteredResData.push(res.find((r:any) => r.vid == data.id))
-                            filteredVnData.push(data)
-                        }
-                    });
-                }
-                else if (filters.nsfw == 2) {
-                    vnData.forEach((data: any, id: number) => {
-                        if (data.tags.find((tag: any) => tag.id == "g23")) {
-                            filteredResData.push(res.find((r:any) => r.vid == data.id))
-                            filteredVnData.push(data)
-                        }
-                        else {
-
-                        }
-                    });
-                }
-
-                var finalEntryDataArray: any = []
-
-                if (sorting.type != "title") {
-                    filteredResData.forEach((e: any, id: number) => {
-                        const thisRes = filteredVnData.find((y: any) => e.vid == y.id)
-                        console.log(e)
-                        finalEntryDataArray.push({
-                            ...e,
-                            title: thisRes.title,
-                            alttitle: thisRes.alttitle,
-                            imageUrl: thisRes.image.url,
-                            imageDims: thisRes.image.dims,
-                            titles: thisRes.titles
-                        })
-                    });
-                }
-                else {
-                    filteredVnData.forEach((e: any, id: number) => {
-                        const thisRes = filteredResData.find((y: any) => y.vid == e.id)
-                        finalEntryDataArray.push({
-                            ...e,
-                            imageUrl: e.image.url,
-                            imageDims: e.image.dims,
-                            created_at: thisRes.created_at,
-                            updated_at: thisRes.updated_at,
-                            rating: thisRes.rating,
-                            status: thisRes.status
-                        })
-                    });
-                }
-            }
-
-            setEntries(finalEntryDataArray)
+            setEntryData(res.vault.entries)
             setIsLoading(false)
         }
+        fetchData()
+    }, [auth, params.slug])
 
-        setEntries(undefined)
-        setIsLoading(true)
-        fetchVault()
-    }, [isEditing, sorting, filters])
+    const filteredAndSortedEntries = useMemo(() => {
+        return entryData
+            .filter(entry =>
+                (entry.vn.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                (statusFilter === "All" || entry.status === statusFilter)
+            )
+            .sort((a, b) => {
+                const getSortValue = (entry: IVNVaultEntry, key: keyof IVNVaultEntry | keyof IVN) => {
+                    if (key in entry) {
+                        return entry[key as keyof IVNVaultEntry];
+                    } else if (key in entry.vn) {
+                        return entry.vn[key as keyof IVN];
+                    }
+                    return null;
+                }
 
-    function ratingSort() {
-        setSorting({ type: "rating", asc: !sorting.asc })
+                const valueA = getSortValue(a, sortBy);
+                const valueB = getSortValue(b, sortBy);
+
+                if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+                if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+                return 0;
+            });
+    }, [entryData, searchTerm, sortBy, sortOrder, statusFilter])
+
+    const toggleSortOrder = () => {
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc")
     }
 
-    function titleSort() {
-        setSorting({ type: "title", asc: !sorting.asc })
-    }
+    const SkeletonListView = () => (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Cover</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Last Updated</TableHead>
+                    <TableHead>Created Date</TableHead>
+                    <TableHead className="text-right">Rating</TableHead>
+                    <TableHead></TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                        <TableCell><Skeleton className="h-[75px] w-[50px]" /></TableCell>
+                        <TableCell>
+                            <Skeleton className="h-4 w-[200px]" />
+                            <Skeleton className="h-4 w-[150px] mt-2" />
+                        </TableCell>
+                        <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-4 w-[50px] ml-auto" /></TableCell>
+                        <TableCell><Skeleton className="h-8 w-8 rounded-full" /></TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    )
 
-    function lastUpdateSort() {
-        setSorting({ type: "updated_at", asc: !sorting.asc })
-    }
+    const renderListView = () => (
+        isLoading ? <SkeletonListView /> : (
+            <Table>
+                <TableHeader>
+                    <TableHead>Cover</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                    <TableHead className="text-center">Last Updated</TableHead>
+                    <TableHead className="text-center">Created Date</TableHead>
+                    <TableHead className="text-right">Rating</TableHead>
+                    <TableHead></TableHead>
+                </TableHeader>
+                <TableBody>
+                    {filteredAndSortedEntries.map((entry: IVNVaultEntry) => (
+                        <VNRow vnData={entry.vn} rating={entry.rating} entry={entry} isMe={isMe} fields={[entry.status, new Date(entry.updatedAt).toLocaleDateString(), new Date(entry.createdAt).toLocaleDateString()]} />
+                    ))}
+                </TableBody>
+            </Table>
+        )
+    )
 
-    function statusSort() {
-        setSorting({ type: "status", asc: !sorting.asc })
-    }
+    const renderCardView = () => (
+        isLoading ? <VNCardSkeleton /> : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredAndSortedEntries.map((entry) => (
+                    <VNCard vnData={entry.vn} entry={entry} isMe={isMe} date={new Date(entry.updatedAt).toLocaleDateString()} rating={entry.rating} badgeText={entry.status} />
+                ))}
+            </div>
+        )
+    )
 
-    const modalContent: any = document.getElementById('modal-content');
-
-    function toggleEditing(entry: any) {
-        setEditingVid(entry.vid)
-        setIsEditing(true)
-    }
-
-    function nsfwFilter(id: number) {
-        setFilters({ ...filters, nsfw: id })
-    }
+    const renderCompactView = () => (
+        isLoading ? <VNCompactSkeleton /> : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-4">
+                {filteredAndSortedEntries.map((entry) => (
+                    <VNCompact vnData={entry.vn} entry={entry} isMe={isMe} rating={entry.rating} imageText={entry.status} />
+                ))}
+            </div>
+        )
+    )
 
     return (
-        <div className="flex flex-col items-center w-full">
-            {modalContent && isEditing && createPortal((
-                <div className="fixed w-full h-full flex items-center justify-center bg-black/75 z-50">
-                    <div onClick={() => { setIsEditing(false) }} className="fixed w-full h-full">
-                    </div>
-                    <VaultEditor isInVault={true} setIsEditing={setIsEditing} vid={editingVid} />
+        <div className=" w-full py-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+                <h1 className="text-3xl font-bold">{params.slug + "'s VNVault"}</h1>
+                <ToggleGroup type="single" value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
+                    <ToggleGroupItem value="list" aria-label="List View">
+                        <List className="h-4 w-4" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="card" aria-label="Card View">
+                        <LayoutGrid className="h-4 w-4" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="compact" aria-label="Compact View">
+                        <Grid className="h-4 w-4" />
+                    </ToggleGroupItem>
+                </ToggleGroup>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="flex items-center space-x-2 w-full sm:w-auto">
+                    <Search className="w-5 h-5 text-gray-400" />
+                    <Input
+                        placeholder="Search visual novels..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full sm:w-auto"
+                    />
                 </div>
-            ), modalContent)}
-            <div className="flex flex-col w-full items-center overflow-scoll gap-2 max-w-page">
-                <div className="flex flex-col gap-8 lg:gap-0 lg:grid grid-cols-3 items-center w-full mb-8">
-                    <Link className="w-fit self-start" href={"/profile/" + params.slug}>
-                        <p className="text-sm text-neutral-500 w-fit hover:text-white duration-300">
-                            {"<- Back to profile"}
-                        </p>
-                    </Link>
-                    <h1 className="text-center">
-                        {params.slug + "'s VNVault"}
-                    </h1>
+                <div className="flex space-x-2 w-full sm:w-auto">
+                    <Select value={sortBy} onValueChange={(value) => setSortBy(value as keyof IVN)}>
+                        <SelectTrigger className="w-full sm:w-[180px]">
+                            <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="title">Title</SelectItem>
+                            <SelectItem value="rating">Rating</SelectItem>
+                            <SelectItem value="updatedAt">Last Updated</SelectItem>
+                            <SelectItem value="createdAt">Created Date</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="icon" onClick={toggleSortOrder}>
+                        {sortOrder === "asc" ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                    </Button>
+                    <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as IVaultStatus | "All")}>
+                        <SelectTrigger className="w-full sm:w-[180px]">
+                            <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="All">All</SelectItem>
+                            <SelectItem value={IVaultStatus.Finished}>{IVaultStatus.Finished}</SelectItem>
+                            <SelectItem value={IVaultStatus.Reading}>{IVaultStatus.Reading}</SelectItem>
+                            <SelectItem value={IVaultStatus.Dropped}>{IVaultStatus.Dropped}</SelectItem>
+                            <SelectItem value={IVaultStatus.ToRead}>{IVaultStatus.ToRead}</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
-                <Table
-                    acceptedTypes={{ card: true, row: true }}
-                    isLoading={isLoading}
-                    headers={{
-                        leftPadding: isMe ? 104 : 0,
-                        sort: {
-                            type:
-                                sorting.type == "rating" ? 3 :
-                                    sorting.type == "updated_at" ? 1 :
-                                        sorting.type == "status" ? 2 :
-                                            0,
-                            asc: sorting.asc
-                        },
-                        fields: ['Updated', 'Status', 'Rating'],
-                        sortingCallback: [titleSort, lastUpdateSort, statusSort, ratingSort]
-                    }}
-                    filters={{
-                        filters: [
-                            {
-                                label: "State",
-                                dropdownSettings: {
-                                    labels: ['All', 'Finished', 'In progress', 'To-read', 'Dropped'],
-                                    selected: filters.state + 1,
-                                },
-                                type: 'dropdown',
-                                callback: (newValue: any) => setFilters({ ...filters, state: newValue - 1 })
-                            },
-                            {
-                                label: "Content",
-                                dropdownSettings: {
-                                    labels: ['SFW & NSFW', 'SFW', 'NSFW'],
-                                    selected: filters.nsfw
-                                },
-                                type: 'dropdown',
-                                callback: nsfwFilter
-                            },
-                        ]
-                    }}
-                    entries={
-                        entries && entries.map((entry: any, id: number) => {
-                            return {
-                                cardFields: {
-                                    right: <RatingBadge className="mt-4" rating={entry.rating} />,
-                                    left:
-                                        (<div className="*:text-center">
-                                            <p>
-                                                {getVnLengthName(entry.length)}
-                                            </p>
-                                        </div>)
-                                },
-                                key: id,
-                                href: "/novel/" + entry.vid,
-                                fields: [
-                                    <p key={id} className="">{entry.updated_at.split('T')[0]}</p>,
-                                    <p key={id} className="">{getVaultStatusText(entry.status)}</p>,
-                                    entry.rating ? <RatingBadge rating={entry.rating} /> : <p className="text-right ">Unrated</p>
-                                ],
-                                iconUrl: entry.imageUrl,
-                                dims: entry.imageDims,
-                                hasIcon: true,
-                                title: getEnglishTitle(entry),
-                                subtitle: entry.alttitle,
-                                actionContent: isMe && (
-                                    <div onClick={() => toggleEditing(entry)} className="group w-fit hidden lg:flex hover:cursor-pointer items-center panel py-1 px-3 duration-300 hover:bg-white/10">
-                                        <h4 className="duration-300 group-hover:text-blue-500 group-hover:font-bold">
-                                            Edit
-                                        </h4>
-                                        <EditSVG className="w-8 h-8 pl-2 stroke-white  stroke-2 group-hover:stroke-[3px]  group-hover:stroke-blue-500 duration-300" />
-                                    </div>
-                                )
-                            }
-                        })
-                    }
-                />
-            </div >
-        </div >
+            </div>
+            {viewMode === "list" && renderListView()}
+            {viewMode === "card" && renderCardView()}
+            {viewMode === "compact" && renderCompactView()}
+        </div>
     )
 }
