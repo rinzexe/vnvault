@@ -1,4 +1,4 @@
-import { IVNSort } from "@/types/vn"
+import { IVNImage, IVNSort } from "@/types/vn"
 import { fieldPresets } from "./field-presets"
 import { IVN } from "@/types/vn"
 import { ICharacter } from "@/types/character"
@@ -57,8 +57,8 @@ export function parseVn(jsonRes: any) {
             rating: parseFloat((result.rating / 10).toFixed(1)),
             rateCount: result.votecount,
             length: result.length_minutes,
-            screenshots: result.screenshots,
-            cover: result.image,
+            screenshots: result.screenshots.map((screenshot: any) => { return { url: screenshot.url, resolution: screenshot.dims, nsfw: screenshot.sexual > 1 } }),
+            cover: { url: result.image.url, resolution: result.image.dims, nsfw: result.image.sexual > 1 },
             devStatus: result.devstatus,
             developers: result.developers,
             tags: result.tags

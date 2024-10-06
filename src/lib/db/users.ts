@@ -204,9 +204,7 @@ export class Users {
 
     // basic user info
     async getUserInfoById(id: string): Promise<any> {
-        console.log(id)
         const userData = await this.supabase.from('users').select('*').eq('id', id).single()
-        console.log(userData)
 
         return userData.data
     }

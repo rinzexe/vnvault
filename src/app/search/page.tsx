@@ -41,13 +41,13 @@ export default function SearchPage() {
   useEffect(() => {
     const query = searchParams.get("q") || "" // Get the 'q' param from URL
     setSearchTerm(query) // Set searchTerm based on query param
-  }, [searchParams])
+  }, [])
 
   useEffect(() => {
     async function fetchData() {
       if (searchTerm) {
         setIsLoading(true)
-        router.push(`?q=${searchTerm}`)
+        
         const res = await getVnBySearch(search[0], search[1], search[2])
 
         setSearchResults(res)
@@ -57,13 +57,13 @@ export default function SearchPage() {
       }
     }
 
+    router.push(`?q=${searchTerm}`)
     fetchData()
   }, [search])
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSearchTerm = e.target.value
     setSearchTerm(newSearchTerm)
-    // Update the URL with the new search term
   }
 
   const SkeletonListView = () => (

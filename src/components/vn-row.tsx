@@ -4,6 +4,7 @@ import { TableCell, TableRow } from "./ui/table"
 import VaultEdit from "./vault-edit"
 import { useRouter } from "next/navigation"
 import { Edit2 } from "lucide-react"
+import NSFWImage from "./nsfw-image"
 
 interface IVNRowProps {
     vnData: IVN
@@ -20,14 +21,15 @@ export default function VNRow({ vnData, entry, rating, fields, isMe }: IVNRowPro
         router.push(`/novel/${vnData.id}`);
     };
 
+    console.log(vnData.cover)
+
     return (
         <TableRow key={vnData.id} className="hover:cursor-pointer" onClick={handleNavigation}>
             <TableCell className="w-20">
-                <img
-                    src={vnData.cover.url}
-                    alt={vnData.title}
-                    width={50}
-                    height={75}
+                <NSFWImage
+                    imageUrl={vnData.cover.url}
+                    resolution={vnData.cover.resolution}
+                    isNsfw={vnData.cover.nsfw}
                     className="object-cover w-20 rounded"
                 />
             </TableCell>

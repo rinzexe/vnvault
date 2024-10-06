@@ -15,9 +15,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ChevronDown, ChevronUp, Edit, ExternalLink, Star } from "lucide-react"
 import { getCharactersByVnId, getVnById } from "@/lib/vndb/search"
-import { IVN } from "@/types/vn"
+import { IVN, IVNImage } from "@/types/vn"
 import { ICharacter } from "@/types/character"
 import { formatDescription } from "@/lib/vndb/utils"
+import NSFWImage from "@/components/nsfw-image"
+import VaultEdit from "@/components/vault-edit"
+import { IVNVaultEntry } from "@/types/vault"
+import { useAuth } from "@/components/auth-provider"
 
 interface IVNData extends IVN {
     characters: ICharacter[]
@@ -27,22 +31,37 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
     const [loading, setLoading] = useState(true)
     const [vnData, setVnData] = useState<IVNData | null>(null)
     const [displayedCharacters, setDisplayedCharacters] = useState(10)
+    const [vaultEntry, setVaultEntry] = useState<IVNVaultEntry | null>(null)
+
+    const auth = useAuth()
 
     useEffect(() => {
         async function fetchData() {
             const vnRes: IVN = await getVnById(params.slug)
             const characterRes: ICharacter[] = await getCharactersByVnId(params.slug)
 
+            const userInfoRes = await auth.db.users.getUserInfoById(auth.user?.id!)
+            const profileRes = await auth.db.users.getUserProfileByName(userInfoRes.username)
+
+            const entry = profileRes.vault.entries.find(obj => obj.vn.id == vnRes.id)
+
+            if (entry) {
+                setVaultEntry(entry)
+            }
+
             setVnData({ characters: characterRes, ...vnRes })
 
             setLoading(false)
         }
+
         fetchData()
     }, [])
 
     const loadMoreCharacters = () => {
         setDisplayedCharacters(prev => Math.min(prev + 10, vnData?.characters.length || 0))
     }
+
+    console.log(vnData)
 
     return (
         <div className="min-h-screen py-4 space-y-8 w-full">
@@ -60,11 +79,13 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                             <p className="text-xl">{vnData?.altTitle}</p>
                         )}
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <Button variant="outline">
-                            <Edit className="mr-2 h-4 w-4" /> Edit Vault
-                        </Button>
-                    </div>
+                    {vaultEntry && <div className="flex items-center space-x-4">
+                        <VaultEdit entryData={vaultEntry}>
+                            <Button variant="outline">
+                                <Edit className="mr-2 h-4 w-4" /> Edit Vault
+                            </Button>
+                        </VaultEdit>
+                    </div>}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -72,12 +93,12 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                         {loading ? (
                             <Skeleton className="w-full h-[600px]" />
                         ) : (
-                            <Image
-                                src={vnData?.cover.url}
-                                alt={`${vnData?.title} cover`}
-                                width={400}
-                                height={600}
+                            <NSFWImage
+                                imageUrl={vnData?.cover.url!}
+                                resolution={vnData?.cover.resolution!}
+                                isNsfw={vnData?.cover.nsfw!}
                                 className="w-full rounded-lg"
+                                showAdvancedNsfwMessage
                             />
                         )}
                         <Card>
@@ -200,13 +221,13 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                             <Skeleton className="h-40 w-full" />
                                         </div>
                                     ) : (
-                                        vnData?.screenshots.map((screenshot: any, index: any) => (
-                                            <Image
+                                        vnData?.screenshots.map((screenshot: IVNImage, index: any) => (
+                                            <NSFWImage
                                                 key={index}
-                                                src={screenshot.url}
-                                                alt={`Screenshot ${index + 1}`}
-                                                width={screenshot.dims[0]}
-                                                height={screenshot.dims[1]}
+                                                imageUrl={screenshot.url}
+                                                resolution={screenshot.resolution}
+                                                showAdvancedNsfwMessage
+                                                isNsfw={screenshot.nsfw}
                                                 className="rounded-lg w-full"
                                             />
                                         ))
