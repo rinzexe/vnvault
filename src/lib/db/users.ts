@@ -206,8 +206,8 @@ export class Users {
             joinedOn: userData.data.created_at.split('T')[0],
             avatarUrl: avatar.data.publicUrl,
             bio: userData.data.bio,
-            favoriteVisualNovels: favoriteNovelData,
-            favoriteCharacters: favoriteCharacterData,
+            favoriteVisualNovels: favoriteNovelData || [],
+            favoriteCharacters: favoriteCharacterData || [],
             stats: stats,
             vault: vault
         }

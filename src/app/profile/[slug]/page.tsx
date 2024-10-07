@@ -129,7 +129,7 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                             <Skeleton key={index} className="w-24 h-36 flex-shrink-0" />
                                         ))
                                     ) : (
-                                        userData?.favoriteVisualNovels.map((vn: any, index: any) => (
+                                        userData?.favoriteVisualNovels?.map((vn: any, index: any) => (
                                             <div key={index} className="w-24 flex-shrink-0">
                                                 <Image
                                                     src={vn.cover.url}
@@ -157,7 +157,7 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                             <Skeleton key={index} className="w-24 h-36 flex-shrink-0" />
                                         ))
                                     ) : (
-                                        userData?.favoriteCharacters.map((character: any, index: any) => (
+                                        userData?.favoriteCharacters?.map((character: any, index: any) => (
                                             <div key={index} className="w-24 flex-shrink-0">
                                                 <Image
                                                     src={character.image.url}
@@ -192,12 +192,12 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                     <>
                                         <div className="flex flex-col items-center">
                                             <BookOpen className="w-8 h-8 mb-2 text-primary" />
-                                            <div className="text-2xl font-bold">{userData?.stats.totalVnsInList}</div>
+                                            <div className="text-2xl font-bold">{userData?.stats?.totalVnsInList}</div>
                                             <div className="text-xs text-muted-foreground">Total VNs</div>
                                         </div>
                                         <div className="flex flex-col items-center">
                                             <Star className="w-8 h-8 mb-2 text-primary" />
-                                            <div className="text-2xl font-bold">{userData?.stats.averageRating?.toFixed(1) || 'N/A'}</div>
+                                            <div className="text-2xl font-bold">{userData?.stats?.averageRating?.toFixed(1) || 'N/A'}</div>
                                             <div className="text-xs text-muted-foreground">Avg Rating</div>
                                         </div>
                                         <div className="flex flex-col items-center">
@@ -207,7 +207,7 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                         </div>
                                         <div className="flex flex-col items-center">
                                             <BarChart2 className="w-8 h-8 mb-2 text-primary" />
-                                            <div className="text-2xl font-bold">{userData?.stats.ratedVns}</div>
+                                            <div className="text-2xl font-bold">{userData?.stats?.ratedVns}</div>
                                             <div className="text-xs text-muted-foreground">Rated</div>
                                         </div>
                                     </>
@@ -234,7 +234,7 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                             </li>
                                         ))
                                     ) : (
-                                        userData?.stats.recentActivity.map((activity: IRecentActivityEntry, index: number) => (
+                                        userData?.stats?.recentActivity.map((activity: IRecentActivityEntry, index: number) => (
                                             <li key={index} className="flex gap-2 items-center">
                                                 <img className='rounded-lg h-fit w-1/6' src={activity.vn.cover.url} />
                                                 <div className="flex-1 space-y-1">
