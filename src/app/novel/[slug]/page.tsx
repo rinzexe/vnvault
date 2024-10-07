@@ -25,6 +25,7 @@ import { useAuth } from "@/components/auth-provider"
 import { IVNTag } from "@/types/vn-tag"
 import Link from "next/link"
 import Description from "@/components/description"
+import { parseCharacterRole } from "@/lib/vndb/utils"
 
 interface IVNData extends IVN {
     characters: ICharacter[]
@@ -188,7 +189,7 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                                             />
                                                             <div className="flex-1">
                                                                 <h3 className="font-semibold">{character.name}</h3>
-                                                                <p style={{ overflowWrap: "anywhere" }} className="text-sm line-clamp-2">{character.description || "No description available."}</p>
+                                                                <p style={{ overflowWrap: "anywhere" }} className="text-sm line-clamp-2">{parseCharacterRole(character?.vns?.find((vn) => vn.id == params.slug)?.role)}</p>
                                                             </div>
                                                         </CardContent>
                                                     </Card>

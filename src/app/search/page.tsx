@@ -84,7 +84,7 @@ export default function SearchPage() {
     setSearchResults([])
     router.push(`?q=${searchTerm}&type=${searchType}`)
     fetchData()
-  }, [search, searchType, router])
+  }, [search, searchType])
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
@@ -363,7 +363,7 @@ export default function SearchPage() {
       </div>
 
       <div>
-        {searchResults.length > 0 ? (
+        {searchResults.length > 0 || isLoading ? (
           searchType === "visual novels" ? (
             <div>
               {viewMode === "list" && renderVNListView()}
