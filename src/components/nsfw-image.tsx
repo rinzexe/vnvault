@@ -31,7 +31,7 @@ export default function NSFWImage({
                 {...props}
                 width={resolution[0]}
                 height={resolution[1]}
-                className={`transition-opacity ${className} duration-300 ${isBlurred ? 'blur-sm opacity-25' : 'opacity-100'}`}
+                className={`transition-opacity ${className} rounded duration-300 ${isBlurred ? 'blur-sm opacity-25' : 'opacity-100'}`}
                 style={{ filter: isBlurred ? 'blur(10px)' : 'none' }}
             />
             {isNsfw && isBlurred && (

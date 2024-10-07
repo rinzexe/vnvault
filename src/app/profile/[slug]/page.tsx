@@ -17,6 +17,7 @@ import { IRecentActivityEntry, IUserProfile } from '@/types/user-profile'
 import FavoriteEditModal from "./favorite-edit-modal"
 import Link from "next/link"
 import useIsMe from "@/hooks/use-is-me"
+import NSFWImage from "@/components/nsfw-image"
 
 export default function ProfilePage({ params }: { params: { slug: string } }) {
     const [loading, setLoading] = useState<boolean>(true)
@@ -236,7 +237,12 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                     ) : (
                                         userData?.stats?.recentActivity.map((activity: IRecentActivityEntry, index: number) => (
                                             <li key={index} className="flex gap-2 items-center">
-                                                <img className='rounded-lg h-fit w-1/6' src={activity.vn.cover.url} />
+                                                <NSFWImage
+                                                    className="w-12"
+                                                    imageUrl={activity.vn.cover.url}
+                                                    isNsfw={activity.vn.cover.nsfw}
+                                                    resolution={activity.vn.cover.resolution}
+                                                />
                                                 <div className="flex-1 space-y-1">
                                                     <p className='text-sm font-medium'>
                                                         {activity.vn.title}
