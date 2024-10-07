@@ -40,7 +40,7 @@ export default function VaultEdit({ entryData, children }: IVaultEditProps) {
 
     function handleSave() {
         const ratingValue = editingData.isRated ? editingData.rating ?? 1 : 0
-        console.log(ratingValue)
+
         auth.db.vaults.updateVault(auth.user?.id!, Math.min(Math.max(ratingValue, 0), 10), Object.values(IVaultStatus).indexOf(editingData.status), entryData.vn.id)
         auth.forceRerender()
     }

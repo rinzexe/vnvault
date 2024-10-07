@@ -1,6 +1,6 @@
 import { IRecentActivityEntry, IUserProfile, IUserStats } from "@/types/user-profile"
 import { IVN, IVNBasic } from "@/types/vn"
-import { getCharactersById, getCharactersByVnId, getVnById } from "../vndb/search"
+import { getCharacterById, getCharactersByVnId, getVnById } from "../vndb/search"
 import { ICharacterBasic } from "@/types/character"
 import { genreTags } from "@/consts/genre-tags"
 import { IVaultStatus, IVNVault, IVNVaultEntry } from "@/types/vault"
@@ -173,7 +173,12 @@ export class Users {
         const userData = await this.supabase.from('users').select('*').eq('username', name).single()
         const vaultRes = await this.supabase.from('vault_entries').select('*').eq('owner_id', userData.data.id).order('updated_at', { ascending: false })
         const vaultEntries = vaultRes.data
-        const vnData: IVN[] = await getVnById(vaultEntries?.map((entry: any) => parseInt(entry.vid.substring(1))) as number[]) as IVN[]
+
+        let vnData: IVN[] = []
+
+        if (vaultEntries && vaultEntries.length > 0) {
+            vnData = await getVnById(vaultEntries.map((entry: any) => parseInt(entry.vid.substring(1))) as number[]) as IVN[]
+        }
 
         const avatar = await this.getAvatar(userData.data)
 
@@ -182,10 +187,18 @@ export class Users {
         const vault = await this.db.vaults.getVaultByName(name, vnData)
 
         const favoriteNovelIds: number[] = userData.data.favorite_novels.map((str: string) => parseInt(str.substring(1)));
-        const favoriteNovelData: IVNBasic[] = await getVnById(favoriteNovelIds) as IVNBasic[]
+
+        let favoriteNovelData: IVNBasic[] = []
+        if (favoriteNovelIds.length > 0) {
+            favoriteNovelData = await getVnById(favoriteNovelIds) as IVNBasic[]
+        }
 
         const favoriteCharacterIds: number[] = userData.data.favorite_characters.map((str: string) => parseInt(str.substring(1)));
-        const favoriteCharacterData: ICharacterBasic[] = await getCharactersById(favoriteCharacterIds) as ICharacterBasic[]
+
+        let favoriteCharacterData: ICharacterBasic[] = []
+        if (favoriteCharacterIds.length > 0) {
+            favoriteCharacterData = await getCharacterById(favoriteCharacterIds) as ICharacterBasic[]
+        }
 
         const userProfile: IUserProfile = {
             uuid: userData.data.id,
@@ -223,6 +236,27 @@ export class Users {
         }
     }
 
+    async getUsersBySearch(query: string): Promise<IUserProfile[]> {
+        const userData = await this.supabase.from('users').select('*').textSearch('username', query)
+
+        let results: IUserProfile[] = []
+
+        userData.data?.forEach(async (data) => {
+            const avatar = await this.getAvatar(data)
+
+            const userProfile: IUserProfile = {
+                uuid: data.id,
+                username: data.username,
+                joinedOn: data.created_at.split('T')[0],
+                avatarUrl: avatar.data.publicUrl,
+                bio: data.bio,
+            }
+
+            results.push(userProfile)
+        })
+
+        return results
+    }
 }
 
 function statusNumberToEnum(num: number) {

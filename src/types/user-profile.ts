@@ -15,10 +15,10 @@ export interface IUserProfile {
     joinedOn: string
     avatarUrl: string
     bio: string
-    favoriteVisualNovels: IVNBasic[]
-    favoriteCharacters: ICharacterBasic[]
-    stats: IUserStats
-    vault: IVNVault
+    favoriteVisualNovels?: IVNBasic[]
+    favoriteCharacters?: ICharacterBasic[]
+    stats?: IUserStats
+    vault?: IVNVault
 }
 
 export interface IUserStats {

@@ -1,7 +1,9 @@
-import { IVNImage, IVNSort } from "@/types/vn"
+import { IVNSort } from "@/types/vn"
 import { fieldPresets } from "./field-presets"
 import { IVN } from "@/types/vn"
-import { ICharacter } from "@/types/character"
+import { ICharacter, ICharacterVN } from "@/types/character"
+import { IDeveloper } from "@/types/developer"
+import { getVnByDeveloperId } from "./search"
 
 export interface IRequestParams {
     filters?: any[]
@@ -12,7 +14,7 @@ export interface IRequestParams {
 }
 
 export async function request(params: IRequestParams) {
-
+console.log(params)
     let body: any = {
         'fields': fieldPresets[params.endpoint],
         "count": true,
@@ -46,22 +48,24 @@ export async function request(params: IRequestParams) {
 export function parseVn(jsonRes: any) {
     let parsedResults: IVN[] = []
 
-    jsonRes.results.forEach((result: any) => {
+    jsonRes.forEach((result: any) => {
         const parsedResult: IVN = {
             id: parseInt(result.id.substring(1)),
             title: getEnglishTitle(result),
             altTitle: result.alttitle,
-            description: result.description,
-            titles: result.titles,
+            description: parseDescription(result.description),
+            titles: result.titles?.map((title: any) => title.title)!,
             released: result.released,
-            rating: parseFloat((result.rating / 10).toFixed(1)),
+            rating: parseFloat((result.rating / 10).toFixed(2)),
             rateCount: result.votecount,
             length: result.length_minutes,
-            screenshots: result.screenshots.map((screenshot: any) => { return { url: screenshot.url, resolution: screenshot.dims, nsfw: screenshot.sexual > 1 } }),
+            screenshots: result?.screenshots?.map((screenshot: any) => { return { url: screenshot.url, resolution: screenshot.dims, nsfw: screenshot.sexual > 1 } }),
             cover: { url: result.image.url, resolution: result.image.dims, nsfw: result.image.sexual > 1 },
             devStatus: result.devstatus,
             developers: result.developers,
-            tags: result.tags
+            tags: result?.tags?.map((tag: any) => { return { name: tag.name, category: tag.category, rating: tag.rating, spoiler: tag.spoiler } })!,
+            olang: result.olang,
+            languages: result.languages
         }
 
         parsedResults.push(parsedResult)
@@ -73,13 +77,31 @@ export function parseVn(jsonRes: any) {
 export function parseCharacter(jsonRes: any) {
     let parsedResults: ICharacter[] = []
 
-    jsonRes.results.forEach((result: any) => {
+    jsonRes.forEach((result: any) => {
+        console.log(result)
         const parsedResult: ICharacter = {
             id: parseInt(result.id.substring(1)),
-            vns: result.vns,
-            image: result.image,
+            vns: result.vns.map((vn: any, id: number) => ({ ...parseVn([vn])[0], role: result.vns[id].role })),
+            image: { url: result.image?.url, resolution: result.image?.dims, nsfw: result.image?.sexual > 1 }!,
             name: result.name,
-            description: result.description
+            description: parseDescription(result.description)
+        }
+
+        parsedResults.push(parsedResult)
+    })
+
+    return parsedResults
+}
+
+export function parseDeveloper(jsonRes: any) {
+    let parsedResults: IDeveloper[] = []
+
+    jsonRes.forEach((result: any) => {
+        const parsedResult: IDeveloper = {
+            id: parseInt(result.id.substring(1)),
+            name: result.name,
+            description: parseDescription(result.description),
+            type: result.type
         }
 
         parsedResults.push(parsedResult)
@@ -100,32 +122,33 @@ function getEnglishTitle(jsonRes: any) {
     return mainTitle
 }
 
-export function formatDescription(text: string) {
-
-    text = text.replaceAll("[From", "^")
-    text = text.replaceAll("[Edited from", "^")
-    text = text.replaceAll("[Translated from", "^")
-
-    text = text.replace("]]", "^")
-    text = text.replaceAll(/\^([^\^]+)\^/g, '');
-
-    text = text.replaceAll("[spoiler]", "")
-    text = text.replaceAll("[/spoiler]", "")
-
-    text = text.replaceAll("[b]", "")
-    text = text.replaceAll("[/b]", "")
-
-    text = text.replaceAll("<s>", "")
-    text = text.replaceAll("</s>", "")
-    text = text.replaceAll(/\^([^\^]+)\^/g, '');
-
-    text = text.replaceAll("[/url]", "")
-
-    text = text.replaceAll("[url=/", "^")
-    text = text.replaceAll("]", "^")
-    text = text.replaceAll(/\^([^\^]+)\^/g, '');
-
-
-    text = text.replaceAll('^', "")
-    return text;
+export function parseCharacterRole(role: string) {
+    switch (role) {
+        case "main": return "Main character"
+        case "primary": return "Primary character"
+        case "side": return "Side character"
+        case "appears": return "Appears"
+        default: return "Role unknown"
+    }
 }
+
+function parseDescription(input: string): string {
+    if (input) {
+        let cleanedText = input.replace(/\[b\](.*?)\[\/b\]/gi, '$1');
+
+        // Handle URL tags: Replace [url=...]...[/url] with the link text
+        cleanedText = cleanedText.replace(/\[url=[^\]]*\](.*?)\[\/url\]/gi, '$1');
+      
+        // Handle generic tags like [From ...] by removing any brackets and keeping the text inside
+        cleanedText = cleanedText.replace(/\[\s*From\s+([^\]]+)\s*\]/gi, 'From $1');
+      
+        // Remove any remaining unhandled brackets
+        cleanedText = cleanedText.replace(/\[\s*|\s*\]/g, '');
+      
+        return input
+    }
+    else {
+        return ""
+    }
+}
+

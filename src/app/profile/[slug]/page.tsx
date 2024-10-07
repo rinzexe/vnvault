@@ -234,7 +234,7 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                             </li>
                                         ))
                                     ) : (
-                                        userData?.stats.recentActivity.map((activity: IRecentActivityEntry, index: any) => (
+                                        userData?.stats.recentActivity.map((activity: IRecentActivityEntry, index: number) => (
                                             <li key={index} className="flex gap-2 items-center">
                                                 <img className='rounded-lg h-fit w-1/6' src={activity.vn.cover.url} />
                                                 <div className="flex-1 space-y-1">
@@ -243,13 +243,13 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                                     </p>
                                                     <p className="text-sm text-muted-foreground">{activity.date}</p>
                                                 </div>
-                                                <div className='ml-2 flex gap-4'>
+                                                <div className='ml-2 flex items-center gap-4'>
                                                     <p className="text-sm font-medium leading-none">
                                                         {activity.rating && (
-                                                            <span className="ml-2 flex items-center gap-1 text-yellow-500">
-                                                                {activity.rating}
-                                                                <Star className="w-4 h-4 inline-block" />
-                                                            </span>
+                                                            <div className="flex items-center justify-end">
+                                                                <span className="text-lg font-bold text-accent">{activity.rating}</span>
+                                                                <span className="text-sm text-muted-foreground ml-1">/10</span>
+                                                            </div>
                                                         )}
                                                     </p>
                                                     <p className='text-sm'>
@@ -266,7 +266,7 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                 </div>
             </div>
 
-           {/*  <Tabs defaultValue="stats" className="p-4">
+            {/*  <Tabs defaultValue="stats" className="p-4">
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="stats">Statistics</TabsTrigger>
                     <TabsTrigger value="genres">Genres</TabsTrigger>

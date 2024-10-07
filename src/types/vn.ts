@@ -1,10 +1,6 @@
+import { IDeveloper } from "./developer"
+import { IImage } from "./image"
 import { IVNTag } from "./vn-tag"
-
-export interface IVNImage {
-    url: string
-    nsfw: boolean
-    resolution: number[]
-}
 
 export interface IVN extends IVNBasic {
     description: string
@@ -12,10 +8,12 @@ export interface IVN extends IVNBasic {
     released: string
     rateCount: number
     length: number // in minutes
-    screenshots: IVNImage[]
+    screenshots: IImage[]
     devStatus: number
-    developers: any[]
+    developers: IDeveloper[]
     tags: IVNTag[]
+    olang: string
+    languages: string[]
 }
 
 export interface IVNBasic {
@@ -23,7 +21,7 @@ export interface IVNBasic {
     title: string
     altTitle: string
     rating?: number
-    cover: IVNImage
+    cover: IImage
 }
 
 export interface IVNFilters {

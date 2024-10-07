@@ -5,6 +5,7 @@ import VaultEdit from "./vault-edit"
 import { useRouter } from "next/navigation"
 import { Edit2 } from "lucide-react"
 import NSFWImage from "./nsfw-image"
+import Rating from "./ui/rating"
 
 interface IVNRowProps {
     vnData: IVN
@@ -21,17 +22,15 @@ export default function VNRow({ vnData, entry, rating, fields, isMe }: IVNRowPro
         router.push(`/novel/${vnData.id}`);
     };
 
-    console.log(vnData.cover)
-
     return (
         <TableRow key={vnData.id} className="hover:cursor-pointer" onClick={handleNavigation}>
             <TableCell className="w-20">
-                <NSFWImage
+                {vnData.cover && <NSFWImage
                     imageUrl={vnData.cover.url}
                     resolution={vnData.cover.resolution}
                     isNsfw={vnData.cover.nsfw}
                     className="object-cover w-20 rounded"
-                />
+                />}
             </TableCell>
             <TableCell>
                 <div className="font-medium">{vnData.title}</div>
@@ -44,15 +43,12 @@ export default function VNRow({ vnData, entry, rating, fields, isMe }: IVNRowPro
                 {rating === 0 ? (
                     <span className="text-xs font-bold flex justify-end text-right text-white">Unrated</span>
                 ) : (
-                    <div className="flex items-center justify-end">
-                        <span className="text-lg font-bold text-accent">{rating}</span>
-                        <span className="text-sm text-muted-foreground ml-1">/10</span>
-                    </div>
+                    <Rating rating={rating!} />
                 )}
             </TableCell>
             {isMe && entry && <TableCell onClick={(e) => e.stopPropagation()}>
                 <VaultEdit entryData={entry}>
-                    <Edit2 className="text-foreground" />
+                    <Edit2 className="text-foreground hover:text-accent duration-200" />
                 </VaultEdit>
             </TableCell>}
         </TableRow>

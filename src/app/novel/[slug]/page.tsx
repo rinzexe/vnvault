@@ -15,13 +15,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ChevronDown, ChevronUp, Edit, ExternalLink, Star } from "lucide-react"
 import { getCharactersByVnId, getVnById } from "@/lib/vndb/search"
-import { IVN, IVNImage } from "@/types/vn"
+import { IVN } from "@/types/vn"
+import { IImage } from '@/types/image'
 import { ICharacter } from "@/types/character"
-import { formatDescription } from "@/lib/vndb/utils"
 import NSFWImage from "@/components/nsfw-image"
 import VaultEdit from "@/components/vault-edit"
 import { IVNVaultEntry } from "@/types/vault"
 import { useAuth } from "@/components/auth-provider"
+import { IVNTag } from "@/types/vn-tag"
+import Link from "next/link"
+import Description from "@/components/description"
 
 interface IVNData extends IVN {
     characters: ICharacter[]
@@ -31,6 +34,7 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
     const [loading, setLoading] = useState(true)
     const [vnData, setVnData] = useState<IVNData | null>(null)
     const [displayedCharacters, setDisplayedCharacters] = useState(10)
+    const [displayedTags, setDisplayedTags] = useState(10)
     const [vaultEntry, setVaultEntry] = useState<IVNVaultEntry | null>(null)
 
     const auth = useAuth()
@@ -38,12 +42,13 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
     useEffect(() => {
         async function fetchData() {
             const vnRes: IVN = await getVnById(params.slug)
-            const characterRes: ICharacter[] = await getCharactersByVnId(params.slug)
+
+            let characterRes: ICharacter[] = await getCharactersByVnId(params.slug)
 
             const userInfoRes = await auth.db.users.getUserInfoById(auth.user?.id!)
             const profileRes = await auth.db.users.getUserProfileByName(userInfoRes.username)
 
-            const entry = profileRes.vault.entries.find(obj => obj.vn.id == vnRes.id)
+            const entry = profileRes.vault?.entries.find(obj => obj.vn.id == vnRes.id)
 
             if (entry) {
                 setVaultEntry(entry)
@@ -61,7 +66,9 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
         setDisplayedCharacters(prev => Math.min(prev + 10, vnData?.characters.length || 0))
     }
 
-    console.log(vnData)
+    const loadMoreTags = () => {
+        setDisplayedTags(prev => Math.min(prev + 20, vnData?.tags.length || 0))
+    }
 
     return (
         <div className="min-h-screen py-4 space-y-8 w-full">
@@ -94,8 +101,8 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                             <Skeleton className="w-full h-[600px]" />
                         ) : (
                             <NSFWImage
-                                imageUrl={vnData?.cover.url!}
-                                resolution={vnData?.cover.resolution!}
+                                imageUrl={vnData?.cover?.url!}
+                                resolution={vnData?.cover?.resolution!}
                                 isNsfw={vnData?.cover.nsfw!}
                                 className="w-full rounded-lg"
                                 showAdvancedNsfwMessage
@@ -117,31 +124,16 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                     </div>
                                 ) : (
                                     <div>
+                                        <p><strong>Status: </strong>{getStatusName(vnData?.devStatus || 0)}</p>
+                                        <p><strong>Released: </strong>{vnData?.released || 'N/A'}</p>
+                                        <p><strong>Length: </strong>{vnData?.length ? `${Math.round(vnData.length / 60)} hours` : 'N/A'}</p>
                                         <div className="flex items-center gap-2">
-                                            <p>
-                                                <strong>Rating: </strong>
-                                            </p>
-                                            <Badge>
-                                                {vnData?.rating}
-                                            </Badge>
+                                            <p><strong>Rating: </strong></p>
+                                            <Badge>{vnData?.rating}</Badge>
                                             <p className="text-muted-foreground text-xs">
-                                                <i>{"(" + vnData?.rateCount + ")"}</i>
+                                                <i>({vnData?.rateCount} votes)</i>
                                             </p>
                                         </div>
-                                        <p><strong>Developer(s): </strong>
-                                            <span>
-                                                {vnData?.developers?.map((developer: any, id: number) => (
-                                                    <span key={id}>
-                                                        {developer.name}
-                                                    </span>
-                                                )) || "Not found"}
-                                            </span>
-                                        </p>
-                                        <p><strong>Status: </strong>
-                                            <span>
-                                                {getStatusName(vnData?.devStatus || 0)}
-                                            </span>
-                                        </p>
                                     </div>
                                 )}
                             </CardContent>
@@ -162,15 +154,16 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                         <Skeleton className="h-4 w-3/4" />
                                     </div>
                                 ) : (
-                                    <p className="leading-relaxed">{formatDescription(vnData?.description || "a")}</p>
+                                    <Description text={vnData?.description || "No description available."} />
                                 )}
                             </CardContent>
                         </Card>
 
                         <Tabs defaultValue="characters" className="w-full">
                             <TabsList className="w-full">
-                                <TabsTrigger value="characters" className="w-1/2">Characters</TabsTrigger>
-                                <TabsTrigger value="screenshots" className="w-1/2">Screenshots</TabsTrigger>
+                                <TabsTrigger value="characters" className="w-1/3">Characters</TabsTrigger>
+                                <TabsTrigger value="screenshots" className="w-1/3">Screenshots</TabsTrigger>
+                                <TabsTrigger value="details" className="w-1/3">Details</TabsTrigger>
                             </TabsList>
                             <TabsContent value="characters" className="mt-4 space-y-4">
                                 {loading ? (
@@ -183,21 +176,23 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                     <div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {vnData?.characters.slice(0, displayedCharacters).map((character) => (
-                                                <Card key={character.name}>
-                                                    <CardContent className="p-4 flex justify-center h-full items-center space-x-4">
-                                                        <Image
-                                                            src={character.image?.url}
-                                                            alt={character.name}
-                                                            width={80}
-                                                            height={120}
-                                                            className="rounded-lg"
-                                                        />
-                                                        <div className="flex-1">
-                                                            <h3 className="font-semibold">{character.name}</h3>
-                                                            <p className="text-sm line-clamp-2">{formatDescription(character.description || "a")}</p>
-                                                        </div>
-                                                    </CardContent>
-                                                </Card>
+                                                <Link href={"/character/" + character.id}>
+                                                    <Card className="hover:bg-muted/50" key={character.id}>
+                                                        <CardContent className="p-4 flex justify-center h-full items-center space-x-4">
+                                                            <Image
+                                                                src={character.image?.url || '/placeholder.svg'}
+                                                                alt={character.name}
+                                                                width={80}
+                                                                height={120}
+                                                                className="rounded-lg"
+                                                            />
+                                                            <div className="flex-1">
+                                                                <h3 className="font-semibold">{character.name}</h3>
+                                                                <p style={{ overflowWrap: "anywhere" }} className="text-sm line-clamp-2">{character.description || "No description available."}</p>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                </Link>
                                             ))}
                                         </div>
                                         {displayedCharacters < (vnData?.characters.length || 0) && (
@@ -221,7 +216,7 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                             <Skeleton className="h-40 w-full" />
                                         </div>
                                     ) : (
-                                        vnData?.screenshots.map((screenshot: IVNImage, index: any) => (
+                                        vnData?.screenshots.map((screenshot: IImage, index: number) => (
                                             <NSFWImage
                                                 key={index}
                                                 imageUrl={screenshot.url}
@@ -233,6 +228,65 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                         ))
                                     )}
                                 </div>
+                            </TabsContent>
+                            <TabsContent value="details" className="mt-4">
+                                {loading ? (
+                                    <Skeleton className="h-40 w-full" />
+                                ) : (
+                                    <div className="space-y-4">
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>Titles</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <ul className="list-disc pl-5">
+                                                    {vnData?.titles.map((title, index) => (
+                                                        <li key={index}>
+                                                            {title}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </CardContent>
+                                        </Card>
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>Developers</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <ul className="list-disc pl-5">
+                                                    {vnData?.developers.map((dev, index) => (
+                                                        <li key={index}>{dev.name}</li>
+                                                    ))}
+                                                </ul>
+                                            </CardContent>
+                                        </Card>
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>Tags</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {vnData?.tags
+                                                        .sort((a, b) => b.rating - a.rating)
+                                                        .slice(0, displayedTags)
+                                                        .map((tag, index) => (
+                                                            <Badge key={index} variant={"secondary"}>
+                                                                {tag.name} ({tag.rating.toFixed(1)})
+                                                            </Badge>
+                                                        ))}
+                                                </div>
+                                                {displayedTags < (vnData?.tags.length || 0) && (
+                                                    <Button
+                                                        onClick={loadMoreTags}
+                                                        className="mt-4 w-full"
+                                                    >
+                                                        Load More Tags
+                                                    </Button>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                )}
                             </TabsContent>
                         </Tabs>
                     </div>

@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }: any) => {
 
     // Sign In function
     function signIn(email: string, password: string) {
-        console.log(email, password);
 
         supabase.auth.signInWithPassword({ email, password }).then((res: any) => {
             if (res.error) {
@@ -65,7 +64,8 @@ export const AuthProvider = ({ children }: any) => {
                 router.push('/error');
             }
 
-            supabase.from('users').insert({ id: res.data.user.id, username }).then(() => {
+            // temporary solution to defaulting favorites to an empty array
+            supabase.from('users').insert({ id: res.data.user.id, username, favorite_novels: [], favorite_characters: [] }).then(() => {
                 router.push('/profile');
             });
         });

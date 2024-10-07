@@ -50,7 +50,6 @@ export default function FavoriteEditModal({ username, type }: FavoriteEditModalP
                 ) as IVNBasic[]);
             } else if (type === "character") {
                 res = await getCharacterBySearch(search) as ICharacterBasic[];
-                console.log(res)
                 const favCharacters = userData.favoriteCharacters as ICharacterBasic[];
 
                 setTempFavorites([...tempFavorites, ...favCharacters].filter((item, index, self) =>
