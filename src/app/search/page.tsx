@@ -29,11 +29,11 @@ import { IUserProfile } from "@/types/user-profile"
 import { IDeveloper } from "@/types/developer"
 
 type ViewMode = "list" | "card" | "compact"
-type SearchType = "visualNovels" | "characters" | "users" | "developers"
+type SearchType = "visual novels" | "characters" | "users" | "developers"
 
 export default function SearchPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("list")
-  const [searchType, setSearchType] = useState<SearchType>("visualNovels")
+  const [searchType, setSearchType] = useState<SearchType>("visual novels")
   const [searchTerm, setSearchTerm] = useState("")
   const [searchResults, setSearchResults] = useState<IVN[] | ICharacter[] | IUserProfile[] | IDeveloper[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -49,7 +49,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     const query = searchParams.get("q") || ""
-    const type = searchParams.get("type") as SearchType || "visualNovels"
+    const type = searchParams.get("type") as SearchType || "visual novels"
     setSearchTerm(query)
     setSearchType(type)
   }, [])
@@ -61,7 +61,7 @@ export default function SearchPage() {
 
         let res: IVN[] | ICharacter[] | IUserProfile[] | IDeveloper[];
         switch (searchType) {
-          case "visualNovels":
+          case "visual novels":
             res = await getVnBySearch(search[0], search[1], search[2])
             break;
           case "characters":
@@ -256,7 +256,7 @@ export default function SearchPage() {
     <div className="container mx-auto py-8 max-w-screen-xl">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
         <h1 className="text-3xl font-bold">Search</h1>
-        {searchType === "visualNovels" && (
+        {searchType === "visual novels" && (
           <div className="hidden md:block">
             <ToggleGroup type="single" value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
               <ToggleGroupItem value="list" aria-label="List View">
@@ -276,7 +276,7 @@ export default function SearchPage() {
       <ScrollArea dir="rtl">
         <Tabs value={searchType} onValueChange={(value) => { setSearchType(value as SearchType); setSearchResults([]) }} className="mb-6">
           <TabsList>
-            <TabsTrigger value="visualNovels">Visual Novels</TabsTrigger>
+            <TabsTrigger value="visual novels">Visual Novels</TabsTrigger>
             <TabsTrigger value="characters">Characters</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="developers">Developers</TabsTrigger>
@@ -296,7 +296,7 @@ export default function SearchPage() {
           />
         </div>
 
-        {searchType === "visualNovels" && (
+        {searchType === "visual novels" && (
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-grow">
               <Label>Rating Range</Label>
@@ -364,7 +364,7 @@ export default function SearchPage() {
 
       <div>
         {searchResults.length > 0 ? (
-          searchType === "visualNovels" ? (
+          searchType === "visual novels" ? (
             <div>
               {viewMode === "list" && renderVNListView()}
               {viewMode === "card" && renderVNCardView()}
