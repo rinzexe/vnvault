@@ -175,8 +175,8 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                 ) : (
                                     <div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {vnData?.characters.slice(0, displayedCharacters).map((character) => (
-                                                <Link href={"/character/" + character.id}>
+                                            {vnData?.characters.slice(0, displayedCharacters).map((character, index: number) => (
+                                                <Link key={index} href={"/character/" + character.id}>
                                                     <Card className="hover:bg-muted/50" key={character.id}>
                                                         <CardContent className="p-4 flex justify-center h-full items-center space-x-4">
                                                             <Image

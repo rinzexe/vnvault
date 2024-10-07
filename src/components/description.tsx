@@ -48,7 +48,7 @@ function renderTokens(tokens: ParsedToken[]) {
           </a>
         );
       case "quote":
-        return <blockquote key={index}>"{token.content}"</blockquote>;
+        return <blockquote key={index}>{'"' + token.content + '"'}</blockquote>;
       case "spoiler":
         return <Spoiler key={index} content={token.content} />;
       case "code":

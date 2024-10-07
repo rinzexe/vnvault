@@ -90,8 +90,8 @@ export default function CharacterPage({ params }: { params: { slug: number } }) 
                         ) : (
                             <div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {characterData?.vns.slice(0, displayedVNs).map((vn: ICharacterVN) => (
-                                        <Link href={`/novel/${vn.id}`} key={vn.id}>
+                                    {characterData?.vns.slice(0, displayedVNs).map((vn: ICharacterVN, index: number) => (
+                                        <Link href={`/novel/${vn.id}`} key={index}>
                                             <Card className="transition-colors hover:bg-muted/50">
                                                 <CardContent className="p-4 flex justify-between items-center space-x-4">
                                                     <img
