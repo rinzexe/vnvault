@@ -26,6 +26,7 @@ import { IVNTag } from "@/types/vn-tag"
 import Link from "next/link"
 import Description from "@/components/description"
 import { parseCharacterRole } from "@/lib/vndb/utils"
+import Rating from "@/components/ui/rating"
 
 interface IVNData extends IVN {
     characters: ICharacter[]
@@ -46,13 +47,15 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
 
             let characterRes: ICharacter[] = await getCharactersByVnId(params.slug)
 
-            const userInfoRes = await auth.db.users.getUserInfoById(auth.user?.id!)
-            const profileRes = await auth.db.users.getUserProfileByName(userInfoRes.username)
+            if (auth.user) {
+                const userInfoRes = await auth.db.users.getUserInfoById(auth.user?.id!)
+                const profileRes = await auth.db.users.getUserProfileByName(userInfoRes.username)
 
-            const entry = profileRes.vault?.entries.find(obj => obj.vn.id == vnRes.id)
+                const entry = profileRes.vault?.entries.find(obj => obj.vn.id == vnRes.id)
 
-            if (entry) {
-                setVaultEntry(entry)
+                if (entry) {
+                    setVaultEntry(entry)
+                }
             }
 
             setVnData({ characters: characterRes, ...vnRes })
@@ -130,7 +133,7 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                         <p><strong>Length: </strong>{vnData?.length ? `${Math.round(vnData.length / 60)} hours` : 'N/A'}</p>
                                         <div className="flex items-center gap-2">
                                             <p><strong>Rating: </strong></p>
-                                            <Badge>{vnData?.rating}</Badge>
+                                            <Rating rating={vnData?.rating || 0} />
                                             <p className="text-muted-foreground text-xs">
                                                 <i>({vnData?.rateCount} votes)</i>
                                             </p>
