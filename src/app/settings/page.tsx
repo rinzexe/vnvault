@@ -23,13 +23,24 @@ export default function SettingsPage() {
 
     useEffect(() => {
         async function fetchData() {
-            const res = await auth.db.users.getUserInfoById(auth.user?.id!)
-
-            setNsfwEnabled(res.nsfw_enabled)
+            if (auth.user) {
+                const res = await auth.db.users.getUserInfoById(auth.user.id!)
+                setNsfwEnabled(res.nsfw_enabled)
+            }
         }
 
         fetchData()
-    }, [])
+    }, [auth.user]) // Added auth.user as a dependency
+
+    // Check if user is logged in
+    if (!auth.user) {
+        return (
+            <div className="container mx-auto py-10">
+                <h1 className="text-3xl font-bold mb-6">Settings</h1>
+                <p className="">Not logged in. You must log in in order to change your preferences.</p>
+            </div>
+        )
+    }
 
     return (
         <div className="container mx-auto py-10">

@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/hooks/use-toast';
 import Database from '@/lib/db/db';
 import { createClient, User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
@@ -11,8 +12,8 @@ interface AuthContextType {
     signUp: (data: any) => Promise<void>;
     signIn: (email: string, password: string) => Promise<void>;
     signOut: () => void;
-    db: Database; 
-    supabase: any; 
+    db: Database;
+    supabase: any;
     user: User | null;
     forceRerender: () => void;
 }
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }: any) => {
 
         supabase.auth.signInWithPassword({ email, password }).then((res: any) => {
             if (res.error) {
-                router.push('/error');
+                toast({ title: "Error", description: "Invalid username or password", variant: "destructive" })
             } else {
                 router.push('/profile');
             }
