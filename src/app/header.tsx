@@ -149,6 +149,10 @@ export default function Header() {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
+              <Link className="hover:cursor-pointer" href={"/settings/"}>Settings</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
               <button className="hover:cursor-pointer w-full" onClick={() => auth.signOut()}>Log out</button>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -207,7 +211,6 @@ export default function Header() {
                 <div className="flex flex-col h-full pt-8">
                   <div className="flex-grow">
                     <nav className="flex flex-col space-y-4">
-                    <Separator />
                       <Link href="/search" className="text-muted-foreground hover:text-primary transition-colors" onClick={closeSheet}>
                         Browse
                       </Link>
@@ -223,6 +226,11 @@ export default function Header() {
                           <Link href={"/profile/" + userData?.username + "/vault/"} className="block text-muted-foreground hover:text-primary transition-colors" onClick={closeSheet}>
                             Vault
                           </Link>
+                          <Separator className="my-4" />
+                          <Link href={"/settings/"} className="block text-muted-foreground hover:text-primary transition-colors" onClick={closeSheet}>
+                            Settings
+                          </Link>
+                          <Separator className="my-4" />
                           <button onClick={() => { auth.signOut(); closeSheet(); }} className="w-full text-left text-muted-foreground hover:text-primary transition-colors">
                             Log out
                           </button>

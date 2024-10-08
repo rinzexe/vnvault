@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import { useAuth } from './auth-provider';
 
 interface INSFWImageProps {
     imageUrl: string;
@@ -19,10 +20,27 @@ export default function NSFWImage({
     ...props
 }: INSFWImageProps) {
     const [isBlurred, setIsBlurred] = useState(isNsfw);
+    const [nsfwEnabled, setNsfwEnabled] = useState(false)
 
     const handleUnblur = () => {
         setIsBlurred(false);
     };
+
+    const auth = useAuth()
+
+    useEffect(() => {
+        async function fetchData() {
+            if (auth.user) {
+                const res = await auth.db.users.getUserInfoById(auth.user.id)
+                console.log(res)
+                if (res.nsfw_enabled == true) {
+                    setNsfwEnabled(true)
+                    setIsBlurred(false)
+                }
+            }
+        }
+        fetchData()
+    }, [])
 
     return (
         <div className="relative">
@@ -32,9 +50,9 @@ export default function NSFWImage({
                 width={resolution[0]}
                 height={resolution[1]}
                 className={`transition-opacity ${className} rounded duration-300 ${isBlurred ? 'blur-sm opacity-25' : 'opacity-100'}`}
-                style={{ filter: isBlurred ? 'blur(10px)' : 'none' }}
+                style={{ filter: isBlurred ? 'blur(10px)' : 'none', padding: isBlurred ? "10px" : "" }}
             />
-            {isNsfw && isBlurred && (
+            {isNsfw && isBlurred && !nsfwEnabled && (
                 <div
                     className="absolute w-full h-full gap-2 flex flex-col justify-center items-center top-0 left-0 text-white p-2 rounded"
                 >
@@ -53,7 +71,7 @@ export default function NSFWImage({
                             </div>
                         </>
                     ) : (
-                        <span className='text-foreground'>NSFW</span>
+                        <span className='text-foreground text-xs text-center'>NSFW</span>
                     )}
                 </div>
             )}

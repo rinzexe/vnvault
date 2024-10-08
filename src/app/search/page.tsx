@@ -56,30 +56,28 @@ export default function SearchPage() {
 
   useEffect(() => {
     async function fetchData() {
-      if (searchTerm) {
-        setIsLoading(true)
 
-        let res: IVN[] | ICharacter[] | IUserProfile[] | IDeveloper[];
-        switch (searchType) {
-          case "visual novels":
-            res = await getVnBySearch(search[0], search[1], search[2])
-            break;
-          case "characters":
-            res = await getCharacterBySearch(search[0]) as ICharacter[]
-            break;
-          case "users":
-            res = await auth.db.users.getUsersBySearch(search[0])
-            break;
-          case "developers":
-            res = await getDeveloperBySearch(search[0])
-            break;
-        }
+      setIsLoading(true)
 
-        setSearchResults(res || [])
-        setIsLoading(false)
-      } else {
-        setSearchResults([])
+      let res: IVN[] | ICharacter[] | IUserProfile[] | IDeveloper[];
+      switch (searchType) {
+        case "visual novels":
+          res = await getVnBySearch(search[0], search[1], search[2])
+          break;
+        case "characters":
+          res = await getCharacterBySearch(search[0]) as ICharacter[]
+          break;
+        case "users":
+          res = await auth.db.users.getUsersBySearch(search[0])
+          break;
+        case "developers":
+          res = await getDeveloperBySearch(search[0])
+          break;
       }
+
+      setSearchResults(res || [])
+      setIsLoading(false)
+
     }
     setSearchResults([])
     router.push(`?q=${searchTerm}&type=${searchType}`)
@@ -132,8 +130,8 @@ export default function SearchPage() {
     isLoading ? <SkeletonListView /> : (
       <Table>
         <TableHeader>
-            <TableHead>Image</TableHead>
-            <TableHead>Name</TableHead>
+          <TableHead>Image</TableHead>
+          <TableHead>Name</TableHead>
         </TableHeader>
         <TableBody>
           {(searchResults as ICharacter[]).map((character: ICharacter) => (

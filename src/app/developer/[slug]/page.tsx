@@ -64,32 +64,16 @@ export default function DeveloperPage({ params }: { params: { slug: number } }) 
     return (
         <div className="min-h-screen py-4 space-y-8 w-full">
             <div className="container mx-auto rounded-lg md:p-8 p-2">
-                <div className="flex flex-col md:flex-row md:gap-8 gap-4 justify-between items-start mb-8">
-                    <div className="w-full md:w-2/3 space-y-6">
+                <div className="flex flex-col md:gap-8 gap-4 justify-between items-start mb-8">
+                    <div className="w-full space-y-6">
                         {loading ? (
                             <Skeleton className="h-10 w-64" />
                         ) : (
                             <h1 className="text-4xl font-bold mb-2">{developerData?.name}</h1>
                         )}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-semibold">Description</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                {loading ? (
-                                    <div>
-                                        <Skeleton className="h-4 w-full mb-2" />
-                                        <Skeleton className="h-4 w-full mb-2" />
-                                        <Skeleton className="h-4 w-3/4" />
-                                    </div>
-                                ) : (
-                                    <Description text={developerData?.description || "No description available."} />
-                                )}
-                            </CardContent>
-                        </Card>
                     </div>
-                    <div className="w-full md:w-1/3">
-                        <Card>
+                    <div className="w-full flex flex-col md:grid grid-cols-3 gap-8">
+                        <Card className="col-start-1 col-end-2">
                             <CardHeader>
                                 <CardTitle className="text-xl font-semibold">Quick Info</CardTitle>
                             </CardHeader>
@@ -108,6 +92,22 @@ export default function DeveloperPage({ params }: { params: { slug: number } }) 
                                         </p>
                                         <p><strong>Visual Novels: </strong>{developerData?.vns?.length || 0}</p>
                                     </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                        <Card className="col-start-2 col-end-4">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-semibold">Description</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {loading ? (
+                                    <div>
+                                        <Skeleton className="h-4 w-full mb-2" />
+                                        <Skeleton className="h-4 w-full mb-2" />
+                                        <Skeleton className="h-4 w-3/4" />
+                                    </div>
+                                ) : (
+                                    <Description text={developerData?.description || "No description available."} />
                                 )}
                             </CardContent>
                         </Card>

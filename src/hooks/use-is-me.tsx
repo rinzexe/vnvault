@@ -8,9 +8,8 @@ export default function useIsMe(username: string): boolean {
 
     useEffect(() => {
         async function fetchData() {
-            const userProfileData = await auth.db.users.getUserProfileByName(username)
-
-            if (userProfileData.uuid == auth.user?.id!) {
+            const userProfileData = await auth.db.users.getUserInfoByName(username)
+            if (userProfileData.id == auth.user?.id!) {
                 setIsMe(true)
             }
         }

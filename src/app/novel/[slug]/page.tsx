@@ -189,7 +189,7 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                                                             />
                                                             <div className="flex-1">
                                                                 <h3 className="font-semibold">{character.name}</h3>
-                                                                <p style={{ overflowWrap: "anywhere" }} className="text-sm line-clamp-2">{parseCharacterRole(character?.vns?.find((vn) => vn.id == params.slug)?.role)}</p>
+                                                                <p style={{ overflowWrap: "anywhere" }} className="text-sm line-clamp-2">{parseCharacterRole(character?.vns?.find((vn) => vn.id == params.slug)?.role || "")}</p>
                                                             </div>
                                                         </CardContent>
                                                     </Card>

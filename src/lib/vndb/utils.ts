@@ -4,6 +4,7 @@ import { IVN } from "@/types/vn"
 import { ICharacter, ICharacterVN } from "@/types/character"
 import { IDeveloper } from "@/types/developer"
 import { getVnByDeveloperId } from "./search"
+import { toast } from "@/hooks/use-toast"
 
 export interface IRequestParams {
     filters?: any[]
@@ -14,7 +15,7 @@ export interface IRequestParams {
 }
 
 export async function request(params: IRequestParams) {
-console.log(params)
+    console.log(params)
     let body: any = {
         'fields': fieldPresets[params.endpoint],
         "count": true,
@@ -32,17 +33,30 @@ console.log(params)
         body['page'] = params.page
     }
 
-    const res = await await fetch('https://api.vndb.org/kana/' + params.endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    })
+    try {
+        const res = await fetch('https://api.vndb.org/kana/' + params.endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
 
-    const jsonRes = await res.json()
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
 
-    return jsonRes
+        const jsonRes = await res.json();
+        return jsonRes;
+    } catch (error) {
+        console.error('Error during request:', error);
+        toast({
+            title: "Request Failed",
+            description: error instanceof Error ? error.message : "An unknown error occurred.",
+            variant: "destructive", // Adjust the variant as needed
+        });
+        throw error; // Optionally rethrow the error if you want to handle it further up the call stack
+    }
 }
 
 export function parseVn(jsonRes: any) {
@@ -78,7 +92,6 @@ export function parseCharacter(jsonRes: any) {
     let parsedResults: ICharacter[] = []
 
     jsonRes.forEach((result: any) => {
-        console.log(result)
         const parsedResult: ICharacter = {
             id: parseInt(result.id.substring(1)),
             vns: result.vns.map((vn: any, id: number) => ({ ...parseVn([vn])[0], role: result.vns[id].role })),

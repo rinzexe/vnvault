@@ -147,7 +147,7 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
     )
 
     return (
-        <div className=" w-full py-8">
+        <div className="w-full py-8">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
                 <h1 className="text-3xl font-bold">{params.slug + "'s VNVault"}</h1>
                 <ToggleGroup type="single" value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
@@ -162,17 +162,17 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
                     </ToggleGroupItem>
                 </ToggleGroup>
             </div>
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
-                <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <div className="flex flex-col space-y-4 mb-6">
+                <div className="flex items-center space-x-2 w-full">
                     <Search className="w-5 h-5 text-gray-400" />
                     <Input
                         placeholder="Search visual novels..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full sm:w-auto"
+                        className="w-full"
                     />
                 </div>
-                <div className="flex space-x-2 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full">
                     <Select value={sortBy} onValueChange={(value) => setSortBy(value as keyof IVN)}>
                         <SelectTrigger className="w-full sm:w-[180px]">
                             <SelectValue placeholder="Sort by" />
@@ -184,8 +184,9 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
                             <SelectItem value="createdAt">Created Date</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button variant="outline" size="icon" onClick={toggleSortOrder}>
-                        {sortOrder === "asc" ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                    <Button variant="outline" className="w-full sm:w-auto" onClick={toggleSortOrder}>
+                        {sortOrder === "asc" ? <SortAsc className="h-4 w-4 mr-2" /> : <SortDesc className="h-4 w-4 mr-2" />}
+                        {sortOrder === "asc" ? "Ascending" : "Descending"}
                     </Button>
                     <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as IVaultStatus | "All")}>
                         <SelectTrigger className="w-full sm:w-[180px]">

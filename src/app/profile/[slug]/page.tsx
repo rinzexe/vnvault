@@ -18,24 +18,25 @@ import FavoriteEditModal from "./favorite-edit-modal"
 import Link from "next/link"
 import useIsMe from "@/hooks/use-is-me"
 import NSFWImage from "@/components/nsfw-image"
+import EditableAvatar from "@/components/editable-avatar"
 
 export default function ProfilePage({ params }: { params: { slug: string } }) {
     const [loading, setLoading] = useState<boolean>(true)
     const [editing, setEditing] = useState<any>({ bio: false })
     const [userData, setUserData] = useState<IUserProfile | null>(null)
-    const [_, rerender] = useState<boolean>(false)
 
     const auth = useAuth()
     const isMe = useIsMe(params.slug)
 
     useEffect(() => {
         async function fetchData() {
+            console.log("fetching")
             const userProfileData = await auth.db.users.getUserProfileByName(params.slug)
             setUserData(userProfileData)
             setLoading(false)
         }
         fetchData()
-    }, [auth, params.slug, _])
+    }, [])
 
     const handleEdit = (section: any) => setEditing((prev: any) => ({ ...prev, [section]: true }))
     const handleSave = (section: any) => {
@@ -53,12 +54,8 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                             {loading ? (
                                 <Skeleton className="w-[100px] h-[100px] rounded-full" />
                             ) : (
-                                <img
-                                    src={userData?.avatarUrl}
-                                    alt={userData?.username}
-                                    width={100}
-                                    height={100}
-                                    className="rounded-full"
+                                <EditableAvatar
+                                    currentImageUrl={userData?.avatarUrl || ""}
                                 />
                             )}
                             <div>
@@ -74,14 +71,110 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                                 )}
                             </div>
                         </div>
-                        <Link href={"/profile/" + params.slug + "/vault"}>
+                        <Link className="hidden md:block" href={"/profile/" + params.slug + "/vault"}>
                             <Button size="sm">Go to Vault</Button>
                         </Link>
                     </div>
                 </CardContent>
             </Card>
+            <Link className="block w-full md:hidden" href={"/profile/" + params.slug + "/vault"}>
+                <Button className="w-full">Go to Vault</Button>
+            </Link>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg font-semibold">Quick Stats</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-4">
+                                {loading ? (
+                                    Array(4).fill(0).map((_, index) => (
+                                        <Skeleton key={index} className="h-20 w-full" />
+                                    ))
+                                ) : (
+                                    <>
+                                        <div className="flex flex-col items-center">
+                                            <BookOpen className="w-8 h-8 mb-2 text-primary" />
+                                            <div className="text-2xl font-bold">{userData?.stats?.totalVnsInList}</div>
+                                            <div className="text-xs text-muted-foreground">Total VNs</div>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <Star className="w-8 h-8 mb-2 text-primary" />
+                                            <div className="text-2xl font-bold">{userData?.stats?.averageRating?.toFixed(1) || 'N/A'}</div>
+                                            <div className="text-xs text-muted-foreground">Avg Rating</div>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <Clock className="w-8 h-8 mb-2 text-primary" />
+                                            <div className="text-2xl font-bold">{((userData?.stats?.totalMinutesRead ?? 0) / 60).toFixed(1)}</div>
+                                            <div className="text-xs text-muted-foreground">Total hours read</div>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <BarChart2 className="w-8 h-8 mb-2 text-primary" />
+                                            <div className="text-2xl font-bold">{userData?.stats?.ratedVns}</div>
+                                            <div className="text-xs text-muted-foreground">Rated</div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ScrollArea className="h-[300px]">
+                                <ul className="space-y-4">
+                                    {loading ? (
+                                        Array(5).fill(0).map((_, index) => (
+                                            <li key={index} className="flex items-start space-x-2">
+                                                <Skeleton className="w-4 h-4 mt-0.5" />
+                                                <div className="flex-1 space-y-1">
+                                                    <Skeleton className="h-4 w-full" />
+                                                    <Skeleton className="h-3 w-24" />
+                                                </div>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        userData?.stats?.recentActivity.map((activity: IRecentActivityEntry, index: number) => (
+                                            <li key={index} className="flex gap-2 items-center">
+                                                <NSFWImage
+                                                    className="w-12"
+                                                    imageUrl={activity.vn.cover.url}
+                                                    isNsfw={activity.vn.cover.nsfw}
+                                                    resolution={activity.vn.cover.resolution}
+                                                />
+                                                <div className="flex-1 space-y-1">
+                                                    <p className='text-sm font-medium'>
+                                                        {activity.vn.title}
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground">{activity.date}</p>
+                                                </div>
+                                                <div className='ml-2 flex items-center gap-4'>
+                                                    <p className="text-sm font-medium leading-none">
+                                                        {activity.rating && (
+                                                            <div className="flex items-center justify-end">
+                                                                <span className="text-lg font-bold text-accent">{activity.rating}</span>
+                                                                <span className="text-sm text-muted-foreground ml-1">/10</span>
+                                                            </div>
+                                                        )}
+                                                    </p>
+                                                    <p className='text-sm'>
+                                                        {activity.status}
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        ))
+                                    )}
+                                </ul>
+                            </ScrollArea>
+                        </CardContent>
+                    </Card>
+                </div>
+
                 <div className="md:col-span-2 space-y-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -178,98 +271,7 @@ export default function ProfilePage({ params }: { params: { slug: string } }) {
                     </Card>
                 </div>
 
-                <div className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg font-semibold">Quick Stats</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 gap-4">
-                                {loading ? (
-                                    Array(4).fill(0).map((_, index) => (
-                                        <Skeleton key={index} className="h-20 w-full" />
-                                    ))
-                                ) : (
-                                    <>
-                                        <div className="flex flex-col items-center">
-                                            <BookOpen className="w-8 h-8 mb-2 text-primary" />
-                                            <div className="text-2xl font-bold">{userData?.stats?.totalVnsInList}</div>
-                                            <div className="text-xs text-muted-foreground">Total VNs</div>
-                                        </div>
-                                        <div className="flex flex-col items-center">
-                                            <Star className="w-8 h-8 mb-2 text-primary" />
-                                            <div className="text-2xl font-bold">{userData?.stats?.averageRating?.toFixed(1) || 'N/A'}</div>
-                                            <div className="text-xs text-muted-foreground">Avg Rating</div>
-                                        </div>
-                                        <div className="flex flex-col items-center">
-                                            <Clock className="w-8 h-8 mb-2 text-primary" />
-                                            <div className="text-2xl font-bold">{((userData?.stats?.totalMinutesRead ?? 0) / 60).toFixed(1)}</div>
-                                            <div className="text-xs text-muted-foreground">Total hours read</div>
-                                        </div>
-                                        <div className="flex flex-col items-center">
-                                            <BarChart2 className="w-8 h-8 mb-2 text-primary" />
-                                            <div className="text-2xl font-bold">{userData?.stats?.ratedVns}</div>
-                                            <div className="text-xs text-muted-foreground">Rated</div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ScrollArea className="h-[300px]">
-                                <ul className="space-y-4">
-                                    {loading ? (
-                                        Array(5).fill(0).map((_, index) => (
-                                            <li key={index} className="flex items-start space-x-2">
-                                                <Skeleton className="w-4 h-4 mt-0.5" />
-                                                <div className="flex-1 space-y-1">
-                                                    <Skeleton className="h-4 w-full" />
-                                                    <Skeleton className="h-3 w-24" />
-                                                </div>
-                                            </li>
-                                        ))
-                                    ) : (
-                                        userData?.stats?.recentActivity.map((activity: IRecentActivityEntry, index: number) => (
-                                            <li key={index} className="flex gap-2 items-center">
-                                                <NSFWImage
-                                                    className="w-12"
-                                                    imageUrl={activity.vn.cover.url}
-                                                    isNsfw={activity.vn.cover.nsfw}
-                                                    resolution={activity.vn.cover.resolution}
-                                                />
-                                                <div className="flex-1 space-y-1">
-                                                    <p className='text-sm font-medium'>
-                                                        {activity.vn.title}
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">{activity.date}</p>
-                                                </div>
-                                                <div className='ml-2 flex items-center gap-4'>
-                                                    <p className="text-sm font-medium leading-none">
-                                                        {activity.rating && (
-                                                            <div className="flex items-center justify-end">
-                                                                <span className="text-lg font-bold text-accent">{activity.rating}</span>
-                                                                <span className="text-sm text-muted-foreground ml-1">/10</span>
-                                                            </div>
-                                                        )}
-                                                    </p>
-                                                    <p className='text-sm'>
-                                                        {activity.status}
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        ))
-                                    )}
-                                </ul>
-                            </ScrollArea>
-                        </CardContent>
-                    </Card>
-                </div>
             </div>
 
             {/*  <Tabs defaultValue="stats" className="p-4">

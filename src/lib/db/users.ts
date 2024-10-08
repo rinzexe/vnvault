@@ -6,6 +6,7 @@ import { genreTags } from "@/consts/genre-tags"
 import { IVaultStatus, IVNVault, IVNVaultEntry } from "@/types/vault"
 import { SupabaseClient } from "@supabase/supabase-js"
 import Database from "./db"
+import { toast } from "@/hooks/use-toast"
 
 export class Users {
     supabase: SupabaseClient
@@ -215,6 +216,31 @@ export class Users {
         return userProfile
     }
 
+    async updateUsername(id: string, newName: string) {
+        const userCheck = await this.db.checkIfNameExists(newName);
+
+        if (userCheck) {
+            toast({ title: "Error", description: "Username exists. Try another name.", variant: "destructive" })
+            return;
+        }
+
+        const res = await this.supabase.from('users').update({ username: newName }).eq('id', id)
+
+        toast({title: "Success", description: "Username updated to " + newName})
+    }
+
+    async deleteUser(id: string) {
+        await this.supabase.auth.admin.deleteUser(id)
+        await this.supabase.from('users').delete().eq('id', id)
+    }
+
+    // basic user info
+    async getUserInfoByName(name: string): Promise<any> {
+        const userData = await this.supabase.from('users').select('*').eq('username', name).single()
+
+        return userData.data
+    }
+
     // basic user info
     async getUserInfoById(id: string): Promise<any> {
         const userData = await this.supabase.from('users').select('*').eq('id', id).single()
@@ -231,7 +257,7 @@ export class Users {
             return await this.supabase.storage.from('user_profiles').getPublicUrl('default.jpg?updated')
         }
         else {
-            const url = 'avatars/' + userData.id + '.png?t=' + userData.updated_at
+            const url = 'avatars/' + userData.id + '.jpg?t=' + userData.updated_at
             return await this.supabase.storage.from('user_profiles').getPublicUrl(url)
         }
     }
@@ -257,6 +283,31 @@ export class Users {
 
         return results
     }
+
+    async updateAvatar(file: File, userId: string): Promise<string> {
+        try {
+            const filePath = `avatars/${userId}.jpg`
+
+            const { error: uploadError } = await this.supabase.storage
+                .from('user_profiles')
+                .update(filePath, file, { upsert: true })
+
+            if (uploadError) {
+                throw uploadError
+            }
+
+            const { data: urlData } = await this.supabase.storage
+                .from('user_profiles')
+                .getPublicUrl(filePath)
+
+            const res = await this.supabase.from('users').update({ has_avatar: true }).eq('id', userId)
+
+            return urlData.publicUrl
+        } catch (error) {
+            console.error('Error uploading file:', error)
+            throw error
+        }
+    }
 }
 
 function statusNumberToEnum(num: number) {
@@ -268,3 +319,4 @@ function statusNumberToEnum(num: number) {
     }
     return IVaultStatus.ToRead
 }
+
