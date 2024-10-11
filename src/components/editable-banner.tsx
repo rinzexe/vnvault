@@ -10,11 +10,11 @@ import AvatarEditor from "react-avatar-editor"
 import { useAuth } from "./auth-provider"
 import { useToast } from "@/hooks/use-toast"
 
-interface ProfilePictureProps {
+interface BannerProps {
   currentImageUrl: string
 }
 
-export default function ProfilePicture({ currentImageUrl }: ProfilePictureProps) {
+export default function Banner({ currentImageUrl }: BannerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [image, setImage] = useState<File | null>(null)
   const [scale, setScale] = useState(1)
@@ -49,37 +49,44 @@ export default function ProfilePicture({ currentImageUrl }: ProfilePictureProps)
   const handleSave = async () => {
     if (editorRef.current && auth.user) {
       const canvas = editorRef.current.getImageScaledToCanvas()
-      try {
-        const jpgBlob = await convertToJpg(canvas)
-        const file = new File([jpgBlob], "profile-picture.jpg", { type: "image/jpeg" })
-        const publicUrl = await auth.db.users.updateAvatar(file, auth.user.id)
-        toast({
-          title: "Success",
-          description: "Profile picture updated successfully. Reload page to see changes.",
-        })
-        setIsOpen(false)
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to update profile picture",
-          variant: "destructive",
-        })
+      const scaledCanvas = document.createElement('canvas')
+      scaledCanvas.width = 1000
+      scaledCanvas.height = 400
+      const ctx = scaledCanvas.getContext('2d')
+      if (ctx) {
+        ctx.drawImage(canvas, 0, 0, 1000, 400)
+        try {
+          const jpgBlob = await convertToJpg(scaledCanvas)
+          const file = new File([jpgBlob], "banner-image.jpg", { type: "image/jpeg" })
+          const publicUrl = await auth.db.users.updateBanner(file, auth.user.id)
+          toast({
+            title: "Success",
+            description: "Banner image updated successfully. Reload page to see changes.",
+          })
+          setIsOpen(false)
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to update banner image",
+            variant: "destructive",
+          })
+        }
       }
     }
   }
 
-  const renderProfileImage = () => (
+  const renderBannerImage = () => (
     <img
       src={currentImageUrl}
-      alt="Profile picture"
-      className="object-cover rounded-full w-full h-full"
+      alt="Banner image"
+      className="object-cover w-full h-full"
     />
   )
 
   const renderEditableContent = () => (
     <>
-      {renderProfileImage()}
-      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-full">
+      {renderBannerImage()}
+      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
         <Camera className="w-8 h-8 text-white" />
       </div>
     </>
@@ -87,8 +94,8 @@ export default function ProfilePicture({ currentImageUrl }: ProfilePictureProps)
 
   if (!isMe) {
     return (
-      <div className="relative w-32 h-32 rounded-full overflow-hidden">
-        {renderProfileImage()}
+      <div className="relative w-full h-48 overflow-hidden">
+        {renderBannerImage()}
       </div>
     )
   }
@@ -98,31 +105,33 @@ export default function ProfilePicture({ currentImageUrl }: ProfilePictureProps)
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="relative w-32 h-32 rounded-full overflow-hidden !p-0"
+          className="relative w-full h-48 overflow-hidden !p-0"
         >
           {renderEditableContent()}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[90vw] md:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Update Profile Picture</DialogTitle>
+          <DialogTitle>Update Banner Image</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex justify-center">
             {image ? (
-              <AvatarEditor
-                ref={editorRef}
-                image={image}
-                width={250}
-                height={250}
-                border={50}
-                borderRadius={125}
-                color={[255, 255, 255, 0.6]}
-                scale={scale}
-                rotate={0}
-              />
+              <div className="w-full max-h-[60vh] overflow-hidden">
+                <AvatarEditor
+                  ref={editorRef}
+                  image={image}
+                  width={1000}
+                  height={400}
+                  border={50}
+                  color={[255, 255, 255, 0.6]}
+                  scale={scale}
+                  rotate={0}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </div>
             ) : (
-              <div className="w-64 h-64 bg-muted flex items-center justify-center rounded-full">
+              <div className="w-full aspect-[5/2] bg-muted flex items-center justify-center">
                 <Upload className="w-12 h-12 text-muted-foreground" />
               </div>
             )}
@@ -138,11 +147,11 @@ export default function ProfilePicture({ currentImageUrl }: ProfilePictureProps)
             />
           )}
           <div className="flex justify-between">
-            <Button variant="outline" onClick={() => document.getElementById("fileInput")?.click()}>
+            <Button variant="outline" onClick={() => document.getElementById("bannerFileInput")?.click()}>
               Choose File
             </Button>
             <input
-              id="fileInput"
+              id="bannerFileInput"
               type="file"
               accept="image/*"
               onChange={handleFileChange}

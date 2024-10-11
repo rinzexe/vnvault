@@ -35,9 +35,9 @@ export default function VaultPage({ params }: { params: { slug: string } }) {
 
     useEffect(() => {
         async function fetchData() {
-            const res = await auth.db.users.getUserProfileByName(params.slug)
+            const res = await auth.db.vaults.getVaultByName(params.slug)
 
-            setEntryData(res.vault?.entries! || [])
+            setEntryData(res.entries! || [])
             setIsLoading(false)
         }
         fetchData()

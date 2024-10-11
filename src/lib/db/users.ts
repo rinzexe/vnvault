@@ -1,6 +1,6 @@
-import { IRecentActivityEntry, IUserProfile, IUserStats } from "@/types/user-profile"
+import { IUser, IUserStats } from "@/types/user"
 import { IVN, IVNBasic } from "@/types/vn"
-import { getCharacterById, getCharactersByVnId, getVnById } from "../vndb/search"
+import { getCharacterById, getVnById } from "../vndb/search"
 import { ICharacterBasic } from "@/types/character"
 import { genreTags } from "@/consts/genre-tags"
 import { IVaultStatus, IVNVault, IVNVaultEntry } from "@/types/vault"
@@ -12,79 +12,54 @@ export class Users {
     supabase: SupabaseClient
     db: Database
 
-    constructor(supabase: SupabaseClient, db: Database) {
+    constructor(supabase: SupabaseClient, db: Database, userId?: string) {
         this.supabase = supabase
         this.db = db
     }
 
-    async getUserStats(userId: string, vnData: IVN[]): Promise<IUserStats> {
-        const res = await this.supabase.from('vault_entries').select('*').eq('owner_id', userId).order('updated_at', { ascending: false })
-        const vaultEntries = res.data || []
+    async calculateStats(vault: IVNVault): Promise<IUserStats> {
+        const vaultEntries = vault.entries
+
 
         // setting up relevant data
-        const finishedVaultEntries = vaultEntries.filter((entry: any) => entry.status == 0)
-        const readingVaultEntries = vaultEntries.filter((entry: any) => entry.status == 1)
-        const toReadVaultEntries = vaultEntries.filter((entry: any) => entry.status == 2)
-        const droppedVaultEntries = vaultEntries.filter((entry: any) => entry.status == 3)
+        const finishedVaultEntries = vaultEntries.filter((entry: any) => entry.status == IVaultStatus.Finished)
+        const readingVaultEntries = vaultEntries.filter((entry: any) => entry.status == IVaultStatus.Reading)
+        const toReadVaultEntries = vaultEntries.filter((entry: any) => entry.status == IVaultStatus.ToRead)
+        const droppedVaultEntries = vaultEntries.filter((entry: any) => entry.status == IVaultStatus.Dropped)
         const ratedVaultEntries = vaultEntries.filter((entry: any) => entry.rating != 0)
-        const ratedEntries = vaultEntries.filter((entry: any) => entry.rating != 0)
 
         const finishedAndDroppedEntries = [...finishedVaultEntries, ...droppedVaultEntries]
 
         let finishedVnData: any = []
-        let readingVnData: any = []
-        let toReadVnData: any = []
-        let droppedVnData: any = []
-        let ratedVndata: any = []
-
-        finishedVaultEntries.forEach((entry: any) => {
-            const tempVnData = vnData.filter((vn: any) => vn.id == parseInt(entry.vid.substring(1)))
-            finishedVnData.push(tempVnData[0])
-        });
-        readingVaultEntries.forEach((entry: any) => {
-            const tempVnData = vnData.filter((vn: any) => vn.id == parseInt(entry.vid.substring(1)))
-            readingVnData.push(tempVnData[0])
-        });
-        toReadVaultEntries.forEach((entry: any) => {
-            const tempVnData = vnData.filter((vn: any) => vn.id == parseInt(entry.vid.substring(1)))
-            toReadVnData.push(tempVnData[0])
-        });
-        droppedVaultEntries.forEach((entry: any) => {
-            const tempVnData = vnData.filter((vn: any) => vn.id == parseInt(entry.vid.substring(1)))
-            droppedVnData.push(tempVnData[0])
-        });
-        ratedVaultEntries.forEach((entry: any) => {
-            const tempVnData = vnData.filter((vn: any) => vn.id == parseInt(entry.vid.substring(1)))
-            ratedVndata.push(tempVnData[0])
-        });
 
         // minutes to read
         let totalMinutesRead = 0
 
-        finishedVnData.forEach((vn: any) => {
-            totalMinutesRead += vn.length
+        finishedVaultEntries.forEach((entry: IVNVaultEntry) => {
+            totalMinutesRead += entry.vn.length
         });
 
         // average popularity & rating
         let total = 0;
-        for (let i = 0; i < ratedEntries.length; i++) {
-            total += ratedEntries[i].rating;
+        for (let i = 0; i < ratedVaultEntries.length; i++) {
+            total += ratedVaultEntries[i].rating;
         }
-        let averageRating = total / ratedEntries.length;
+        let averageRating = total / ratedVaultEntries.length;
 
-        let averageVotecount = 0
+        let averageVotecount: number = 0
 
-        finishedAndDroppedEntries.forEach((entry: any, id: number) => {
-            averageVotecount += vnData.find((data: any) => data.id == parseInt(entry.vid.substring(1)))?.rateCount ?? 0
+        finishedAndDroppedEntries.forEach((entry) => {
+            averageVotecount += entry.vn.rateCount || 0
         })
 
         averageVotecount /= finishedAndDroppedEntries.length
         averageVotecount = Math.round(averageVotecount)
 
-        let averageRatingPlayed = 0
 
-        finishedAndDroppedEntries.forEach((entry: any, id: number) => {
-            averageRatingPlayed += vnData.find((data: any) => data.id == parseInt(entry.vid.substring(1)))?.rateCount ?? 0
+        let averageRatingPlayed: number = 0
+
+        finishedAndDroppedEntries.forEach((entry) => {
+            averageRatingPlayed += entry.vn.rating || 0
         })
 
         averageRatingPlayed /= finishedAndDroppedEntries.length
@@ -117,37 +92,14 @@ export class Users {
         }
 
         // rating disrib
-        const ratingDistribution = [10]
+        const ratingDistribution: number[] = new Array(10).fill(0);
 
-        ratedEntries.forEach((entry: any, id: number) => {
-            if (entry.rating != null) {
+        ratedVaultEntries.forEach((entry: IVNVaultEntry, id: number) => {
+            console.log(ratingDistribution)
+            if (entry.rating != 0) {
                 ratingDistribution[10 - entry.rating] += 1
             }
         })
-
-        // recent activity
-        let recentActivityData: IRecentActivityEntry[] = []
-        let filteredVnData: any = vnData
-            .filter((vn: any) =>
-                vaultEntries.slice(0, 5).some((entry: any) => vn.id === parseInt(entry.vid.substring(1))))
-            .sort((a: any, b: any) => {
-                const indexA = vaultEntries.findIndex((entry: any) => a.id === parseInt(entry.vid.substring(1)));
-                const indexB = vaultEntries.findIndex((entry: any) => b.id === parseInt(entry.vid.substring(1)));
-                return indexA - indexB;
-            });
-
-
-
-        filteredVnData.forEach((vn: any, id: number) => {
-            const activityEntry: IRecentActivityEntry = {
-                vn: vn,
-                date: vaultEntries[id].updated_at.split('T')[0],
-                status: statusNumberToEnum(vaultEntries[id].status),
-                rating: vaultEntries[id].rating != 0 && vaultEntries[id].rating
-            };
-
-            recentActivityData.push(activityEntry);
-        });
 
         const stats: IUserStats = {
             totalVnsFinished: finishedVaultEntries.length,
@@ -159,33 +111,27 @@ export class Users {
 
             ratingDistribution: ratingDistribution,
             averageRating: averageRating,
-            ratedVns: ratedEntries.length,
+            ratedVns: ratedVaultEntries.length,
             averageVotecount: averageVotecount,
             averageRatingPlayed: averageRatingPlayed,
             favoriteTags: favoriteTags,
-            recentActivity: recentActivityData
         }
 
         return stats
     }
 
+    async getUserById(id: string): Promise<IUser> {
+        const userData = await this.supabase.from('users').select('*').eq('id', id).single()
+
+        return await this.getUserByName(userData.data.username)
+    }
+
     // detailed user info
-    async getUserProfileByName(name: string): Promise<IUserProfile> {
+    async getUserByName(name: string): Promise<IUser> {
         const userData = await this.supabase.from('users').select('*').eq('username', name).single()
-        const vaultRes = await this.supabase.from('vault_entries').select('*').eq('owner_id', userData.data.id).order('updated_at', { ascending: false })
-        const vaultEntries = vaultRes.data
-
-        let vnData: IVN[] = []
-
-        if (vaultEntries && vaultEntries.length > 0) {
-            vnData = await getVnById(vaultEntries.map((entry: any) => parseInt(entry.vid.substring(1))) as number[]) as IVN[]
-        }
 
         const avatar = await this.getAvatar(userData.data)
-
-        const stats = await this.getUserStats(userData.data.id, vnData)
-
-        const vault = await this.db.vaults.getVaultByName(name, vnData)
+        const banner = await this.getBanner(userData.data)
 
         const favoriteNovelIds: number[] = userData.data.favorite_novels.map((str: string) => parseInt(str.substring(1)));
 
@@ -201,20 +147,21 @@ export class Users {
             favoriteCharacterData = await getCharacterById(favoriteCharacterIds) as ICharacterBasic[]
         }
 
-        const userProfile: IUserProfile = {
+        const userProfile: IUser = {
             uuid: userData.data.id,
             username: userData.data.username,
             joinedOn: userData.data.created_at.split('T')[0],
             avatarUrl: avatar.data.publicUrl,
+            bannerUrl: banner.data.publicUrl,
             bio: userData.data.bio,
             favoriteVisualNovels: favoriteNovelData || [],
             favoriteCharacters: favoriteCharacterData || [],
-            stats: stats,
-            vault: vault
+            nsfwEnabled: userData.data.nsfw_enabled
         }
 
         return userProfile
     }
+
 
     async updateUsername(id: string, newName: string) {
         const userCheck = await this.db.checkIfNameExists(newName);
@@ -226,7 +173,7 @@ export class Users {
 
         const res = await this.supabase.from('users').update({ username: newName }).eq('id', id)
 
-        toast({title: "Success", description: "Username updated to " + newName})
+        toast({ title: "Success", description: "Username updated to " + newName })
     }
 
     async deleteUser(id: string) {
@@ -254,34 +201,12 @@ export class Users {
 
     async getAvatar(userData: any) {
         if (userData.has_avatar == false) {
-            return await this.supabase.storage.from('user_profiles').getPublicUrl('default.jpg?updated')
+            return await this.supabase.storage.from('user_profiles').getPublicUrl('avatars/default.jpg?updated')
         }
         else {
             const url = 'avatars/' + userData.id + '.jpg?t=' + userData.updated_at
             return await this.supabase.storage.from('user_profiles').getPublicUrl(url)
         }
-    }
-
-    async getUsersBySearch(query: string): Promise<IUserProfile[]> {
-        const userData = await this.supabase.from('users').select('*').textSearch('username', query)
-
-        let results: IUserProfile[] = []
-
-        userData.data?.forEach(async (data) => {
-            const avatar = await this.getAvatar(data)
-
-            const userProfile: IUserProfile = {
-                uuid: data.id,
-                username: data.username,
-                joinedOn: data.created_at.split('T')[0],
-                avatarUrl: avatar.data.publicUrl,
-                bio: data.bio,
-            }
-
-            results.push(userProfile)
-        })
-
-        return results
     }
 
     async updateAvatar(file: File, userId: string): Promise<string> {
@@ -307,6 +232,66 @@ export class Users {
             console.error('Error uploading file:', error)
             throw error
         }
+    }
+
+    async getBanner(userData: any) {
+        if (userData.has_banner == false) {
+            return await this.supabase.storage.from('user_profiles').getPublicUrl('banners/default.jpg?updated')
+        }
+        else {
+            const url = 'banners/' + userData.id + '.jpg?t=' + userData.updated_at
+            return await this.supabase.storage.from('user_profiles').getPublicUrl(url)
+        }
+    }
+
+    async updateBanner(file: File, userId: string): Promise<string> {
+        try {
+            const filePath = `banners/${userId}.jpg`
+
+            const { error: uploadError } = await this.supabase.storage
+                .from('user_profiles')
+                .upload(filePath, file, { upsert: true })
+
+            if (uploadError) {
+                throw uploadError
+            }
+
+            const { data: urlData } = await this.supabase.storage
+                .from('user_profiles')
+                .getPublicUrl(filePath)
+
+            const res = await this.supabase.from('users').update({ has_banner: true }).eq('id', userId)
+
+            return urlData.publicUrl
+        } catch (error) {
+            console.error('Error uploading file:', error)
+            throw error
+        }
+    }
+
+    async getUsersBySearch(query: string): Promise<IUser[]> {
+        const userData = await this.supabase.from('users').select('*').textSearch('username', query)
+
+        let results: IUser[] = []
+
+        userData.data?.forEach(async (data) => {
+            const avatar = await this.getAvatar(data)
+            const banner = await this.getBanner(data)
+
+            const userProfile: IUser = {
+                uuid: data.id,
+                username: data.username,
+                joinedOn: data.created_at.split('T')[0],
+                avatarUrl: avatar.data.publicUrl,
+                bannerUrl: banner.data.publicUrl,
+                bio: data.bio,
+                nsfwEnabled: data.nsfw_enabled
+            }
+
+            results.push(userProfile)
+        })
+
+        return results
     }
 }
 

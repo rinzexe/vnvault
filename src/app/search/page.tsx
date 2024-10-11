@@ -25,7 +25,7 @@ import { ICharacter } from "@/types/character"
 import NSFWImage from "@/components/nsfw-image"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useAuth } from "@/components/auth-provider"
-import { IUserProfile } from "@/types/user-profile"
+import { IUser } from "@/types/user"
 import { IDeveloper } from "@/types/developer"
 
 type ViewMode = "list" | "card" | "compact"
@@ -35,7 +35,7 @@ export default function SearchPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("list")
   const [searchType, setSearchType] = useState<SearchType>("visual novels")
   const [searchTerm, setSearchTerm] = useState("")
-  const [searchResults, setSearchResults] = useState<IVN[] | ICharacter[] | IUserProfile[] | IDeveloper[]>([])
+  const [searchResults, setSearchResults] = useState<IVN[] | ICharacter[] | IUser[] | IDeveloper[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [sort, setSort] = useState<IVNSort>({ type: "rating", asc: false })
   const [filters, setFilters] = useState<IVNFilters>({ rating: [1, 10] })
@@ -59,7 +59,7 @@ export default function SearchPage() {
 
       setIsLoading(true)
 
-      let res: IVN[] | ICharacter[] | IUserProfile[] | IDeveloper[];
+      let res: IVN[] | ICharacter[] | IUser[] | IDeveloper[];
       switch (searchType) {
         case "visual novels":
           res = await getVnBySearch(search[0], search[1], search[2])
@@ -204,7 +204,7 @@ export default function SearchPage() {
           <TableHead>Name</TableHead>
         </TableHeader>
         <TableBody>
-          {(searchResults as IUserProfile[]).map((user: IUserProfile) => (
+          {(searchResults as IUser[]).map((user: IUser) => (
             <Link key={user.uuid} href={"/profile/" + user.username} passHref legacyBehavior>
               <TableRow className="hover:cursor-pointer">
                 <TableCell className="w-20">

@@ -32,7 +32,6 @@ export default function NSFWImage({
         async function fetchData() {
             if (auth.user) {
                 const res = await auth.db.users.getUserInfoById(auth.user.id)
-                console.log(res)
                 if (res.nsfw_enabled == true) {
                     setNsfwEnabled(true)
                     setIsBlurred(false)

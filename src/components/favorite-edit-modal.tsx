@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import useDebouncedSearch from "@/hooks/use-debounced-search"
 import { getVnBySearch, getCharacterBySearch } from "@/lib/vndb/search" // Adjust this to import character search
-import { IUserProfile } from "@/types/user-profile"
+import { IUser } from "@/types/user"
 import { IVNVaultEntry } from "@/types/vault"
 import { IVNBasic } from "@/types/vn"
 import { ICharacterBasic } from "@/types/character" // Assuming there's a character type
@@ -38,7 +38,7 @@ export default function FavoriteEditModal({ username, type }: FavoriteEditModalP
 
     useEffect(() => {
         async function fetchSearch() {
-            const userData: IUserProfile = await auth.db.users.getUserProfileByName(username)
+            const userData: IUser = await auth.db.users.getUserByName(username)
             let res;
 
             if (type === "vn") {

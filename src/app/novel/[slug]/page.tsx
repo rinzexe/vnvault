@@ -49,9 +49,9 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
 
             if (auth.user) {
                 const userInfoRes = await auth.db.users.getUserInfoById(auth.user?.id!)
-                const profileRes = await auth.db.users.getUserProfileByName(userInfoRes.username)
+                const vaultRes = await auth.db.vaults.getVaultByName(userInfoRes.username)
 
-                const entry = profileRes.vault?.entries.find(obj => obj.vn.id == vnRes.id)
+                const entry = vaultRes.entries.find(obj => obj.vn.id == vnRes.id)
 
                 if (entry) {
                     setVaultEntry(entry)

@@ -20,7 +20,7 @@ import { Separator } from "@/components/ui/separator"
 import useDebouncedSearch from "@/hooks/use-debounced-search"
 import { IVN } from "@/types/vn"
 import { getVnBySearch } from "@/lib/vndb/search"
-import { IUserProfile } from "@/types/user-profile"
+import { IUser } from "@/types/user"
 import { useAuth } from "@/components/auth-provider"
 import ThemeToggle from "@/components/theme-toggle"
 
@@ -29,7 +29,7 @@ export default function Header() {
   const [searchResults, setSearchResults] = useState<IVN[]>([])
   const searchRef = useRef<HTMLDivElement>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const [userData, setUserData] = useState<IUserProfile>()
+  const [userData, setUserData] = useState<IUser>()
 
   const search = useDebouncedSearch(searchQuery)
 
@@ -176,7 +176,7 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/40">
       <div className="max-w-screen-xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
@@ -184,7 +184,7 @@ export default function Header() {
               <span className="font-bold text-xl text-primary">VNVault</span>
             </Link>
             <nav className="hidden md:flex space-x-4">
-              <Link href="/search?q=fullmetaldaemonmuramasa" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link href="/search/" className="text-muted-foreground hover:text-primary transition-colors">
                 Browse
               </Link>
               <Link href="/changelog" className="text-muted-foreground hover:text-primary transition-colors">

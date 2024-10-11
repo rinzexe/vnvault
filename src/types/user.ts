@@ -2,23 +2,16 @@ import { ICharacterBasic } from "./character"
 import { IVaultStatus, IVNVault } from "./vault"
 import { IVN, IVNBasic } from "./vn"
 
-export interface IRecentActivityEntry {
-    vn: IVNBasic
-    status: IVaultStatus
-    rating?: number
-    date: string
-}
-
-export interface IUserProfile {
+export interface IUser {
     uuid: string
     username: string
     joinedOn: string
     avatarUrl: string
+    bannerUrl: string
     bio: string
     favoriteVisualNovels?: IVNBasic[]
     favoriteCharacters?: ICharacterBasic[]
-    stats?: IUserStats
-    vault?: IVNVault
+    nsfwEnabled: boolean
 }
 
 export interface IUserStats {
@@ -35,5 +28,8 @@ export interface IUserStats {
     averageVotecount: number
     averageRatingPlayed: number
     favoriteTags: number[]
-    recentActivity: IRecentActivityEntry[]
+}
+
+export interface IUserSettings {
+    nsfwEnabled: boolean
 }

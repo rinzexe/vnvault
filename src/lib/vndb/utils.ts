@@ -15,7 +15,6 @@ export interface IRequestParams {
 }
 
 export async function request(params: IRequestParams) {
-    console.log(params)
     let body: any = {
         'fields': fieldPresets[params.endpoint],
         "count": true,
