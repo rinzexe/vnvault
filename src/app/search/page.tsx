@@ -39,6 +39,7 @@ export default function SearchPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [sort, setSort] = useState<IVNSort>({ type: "rating", asc: false })
   const [filters, setFilters] = useState<IVNFilters>({ rating: [1, 10] })
+  const [searchParamsChecked, setSearchParamsChecked] = useState<boolean>(false)
 
   const search = useDebouncedSearch([searchTerm, filters, sort])
 
@@ -52,6 +53,7 @@ export default function SearchPage() {
     const type = (searchParams.get("type") as SearchType) || "visual novels"
     setSearchTerm(query)
     setSearchType(type)
+    setSearchParamsChecked(true)
   }, [])
 
   useEffect(() => {
@@ -78,14 +80,19 @@ export default function SearchPage() {
       setSearchResults(res || [])
       setIsLoading(false)
     }
-    setSearchResults([])
-    router.push(`?q=${searchTerm}&type=${searchType}`)
-    fetchData()
+
+    if (searchParamsChecked == true) {
+      setSearchResults([])
+      router.push(`?q=${searchTerm}&type=${searchType}`)
+      fetchData()
+    }
   }, [search, searchType])
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
   }
+
+  console.log(searchTerm)
 
   const SkeletonListView = () => (
     <Table>
