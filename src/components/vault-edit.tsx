@@ -5,26 +5,28 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Edit2, Minus, Plus } from "lucide-react"
+import { Minus, Plus } from "lucide-react"
 import { useAuth } from "./auth-provider"
 
 interface IVaultEditProps {
-    entryData: IVNVaultEntry
+    entryData?: IVNVaultEntry
+    vnId?: number
+    vnTitle?: string
     children: ReactNode
 }
 
 interface IEditingData {
     rating: number | null // Allow for unrated by setting it to null
     status: IVaultStatus
-    isRated: boolean // New flag to handle rated/unrated
+    isRated: boolean // Flag to handle rated/unrated
 }
 
-export default function VaultEdit({ entryData, children }: IVaultEditProps) {
+export default function VaultEdit({ entryData, vnId, vnTitle, children }: IVaultEditProps) {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
     const [editingData, setEditingData] = useState<IEditingData>({
-        rating: entryData.rating === 0 ? null : entryData.rating,
-        status: entryData.status,
-        isRated: entryData.rating !== 0 // Determine initial state if it's rated or not
+        rating: entryData ? (entryData.rating === 0 ? null : entryData.rating) : null,
+        status: entryData ? entryData.status : IVaultStatus.ToRead,
+        isRated: entryData ? entryData.rating !== 0 : false,
     })
 
     const auth = useAuth()
@@ -38,18 +40,32 @@ export default function VaultEdit({ entryData, children }: IVaultEditProps) {
         }
     }
 
-    function handleSave() {
+    function handleSave(remove: boolean = false) {
         const ratingValue = editingData.isRated ? editingData.rating ?? 1 : 0
 
-        auth.db.vaults.updateVault(auth.user?.id!, Math.min(Math.max(ratingValue, 0), 10), Object.values(IVaultStatus).indexOf(editingData.status), entryData.vn.id)
+        const vaultVnId = vnId ?? entryData?.vn.id
+        if (!vaultVnId) {
+            console.error("VN ID is missing")
+            return
+        }
+
+        auth.db.vaults.updateVault(
+            auth.user?.id!,
+            Math.min(Math.max(ratingValue, 0), 10),
+            Object.values(IVaultStatus).indexOf(editingData.status),
+            vaultVnId,
+            remove // Pass the remove flag
+        )
+
         auth.forceRerender()
+        setIsDialogOpen(false)
     }
 
     function handleRatingOptionChange(isRated: boolean) {
         setEditingData({
             ...editingData,
             isRated,
-            rating: isRated ? editingData.rating ?? 1 : null // Set rating to null if unrated, or 1 for rated
+            rating: isRated ? editingData.rating ?? 1 : null, // Set rating to null if unrated, or 1 for rated
         })
     }
 
@@ -60,7 +76,14 @@ export default function VaultEdit({ entryData, children }: IVaultEditProps) {
             </div>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader className="w-5/6">
-                    <DialogTitle><span className="font-light">Edit entry for </span><span className="italic">{entryData.vn.title}</span></DialogTitle>
+                    <DialogTitle>
+                        <span className="font-light">
+                            {entryData ? "Edit entry for " : "Add entry for "}
+                        </span>
+                        <span className="italic">
+                            {entryData ? entryData.vn.title : vnTitle}
+                        </span>
+                    </DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     {/* Status Field */}
@@ -70,7 +93,9 @@ export default function VaultEdit({ entryData, children }: IVaultEditProps) {
                         </Label>
                         <Select
                             value={editingData.status}
-                            onValueChange={(value) => setEditingData({ ...editingData, status: value as IVaultStatus })}
+                            onValueChange={(value) =>
+                                setEditingData({ ...editingData, status: value as IVaultStatus })
+                            }
                         >
                             <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Select status" />
@@ -120,7 +145,12 @@ export default function VaultEdit({ entryData, children }: IVaultEditProps) {
                                     id="rating"
                                     type="number"
                                     value={editingData.rating?.toFixed(1) ?? ""}
-                                    onChange={(e) => setEditingData({ ...editingData, rating: Number(parseFloat(e.target.value).toFixed(1)) })}
+                                    onChange={(e) =>
+                                        setEditingData({
+                                            ...editingData,
+                                            rating: Number(parseFloat(e.target.value).toFixed(1)),
+                                        })
+                                    }
                                     min={1}
                                     max={10}
                                     step={0.1}
@@ -133,8 +163,15 @@ export default function VaultEdit({ entryData, children }: IVaultEditProps) {
                         </div>
                     )}
                 </div>
-                <div className="flex justify-end">
-                    <Button onClick={() => handleSave()}>Save Changes</Button>
+                <div className="flex justify-between">
+                    {entryData && (
+                        <Button variant="destructive" onClick={() => handleSave(true)}>
+                            Delete Entry
+                        </Button>
+                    )}
+                    <Button onClick={() => handleSave()}>
+                        {entryData ? "Save Changes" : "Add Entry"}
+                    </Button>
                 </div>
             </DialogContent>
         </Dialog>

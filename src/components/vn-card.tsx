@@ -8,6 +8,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "./ui/button"
 import { Edit2 } from "lucide-react"
+import NSFWImage from "./nsfw-image"
 
 interface IVNCardProps {
     vnData: IVN
@@ -30,11 +31,10 @@ export default function VNCard({ vnData, entry, date, rating, badgeText, isMe }:
             <Card key={vnData.id} className="overflow-hidden hover:bg-foreground/10 duration-300">
                 <CardContent className="p-0">
                     <div className="relative">
-                        <Image
-                            src={vnData.cover.url}
-                            alt={vnData.title}
-                            width={300}
-                            height={450}
+                        <NSFWImage
+                            imageUrl={vnData.cover.url}
+                            resolution={vnData.cover.resolution}
+                            isNsfw={vnData.cover.nsfw}
                             className="w-full h-[300px] object-cover"
                         />
                         {badgeText && (

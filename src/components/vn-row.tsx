@@ -47,7 +47,7 @@ export default function VNRow({ vnData, entry, rating, fields, isMe }: IVNRowPro
                 )}
             </TableCell>
             {isMe && entry && <TableCell onClick={(e) => e.stopPropagation()}>
-                <VaultEdit entryData={entry}>
+                <VaultEdit  entryData={entry}>
                     <Edit2 className="text-foreground hover:text-accent duration-200" />
                 </VaultEdit>
             </TableCell>}

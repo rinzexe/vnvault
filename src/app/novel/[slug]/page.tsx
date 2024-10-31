@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/collapsible"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ChevronDown, ChevronUp, Edit, ExternalLink, Star } from "lucide-react"
+import { ChevronDown, ChevronUp, Edit, ExternalLink, Plus, Star } from "lucide-react"
 import { getCharactersByVnId, getVnById } from "@/lib/vndb/search"
 import { IVN } from "@/types/vn"
 import { IImage } from '@/types/image'
@@ -90,13 +90,24 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                             <p className="text-xl">{vnData?.altTitle}</p>
                         )}
                     </div>
-                    {vaultEntry && <div className="flex items-center space-x-4">
-                        <VaultEdit entryData={vaultEntry}>
-                            <Button variant="outline">
-                                <Edit className="mr-2 h-4 w-4" /> Edit Vault
-                            </Button>
-                        </VaultEdit>
-                    </div>}
+                    {auth.user && vnData && (vaultEntry ? (
+                        <div className="flex items-center space-x-4">
+                            <VaultEdit vnId={vnData?.id} vnTitle={vnData?.title} entryData={vaultEntry}>
+                                <Button variant="outline">
+                                    <Edit className="mr-2 h-4 w-4" /> Edit Vault
+                                </Button>
+                            </VaultEdit>
+                        </div>
+                    ) : (
+                        <div className="flex items-center space-x-4">
+                            <VaultEdit vnId={vnData?.id} vnTitle={vnData?.title}>
+                                <Button variant="outline">
+                                    <Plus className="mr-2 h-4 w-4" /> Add to vault
+                                </Button>
+                            </VaultEdit>
+                        </div>
+                    ))}
+
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -296,7 +307,7 @@ export default function VisualNovelInfoPage({ params }: { params: { slug: number
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

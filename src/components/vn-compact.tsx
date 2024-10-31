@@ -16,6 +16,7 @@ interface IVNCompactProps {
 import { useRouter } from 'next/navigation';
 import { Button } from "./ui/button"
 import { Edit2 } from "lucide-react"
+import NSFWImage from "./nsfw-image"
 
 export default function VNCompact({ vnData, entry, rating, imageText, isMe }: IVNCompactProps) {
     const router = useRouter();
@@ -27,15 +28,14 @@ export default function VNCompact({ vnData, entry, rating, imageText, isMe }: IV
     return (
         <div
             key={vnData.id}
-            className="flex hover:bg-foreground/10 rounded duration-200 p-2 hover:cursor-pointer flex-col items-center text-center"
+            className="flex hover:bg-foreground/10 rounded duration-200 p-2 h-fit hover:cursor-pointer flex-col items-center text-center"
             onClick={handleNavigation}
         >
             <div className="relative">
-                <Image
-                    src={vnData.cover.url}
-                    alt={vnData.title}
-                    width={120}
-                    height={180}
+                <NSFWImage
+                    imageUrl={vnData.cover.url}
+                    resolution={vnData.cover.resolution}
+                    isNsfw={vnData.cover.nsfw}
                     className="object-cover rounded"
                 />
                 {imageText && (

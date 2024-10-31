@@ -32,7 +32,7 @@ type ViewMode = "list" | "card" | "compact"
 type SearchType = "visual novels" | "characters" | "users" | "developers"
 
 export default function SearchPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>("list")
+  const [viewMode, setViewMode] = useState<ViewMode>("card")
   const [searchType, setSearchType] = useState<SearchType>("visual novels")
   const [searchTerm, setSearchTerm] = useState("")
   const [searchResults, setSearchResults] = useState<IVN[] | ICharacter[] | IUser[] | IDeveloper[]>([])
@@ -49,35 +49,34 @@ export default function SearchPage() {
 
   useEffect(() => {
     const query = searchParams.get("q") || ""
-    const type = searchParams.get("type") as SearchType || "visual novels"
+    const type = (searchParams.get("type") as SearchType) || "visual novels"
     setSearchTerm(query)
     setSearchType(type)
   }, [])
 
   useEffect(() => {
     async function fetchData() {
-
+      console.log(search)
       setIsLoading(true)
 
-      let res: IVN[] | ICharacter[] | IUser[] | IDeveloper[];
+      let res: IVN[] | ICharacter[] | IUser[] | IDeveloper[]
       switch (searchType) {
         case "visual novels":
           res = await getVnBySearch(search[0], search[1], search[2])
-          break;
+          break
         case "characters":
-          res = await getCharacterBySearch(search[0]) as ICharacter[]
-          break;
+          res = (await getCharacterBySearch(search[0])) as ICharacter[]
+          break
         case "users":
           res = await auth.db.users.getUsersBySearch(search[0])
-          break;
+          break
         case "developers":
           res = await getDeveloperBySearch(search[0])
-          break;
+          break
       }
 
       setSearchResults(res || [])
       setIsLoading(false)
-
     }
     setSearchResults([])
     router.push(`?q=${searchTerm}&type=${searchType}`)
@@ -90,26 +89,33 @@ export default function SearchPage() {
 
   const SkeletonListView = () => (
     <Table>
-      <TableHeader>
-      </TableHeader>
+      <TableHeader></TableHeader>
       <TableBody>
         {Array.from({ length: 5 }).map((_, index) => (
           <TableRow key={index}>
-            <TableCell><Skeleton className="h-[75px] w-[50px]" /></TableCell>
+            <TableCell>
+              <Skeleton className="h-[75px] w-[50px]" />
+            </TableCell>
             <TableCell>
               <Skeleton className="h-4 w-[200px]" />
               <Skeleton className="h-4 w-[150px] mt-2" />
             </TableCell>
-            <TableCell><Skeleton className="h-4 w-[50px]" /></TableCell>
-            <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[50px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[100px]" />
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
   )
 
-  const renderVNListView = () => (
-    isLoading ? <SkeletonListView /> : (
+  const renderVNListView = () =>
+    isLoading ? (
+      <SkeletonListView />
+    ) : (
       <Table>
         <TableHeader>
           <TableHead>Cover</TableHead>
@@ -124,10 +130,11 @@ export default function SearchPage() {
         </TableBody>
       </Table>
     )
-  )
 
-  const renderCharacterListview = () => (
-    isLoading ? <SkeletonListView /> : (
+  const renderCharacterListview = () =>
+    isLoading ? (
+      <SkeletonListView />
+    ) : (
       <Table>
         <TableHeader>
           <TableHead>Image</TableHead>
@@ -155,7 +162,7 @@ export default function SearchPage() {
                     {character.vns.slice(0, 3).map((vn, index) => (
                       <Image
                         key={index}
-                        src={vn?.cover?.url || '/placeholder.svg'}
+                        src={vn?.cover?.url || "/placeholder.svg"}
                         alt={vn.title}
                         width={40}
                         height={60}
@@ -170,34 +177,37 @@ export default function SearchPage() {
         </TableBody>
       </Table>
     )
-  )
 
-  const renderVNCardView = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {isLoading ? <VNCardSkeleton /> : (
-        (searchResults as IVN[]).map((vn: IVN, id: number) => (
+  const renderVNCardView = () => {
+    return isLoading ? (
+      <VNCardSkeleton />
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {(searchResults as IVN[]).map((vn: IVN, id: number) => (
           <Link key={id} href={"/novel/" + vn.id}>
             <VNCard vnData={vn} rating={vn.rating!} date={vn.released} />
           </Link>
-        ))
-      )}
-    </div>
-  )
+        ))}
+      </div>
+    )
+  }
 
-  const renderVNCompactView = () => (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-2">
-      {isLoading ? (
-        <VNCompactSkeleton />
-      ) : (
-        (searchResults as IVN[]).map((vn: IVN, id: number) => (
+  const renderVNCompactView = () => {
+    return isLoading ? (
+      <VNCompactSkeleton />
+    ) : (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-2">
+        {(searchResults as IVN[]).map((vn: IVN, id: number) => (
           <VNCompact key={id} vnData={vn} rating={vn.rating} />
-        ))
-      )}
-    </div>
-  )
+        ))}
+      </div>
+    )
+  }
 
-  const renderUserListView = () => (
-    isLoading ? <SkeletonListView /> : (
+  const renderUserListView = () =>
+    isLoading ? (
+      <SkeletonListView />
+    ) : (
       <Table>
         <TableHeader>
           <TableHead>Avatar</TableHead>
@@ -227,10 +237,11 @@ export default function SearchPage() {
         </TableBody>
       </Table>
     )
-  )
 
-  const renderDeveloperListView = () => (
-    isLoading ? <SkeletonListView /> : (
+  const renderDeveloperListView = () =>
+    isLoading ? (
+      <SkeletonListView />
+    ) : (
       <Table>
         <TableHeader>
           <TableHead>Name</TableHead>
@@ -248,7 +259,6 @@ export default function SearchPage() {
         </TableBody>
       </Table>
     )
-  )
 
   return (
     <div className="container mx-auto py-8 max-w-screen-xl">
@@ -256,7 +266,11 @@ export default function SearchPage() {
         <h1 className="text-3xl font-bold">Search</h1>
         {searchType === "visual novels" && (
           <div className="hidden md:block">
-            <ToggleGroup type="single" value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
+            <ToggleGroup
+              type="single"
+              value={viewMode}
+              onValueChange={(value) => setViewMode(value as ViewMode)}
+            >
               <ToggleGroupItem value="list" aria-label="List View">
                 <List className="h-4 w-4" />
               </ToggleGroupItem>
@@ -272,7 +286,14 @@ export default function SearchPage() {
       </div>
 
       <ScrollArea dir="rtl">
-        <Tabs value={searchType} onValueChange={(value) => { setSearchType(value as SearchType); setSearchResults([]) }} className="mb-6">
+        <Tabs
+          value={searchType}
+          onValueChange={(value) => {
+            setSearchType(value as SearchType)
+            setSearchResults([])
+          }}
+          className="mb-6"
+        >
           <TabsList>
             <TabsTrigger value="visual novels">Visual Novels</TabsTrigger>
             <TabsTrigger value="characters">Characters</TabsTrigger>
@@ -283,8 +304,10 @@ export default function SearchPage() {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      <div className="flex flex-col gap-4 mb-6">
-        <div className="flex items-center space-x-2 w-full">
+      {/* Updated Layout Starts Here */}
+      <div className="flex flex-col lg:flex-row lg:items-end gap-4 mb-6">
+        {/* Search Bar */}
+        <div className="flex items-center space-x-2 w-full lg:flex-1">
           <Search className="w-5 h-5 text-gray-400" />
           <Input
             placeholder={`Search ${searchType}...`}
@@ -294,9 +317,11 @@ export default function SearchPage() {
           />
         </div>
 
+        {/* Conditional Filters */}
         {searchType === "visual novels" && (
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-grow">
+          <div className="flex flex-col lg:flex-row lg:items-end gap-4 w-full lg:w-auto">
+            {/* Rating Range */}
+            <div className="flex flex-col flex-grow lg:flex-1">
               <Label>Rating Range</Label>
               <div className="flex items-center mt-2 space-x-4">
                 <Input
@@ -305,31 +330,48 @@ export default function SearchPage() {
                   max={10}
                   step={0.1}
                   value={filters?.rating![0]}
-                  onChange={(e) => setFilters({ ...filters, rating: [parseFloat(e.target.value), filters.rating![1]] })}
+                  onChange={(e) =>
+                    setFilters({
+                      ...filters,
+                      rating: [parseFloat(e.target.value), filters.rating![1]],
+                    })
+                  }
                   className="w-20"
                 />
-                <Range
-                  min={1}
-                  max={10}
-                  step={0.1}
-                  value={filters.rating}
-                  defaultValue={[1, 10]}
-                  onValueChange={(e) => setFilters({ rating: e })}
-                  className="flex-grow"
-                />
+                <div className="flex-grow w-48">
+                  <Range
+                    min={1}
+                    max={10}
+                    step={0.1}
+                    value={filters.rating}
+                    defaultValue={[1, 10]}
+                    onValueChange={(e) => setFilters({ rating: e })}
+                  />
+                </div>
                 <Input
                   type="number"
                   min={1}
                   max={10}
                   step={0.1}
                   value={filters.rating![1]}
-                  onChange={(e) => setFilters({ rating: [filters.rating![0], parseFloat(e.target.value)] })}
+                  onChange={(e) =>
+                    setFilters({
+                      rating: [filters.rating![0], parseFloat(e.target.value)],
+                    })
+                  }
                   className="w-20"
                 />
               </div>
             </div>
-            <div className="flex items-end gap-2">
-              <Select value={sort.type} onValueChange={(value: "title" | "rating" | "releaseDate") => setSort({ type: value, asc: sort.asc })}>
+
+            {/* Sort Options */}
+            <div className="flex items-end gap-2 mt-4 lg:mt-0">
+              <Select
+                value={sort.type}
+                onValueChange={(value: "title" | "rating" | "releaseDate") =>
+                  setSort({ type: value, asc: sort.asc })
+                }
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -339,11 +381,19 @@ export default function SearchPage() {
                   <SelectItem value="releaseDate">Release Date</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="icon" onClick={() => setSort({ asc: !sort.asc, type: sort.type })}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setSort({ asc: !sort.asc, type: sort.type })}
+              >
                 {sort.asc ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
               </Button>
               <div className="md:hidden">
-                <ToggleGroup type="single" value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
+                <ToggleGroup
+                  type="single"
+                  value={viewMode}
+                  onValueChange={(value) => setViewMode(value as ViewMode)}
+                >
                   <ToggleGroupItem value="list" aria-label="List View">
                     <List className="h-4 w-4" />
                   </ToggleGroupItem>
@@ -359,6 +409,7 @@ export default function SearchPage() {
           </div>
         )}
       </div>
+      {/* Updated Layout Ends Here */}
 
       <div>
         {searchResults.length > 0 || isLoading ? (
@@ -368,15 +419,16 @@ export default function SearchPage() {
               {viewMode === "card" && renderVNCardView()}
               {viewMode === "compact" && renderVNCompactView()}
             </div>
-          ) :
-            searchType === "characters" ? renderCharacterListview() :
-              searchType === "users" ? renderUserListView() :
-                searchType === "developers" && (
-                  renderDeveloperListView()
-                )
-        )
-          :
-          isLoading == false && "No search results o(╥﹏╥)o"}
+          ) : searchType === "characters" ? (
+            renderCharacterListview()
+          ) : searchType === "users" ? (
+            renderUserListView()
+          ) : (
+            searchType === "developers" && renderDeveloperListView()
+          )
+        ) : (
+          !isLoading && "No search results o(╥﹏╥)o"
+        )}
       </div>
     </div>
   )
